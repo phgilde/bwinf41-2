@@ -7,9 +7,12 @@ module SliceMultiSet (
     fromList,
     findCompatible,
     unique,
+    getLowestEach,
 ) where
 
-import qualified Data.IntMap.Lazy as Map
+import Data.List qualified as List
+
+import Data.IntMap.Lazy qualified as Map
 import MultiSet qualified as MS
 
 type Slice = (Int, Int)
@@ -23,16 +26,26 @@ insert (s, s') m
     | otherwise = insert (s, s') $ Map.insert s MS.empty m
 
 delete :: Slice -> SliceMS -> SliceMS
-delete (s, s') = Map.adjust (MS.delete s') s
+delete (s, s') =
+    Map.update
+        ( \ms ->
+            let deleted = MS.delete s' ms
+             in if deleted /= MS.empty then Just deleted else Nothing
+        )
+        s
 
 fromList :: [Slice] -> SliceMS
 fromList = foldr insert Map.empty
 
 findCompatible :: Cheese -> SliceMS -> [Slice]
 findCompatible (c1, c2, c3) m =
-    [(c1, c2) | c1 `Map.member` m, c2 `MS.member` (m Map.! c1)]
+    List.nub
+        [(c1, c2) | c1 `Map.member` m, c2 `MS.member` (m Map.! c1)]
         ++ [(c1, c3) | c1 `Map.member` m, c3 `MS.member` (m Map.! c1)]
         ++ [(c2, c3) | c2 `Map.member` m, c3 `MS.member` (m Map.! c2)]
 
 unique :: SliceMS -> [Slice]
 unique = concatMap (\(s, s') -> map (s,) $ MS.unique s') . Map.toList
+
+getLowestEach :: SliceMS -> [Slice]
+getLowestEach = map (\(s, s') -> (s, MS.findMin s')) . Map.toList

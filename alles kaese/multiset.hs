@@ -5,7 +5,8 @@ module MultiSet (
     delete,
     unique,
     member,
-    empty
+    empty,
+    findMin,
 ) where
 
 import Data.Map qualified as Map
@@ -29,3 +30,6 @@ member = Map.member
 
 empty :: MultiSet a
 empty = Map.empty
+
+findMin :: Ord a => MultiSet a -> a
+findMin = fst . Map.findMin

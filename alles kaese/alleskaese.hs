@@ -5,12 +5,13 @@ import Data.Set qualified as Set
 import SliceMultiSet qualified as SMS
 import System.IO
 import Text.Printf
+import System.CPUTime
 
 type Slice = (Int, Int)
 
 type Cheese = (Int, Int, Int)
 
-newtype State = State (Cheese, [Slice], SMS.SliceMS)
+newtype State = State (Cheese, [Slice], SMS.SliceMS) deriving (Show)
 instance Eq State where
     (State (_, su, sl)) == (State (_, su', sl')) = su == su' && sl == sl'
 
@@ -53,7 +54,7 @@ nextState (State (c, s, s')) slice = State (addSlice c slice, slice : s, SMS.del
 
 nextStates :: State -> [State]
 nextStates (State (c, s, s')) =
-    filter (\(State (c, _, s)) -> all (fitsLater c) $ SMS.unique s)
+    filter (\(State (c, _, s)) -> all (fitsLater c) $ SMS.getLowestEach s)
         . map (nextState (State (c, s, s')))
         . sort
         $ SMS.findCompatible c s'
@@ -98,8 +99,12 @@ main = do
     hFlush stdout
     path <- getLine
     slices <- readSlices path
+    startTime <- getCPUTime
     let order = findOrder slices
     print $ length order
     mapM_
         (\((s1, s2), (c1, c2, c3)) -> putStrLn $ printf "Scheibe: %d %d, Käse: %d %d %d" s1 s2 c1 c2 c3)
         (zip order (slicesToCheeses order))
+    endTime <- getCPUTime
+    let diff = (fromIntegral (endTime - startTime) :: Double) / (10 ^ 12)
+    printf "Laufzeit: %.3f Sekunden" diff

@@ -53,24 +53,28 @@ nextState (State (c, s, s')) slice = State (addSlice c slice, slice : s, SMS.del
 
 nextStates :: State -> [State]
 nextStates (State (c, s, s')) =
-    filter (\(State (c, _, s)) -> all (fitsLater c) $ SMS.unique s) $
-        map (nextState (State (c, s, s'))) $
-            sort $ SMS.findCompatible c s'
+    filter (\(State (c, _, s)) -> all (fitsLater c) $ SMS.unique s)
+        . map (nextState (State (c, s, s')))
+        . sort
+        $ SMS.findCompatible c s'
 
 sliceToCheese :: Slice -> Cheese
 sliceToCheese (s1, s2) = (1, s1, s2)
 
-sliceToState :: [Slice] -> Slice -> State
-sliceToState slices slice = State (sliceToCheese slice, [slice], SMS.fromList $ delete slice slices)
+sliceToState :: SMS.SliceMS -> Slice -> State
+sliceToState slices slice = State (sliceToCheese slice, [slice], SMS.delete slice slices)
 
 slicesToStates :: [Slice] -> [State]
-slicesToStates slices = ordNub $ map (sliceToState slices) slices
+slicesToStates slices = ordNub $ map (sliceToState $ SMS.fromList slices) slices
 
 findOrder :: [Slice] -> [Slice]
 findOrder slices =
     let State (_, order, _) =
-            head . (!! (length slices - 1)) $
-                iterate (ordNub . (>>= nextStates)) (slicesToStates slices)
+            head
+                . (!! (length slices - 1))
+                . iterate (ordNub . (>>= nextStates))
+                . slicesToStates
+                $ sort slices
      in reverse order
 
 slicesToCheeses :: [Slice] -> [Cheese]

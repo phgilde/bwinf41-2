@@ -1,0 +1,89 @@
+	Mon Jan 02 12:40 2023 Time and Allocation Profiling Report  (Final)
+
+	   alleskaese.exe +RTS -p -RTS
+
+	total time  =        0.18 secs   (181 ticks @ 1000 us, 1 processor)
+	total alloc = 4,236,982,872 bytes  (excludes profiling overheads)
+
+COST CENTRE     MODULE        SRC                           %time %alloc
+
+getLowestEach   SliceMultiSet SliceMultiSet.hs:51:1-65       27.1   44.2
+fitsLater       Main          alleskaese.hs:29:1-58          25.4   12.2
+findMin         MultiSet      MultiSet.hs:35:1-27            19.9   18.3
+compare         Main          alleskaese.hs:18:5-87           9.4    7.9
+nextStates.\    Main          alleskaese.hs:56:35-73          8.3   12.2
+getLowestEach.\ SliceMultiSet SliceMultiSet.hs:51:34-51       5.5    0.0
+main.\          Main          alleskaese.hs:104:39-103        3.3    2.4
+sliceFromString Main          alleskaese.hs:(84,1)-(86,22)    1.1    1.4
+
+
+                                                                                                        individual      inherited
+COST CENTRE                MODULE                   SRC                              no.     entries  %time %alloc   %time %alloc
+
+MAIN                       MAIN                     <built-in>                       168           0    0.0    0.0   100.0  100.0
+ CAF                       GHC.IO.Handle.Text       <entire-module>                  317           0    0.0    0.0     0.0    0.0
+ CAF                       GHC.IO.Handle.FD         <entire-module>                  316           0    0.0    0.0     0.0    0.0
+ CAF                       GHC.IO.FD                <entire-module>                  315           0    0.0    0.0     0.0    0.0
+ CAF                       Text.Printf              <entire-module>                  268           0    0.0    0.0     0.0    0.0
+ CAF                       GHC.IO.StdHandles        <entire-module>                  236           0    0.0    0.0     0.0    0.0
+ CAF                       GHC.IO.Handle.Internals  <entire-module>                  234           0    0.0    0.0     0.0    0.0
+ CAF                       GHC.IO.Exception         <entire-module>                  232           0    0.0    0.0     0.0    0.0
+ CAF                       GHC.IO.Encoding.CodePage <entire-module>                  225           0    0.0    0.0     0.0    0.0
+ CAF                       GHC.IO.Encoding          <entire-module>                  224           0    0.0    0.0     0.0    0.0
+ CAF                       Main                     <entire-module>                  177           0    0.0    0.0     0.0    0.0
+  main                     Main                     alleskaese.hs:(96,1)-(105,43)    336           1    0.0    0.0     0.0    0.0
+ CAF                       SliceMultiSet            <entire-module>                  176           0    0.0    0.0     0.0    0.0
+  fromList                 SliceMultiSet            SliceMultiSet.hs:38:1-33         359           1    0.0    0.0     0.0    0.0
+  getLowestEach            SliceMultiSet            SliceMultiSet.hs:51:1-65         372           1    0.0    0.0     0.0    0.0
+ CAF                       MultiSet                 <entire-module>                  175           0    0.0    0.0     0.0    0.0
+  empty                    MultiSet                 MultiSet.hs:32:1-17              366           1    0.0    0.0     0.0    0.0
+ main                      Main                     alleskaese.hs:(96,1)-(105,43)    337           0    0.0    0.0   100.0  100.0
+  main.\                   Main                     alleskaese.hs:104:39-103         387        6848    3.3    2.4     3.3    2.4
+  main.order               Main                     alleskaese.hs:101:9-32           339           1    0.0    0.0    95.6   95.6
+   findOrder               Main                     alleskaese.hs:(71,1)-(78,21)     340           1    0.0    0.0    95.6   95.6
+    findOrder.(...)        Main                     alleskaese.hs:(72,9)-(77,29)     342           1    0.0    0.2    95.6   95.6
+     nextStates            Main                     alleskaese.hs:(55,1)-(59,33)     355        7667    0.0    0.1    86.2   87.4
+      findCompatible       SliceMultiSet            SliceMultiSet.hs:(41,1)-(45,70)  356        7667    0.0    0.1     0.0    0.1
+       member              MultiSet                 MultiSet.hs:29:1-19              368       15180    0.0    0.0     0.0    0.0
+      nextState            Main                     alleskaese.hs:52:1-93            370        7131    0.0    0.0     0.0    0.2
+       delete              SliceMultiSet            SliceMultiSet.hs:(29,1)-(35,9)   374        7131    0.0    0.1     0.0    0.1
+        delete.\           SliceMultiSet            SliceMultiSet.hs:(32,13)-(33,69) 375        7131    0.0    0.0     0.0    0.0
+         delete.\.deleted  SliceMultiSet            SliceMultiSet.hs:32:17-41        376        7131    0.0    0.0     0.0    0.0
+          delete           MultiSet                 MultiSet.hs:23:1-68              377        7131    0.0    0.0     0.0    0.0
+           delete.\        MultiSet                 MultiSet.hs:23:28-67             378        7131    0.0    0.0     0.0    0.0
+       addSlice            Main                     alleskaese.hs:(46,1)-(49,56)     380        7130    0.0    0.0     0.0    0.0
+        sortCheese         Main                     alleskaese.hs:(35,1)-(38,41)     381        4885    0.0    0.0     0.0    0.0
+      nextStates.\         Main                     alleskaese.hs:56:35-73           371        7131    8.3   12.2    86.2   87.0
+       fitsLater           Main                     alleskaese.hs:29:1-58            379     8080155   25.4   12.2    25.4   12.2
+       getLowestEach       SliceMultiSet            SliceMultiSet.hs:51:1-65         373           0   27.1   44.2    52.5   62.6
+        getLowestEach.\    SliceMultiSet            SliceMultiSet.hs:51:34-51        382     8080155    5.5    0.0    25.4   18.3
+         findMin           MultiSet                 MultiSet.hs:35:1-27              383     8080130   19.9   18.3    19.9   18.3
+     ordNub                Main                     alleskaese.hs:(21,1)-(26,53)     344        6847    0.0    0.0     0.0    0.0
+      ordNub.ordNub'       Main                     alleskaese.hs:(23,5)-(26,53)     345        7106    0.0    0.0     0.0    0.0
+       compare             Main                     alleskaese.hs:18:5-87            384        3836    0.0    0.0     0.0    0.0
+     slicesToStates        Main                     alleskaese.hs:68:1-80            346           1    0.0    0.0     9.4    8.0
+      sliceToState         Main                     alleskaese.hs:65:1-89            354         855    0.0    0.0     0.0    0.0
+       delete              SliceMultiSet            SliceMultiSet.hs:(29,1)-(35,9)   358         855    0.0    0.0     0.0    0.0
+        delete.\           SliceMultiSet            SliceMultiSet.hs:(32,13)-(33,69) 362         855    0.0    0.0     0.0    0.0
+         delete.\.deleted  SliceMultiSet            SliceMultiSet.hs:32:17-41        363         855    0.0    0.0     0.0    0.0
+          delete           MultiSet                 MultiSet.hs:23:1-68              364         855    0.0    0.0     0.0    0.0
+           delete.\        MultiSet                 MultiSet.hs:23:28-67             367         855    0.0    0.0     0.0    0.0
+       sliceToCheese       Main                     alleskaese.hs:62:1-36            357         562    0.0    0.0     0.0    0.0
+      ordNub               Main                     alleskaese.hs:(21,1)-(26,53)     347           1    0.0    0.0     9.4    7.9
+       ordNub.ordNub'      Main                     alleskaese.hs:(23,5)-(26,53)     348         855    0.0    0.0     9.4    7.9
+        compare            Main                     alleskaese.hs:18:5-87            369       14401    9.4    7.9     9.4    7.9
+      fromList             SliceMultiSet            SliceMultiSet.hs:38:1-33         360           0    0.0    0.0     0.0    0.1
+       insert              SliceMultiSet            SliceMultiSet.hs:(24,1)-(26,58)  361        8938    0.0    0.1     0.0    0.1
+        insert             MultiSet                 MultiSet.hs:17:1-33              365        6848    0.0    0.0     0.0    0.0
+    findOrder.order        Main                     alleskaese.hs:(72,9)-(77,29)     341           1    0.0    0.0     0.0    0.0
+  readSlices               Main                     alleskaese.hs:(90,1)-(93,33)     338           1    0.0    0.1     1.1    1.9
+   sortSlice               Main                     alleskaese.hs:(41,1)-(43,26)     349        6848    0.0    0.0     0.0    0.0
+   readSlices.slices       Main                     alleskaese.hs:92:9-59            343           1    0.0    0.2     1.1    1.8
+    sliceFromString        Main                     alleskaese.hs:(84,1)-(86,22)     350        6848    1.1    1.4     1.1    1.6
+     sliceFromString.(...) Main                     alleskaese.hs:86:5-22            352        6848    0.0    0.2     0.0    0.2
+     sliceFromString.s1    Main                     alleskaese.hs:86:5-22            351        6848    0.0    0.0     0.0    0.0
+     sliceFromString.s2    Main                     alleskaese.hs:86:5-22            353        6848    0.0    0.0     0.0    0.0
+  slicesToCheeses          Main                     alleskaese.hs:81:1-78            385           1    0.0    0.0     0.0    0.1
+   addSlice                Main                     alleskaese.hs:(46,1)-(49,56)     388        6847    0.0    0.0     0.0    0.0
+    sortCheese             Main                     alleskaese.hs:(35,1)-(38,41)     389        4602    0.0    0.0     0.0    0.0
+   sliceToCheese           Main                     alleskaese.hs:62:1-36            386           1    0.0    0.0     0.0    0.0

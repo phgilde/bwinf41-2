@@ -3,7 +3,7 @@ import qualified Data.Set as Set
 import System.IO
 import Text.Printf
 import System.CPUTime
-import Data.List (intercalate)
+import Data.List (intercalate, sort)
 {-# LANGUAGE BangPatterns #-}
 
 newtype State = St (Cheese, [Slice], SliceMS) deriving (Show)
@@ -72,7 +72,7 @@ solve slices =
         . (!! (length slices - 1))
         . iterate (ordNub . (>>= nextStates))
         $ [ sliceToState v slices' slice
-          | slice <- unique slices'
+          | slice <- reverse . sort . unique $ slices'
           , fitsOutside v slice
           ]
   where
@@ -94,7 +94,7 @@ slicesToCheeses (slice : slices) = scanl addSlice (sliceToCheese slice) slices
 sliceFromString :: String -> Slice
 sliceFromString s = (read s1, read s2)
   where
-    [s1, s2] = words s
+    ![s1, s2] = words s
 
 -- reads slices from file at path which starts with number of slices
 readSlices :: String -> IO [Slice]
@@ -108,13 +108,15 @@ main = do
     putStr "Pfad zur Datei: "
     hFlush stdout
     path <- getLine
-    slices <- readSlices path
+    !slices <- readSlices path
+    putStrLn "Starte Berechnung..."
     startTime <- getCPUTime
     let !order = solve slices
     endTime <- getCPUTime
     let diff = (fromIntegral (endTime - startTime) :: Double) / (10 ^ 12)
-    printf "Laufzeit: %.3f Sekunden" diff
+    printf "Laufzeit: %.3f Sekunden\n" diff
     
     writeFile (path ++ "output.txt") $ intercalate "\n" (zipWith 
         (\(s1, s2) (c1, c2, c3) -> printf "S: %d %d, K: %d %d %d" s1 s2 c1 c2 c3)
         order (slicesToCheeses order))
+    putStrLn $ "Fertig! Lösung in " ++ path ++ "output.txt gespeichert."

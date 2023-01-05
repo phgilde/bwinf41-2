@@ -4,6 +4,7 @@ import System.IO
 import Text.Printf
 import System.CPUTime
 import Data.List (intercalate)
+{-# LANGUAGE BangPatterns #-}
 
 newtype State = St (Cheese, [Slice], SliceMS) deriving (Show)
 instance Eq State where
@@ -109,7 +110,7 @@ main = do
     path <- getLine
     slices <- readSlices path
     startTime <- getCPUTime
-    let order = solve slices
+    let !order = solve slices
     endTime <- getCPUTime
     let diff = (fromIntegral (endTime - startTime) :: Double) / (10 ^ 12)
     printf "Laufzeit: %.3f Sekunden" diff

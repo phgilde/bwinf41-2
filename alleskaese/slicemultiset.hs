@@ -10,17 +10,18 @@ module SliceMultiSet (
     getLowestEach,
     getHighestEach,
     getMax,
+    member,
 ) where
 
 import Data.List qualified as List
 
 import Data.IntMap.Lazy qualified as Map
-import MultiSet qualified as MS
+import IntMultiSet qualified as MS
 
 type Slice = (Int, Int)
 type Cheese = (Int, Int, Int)
 
-type SliceMS = Map.IntMap (MS.MultiSet Int)
+type SliceMS = Map.IntMap MS.IntMultiSet
 
 insert :: Slice -> SliceMS -> SliceMS
 insert (s, s') m
@@ -59,3 +60,6 @@ getMax :: SliceMS -> Slice
 getMax m
     | Map.null m = (0, 0)
     | otherwise = let (s, s') = Map.findMax m in (s, MS.findMax s')
+
+member :: Slice -> SliceMS -> Bool
+member (s, s') m = s `Map.member` m && s' `MS.member` (m Map.! s)

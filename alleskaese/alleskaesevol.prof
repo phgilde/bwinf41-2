@@ -1,0 +1,104 @@
+	Thu Jan 05 19:21 2023 Time and Allocation Profiling Report  (Final)
+
+	   alleskaesevol.exe +RTS -p -RTS maybe.exe
+
+	total time  =        1.78 secs   (1784 ticks @ 1000 us, 1 processor)
+	total alloc = 51,515,057,656 bytes  (excludes profiling overheads)
+
+COST CENTRE              MODULE        SRC                                %time %alloc
+
+main.\                   Main          alleskaesevol.hs:120:36-80          32.3   37.7
+sliceFromString          Main          alleskaesevol.hs:(95,1)-(97,23)     30.0   29.1
+sliceFromString.(...)    Main          alleskaesevol.hs:97:5-23             7.1    5.1
+main                     Main          alleskaesevol.hs:(107,1)-(122,72)    5.3    7.6
+insert                   SliceMultiSet SliceMultiSet.hs:(26,1)-(28,58)      3.3    3.1
+findCompatible           SliceMultiSet SliceMultiSet.hs:(43,1)-(47,70)      3.1    1.1
+readSlices.slices        Main          alleskaesevol.hs:103:9-59            2.6    5.5
+slicesToCheeses.addSlice Main          alleskaesevol.hs:(89,9)-(92,53)      1.7    0.6
+removeSlice              Main          alleskaesevol.hs:(39,1)-(42,56)      1.6    0.6
+insert                   MultiSet      MultiSet.hs:18:1-33                  1.5    0.6
+solve                    Main          alleskaesevol.hs:(69,1)-(80,29)      1.1    0.8
+delete                   MultiSet      MultiSet.hs:24:1-68                  1.1    0.4
+delete                   SliceMultiSet SliceMultiSet.hs:(31,1)-(37,9)       0.7    1.6
+readSlices               Main          alleskaesevol.hs:(101,1)-(104,33)    0.6    1.8
+
+
+                                                                                                               individual      inherited
+COST CENTRE                      MODULE                   SRC                               no.     entries  %time %alloc   %time %alloc
+
+MAIN                             MAIN                     <built-in>                        170           0    0.0    0.0   100.0  100.0
+ CAF                             GHC.IO.Handle.Text       <entire-module>                   321           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Handle.FD         <entire-module>                   320           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.FD                <entire-module>                   319           0    0.0    0.0     0.0    0.0
+ CAF                             System.CPUTime.Windows   <entire-module>                   300           0    0.0    0.0     0.0    0.0
+ CAF                             Text.Printf              <entire-module>                   271           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.StdHandles        <entire-module>                   238           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Handle.Internals  <entire-module>                   236           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Exception         <entire-module>                   234           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Encoding.CodePage <entire-module>                   227           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Encoding          <entire-module>                   226           0    0.0    0.0     0.0    0.0
+ CAF                             GHC.Float                <entire-module>                   218           0    0.0    0.0     0.0    0.0
+ CAF                             Main                     <entire-module>                   179           0    0.0    0.0     0.0    0.0
+  main                           Main                     alleskaesevol.hs:(107,1)-(122,72) 340           1    0.0    0.0     0.0    0.0
+  volumen                        Main                     alleskaesevol.hs:57:1-33          365           1    0.0    0.0     0.0    0.0
+ CAF                             SliceMultiSet            <entire-module>                   178           0    0.0    0.0     0.0    0.0
+  fromList                       SliceMultiSet            SliceMultiSet.hs:40:1-33          351           1    0.0    0.0     0.0    0.0
+  unique                         SliceMultiSet            SliceMultiSet.hs:50:1-69          348           1    0.0    0.0     0.0    0.0
+ CAF                             MultiSet                 <entire-module>                   177           0    0.0    0.0     0.0    0.0
+  empty                          MultiSet                 MultiSet.hs:33:1-17               362           1    0.0    0.0     0.0    0.0
+ main                            Main                     alleskaesevol.hs:(107,1)-(122,72) 341           0    5.3    7.6   100.0  100.0
+  main.\                         Main                     alleskaesevol.hs:120:36-80        398     1529903   32.3   37.7    32.3   37.7
+  main.diff                      Main                     alleskaesevol.hs:116:9-73         394           1    0.0    0.0     0.0    0.0
+  main.order                     Main                     alleskaesevol.hs:114:9-29         344           1    0.0    0.0    19.2   12.1
+   solve                         Main                     alleskaesevol.hs:(69,1)-(80,29)   345           1    1.1    0.8    19.2   12.1
+    nextStates                   Main                     alleskaesevol.hs:(45,1)-(54,62)   367     1529902    0.6    0.8    11.6    6.2
+     findCompatible              SliceMultiSet            SliceMultiSet.hs:(43,1)-(47,70)   369     1529902    3.1    1.1     3.9    1.2
+      member                     MultiSet                 MultiSet.hs:30:1-19               377     2039747    0.8    0.1     0.8    0.1
+     getMax                      SliceMultiSet            SliceMultiSet.hs:(59,1)-(61,67)   381     1529902    0.4    0.4     1.4    0.8
+      findMax                    MultiSet                 MultiSet.hs:39:1-27               390     1529901    0.5    0.3     0.5    0.3
+      getMax.(...)               SliceMultiSet            SliceMultiSet.hs:61:23-45         389     1529901    0.2    0.2     0.2    0.2
+      getMax.s                   SliceMultiSet            SliceMultiSet.hs:61:23-45         388     1529901    0.2    0.0     0.2    0.0
+      getMax.s'                  SliceMultiSet            SliceMultiSet.hs:61:23-45         391     1529901    0.1    0.0     0.1    0.0
+     nextStates.cheese'          Main                     alleskaesevol.hs:48:11-44         379     1529902    0.0    0.0     2.1    0.8
+      removeSlice                Main                     alleskaesevol.hs:(39,1)-(42,56)   380     1529902    1.6    0.6     2.1    0.8
+       sortCheese                Main                     alleskaesevol.hs:(25,1)-(31,41)   392     1019393    0.5    0.2     0.5    0.2
+     nextStates.fitsLater        Main                     alleskaesevol.hs:54:5-62          378     1529902    0.4    0.2     0.4    0.2
+     nextStates.sl'              Main                     alleskaesevol.hs:49:11-31         382     1529902    0.3    0.0     3.2    2.4
+      delete                     SliceMultiSet            SliceMultiSet.hs:(31,1)-(37,9)    383     1529902    0.7    1.6     2.9    2.4
+       delete.\                  SliceMultiSet            SliceMultiSet.hs:(34,13)-(35,69)  384     1529902    0.7    0.4     2.2    0.8
+        delete.\.deleted         SliceMultiSet            SliceMultiSet.hs:34:17-41         385     1529902    0.1    0.0     1.5    0.4
+         delete                  MultiSet                 MultiSet.hs:24:1-68               386     1529902    1.1    0.4     1.4    0.4
+          delete.\               MultiSet                 MultiSet.hs:24:28-67              387     1529902    0.3    0.1     0.3    0.1
+    ordNub                       Main                     alleskaesevol.hs:(17,1)-(22,53)   346     1529902    0.1    0.0     0.3    0.3
+     ordNub.ordNub'              Main                     alleskaesevol.hs:(19,5)-(22,53)   347     1529902    0.2    0.2     0.2    0.2
+    fitsOutside                  Main                     alleskaesevol.hs:60:1-47          363           1    0.0    0.0     0.0    0.0
+    sliceToState                 Main                     alleskaesevol.hs:(63,1)-(66,73)   368           1    0.0    0.0     0.0    0.0
+     delete                      SliceMultiSet            SliceMultiSet.hs:(31,1)-(37,9)    372           1    0.0    0.0     0.0    0.0
+      delete.\                   SliceMultiSet            SliceMultiSet.hs:(34,13)-(35,69)  373           1    0.0    0.0     0.0    0.0
+       delete.\.deleted          SliceMultiSet            SliceMultiSet.hs:34:17-41         374           1    0.0    0.0     0.0    0.0
+        delete                   MultiSet                 MultiSet.hs:24:1-68               375           1    0.0    0.0     0.0    0.0
+         delete.\                MultiSet                 MultiSet.hs:24:28-67              376           1    0.0    0.0     0.0    0.0
+     sliceToState.sliceToCheese  Main                     alleskaesevol.hs:66:5-73          370           1    0.0    0.0     0.0    0.0
+      sortCheese                 Main                     alleskaesevol.hs:(25,1)-(31,41)   371           1    0.0    0.0     0.0    0.0
+    solve.\                      Main                     alleskaesevol.hs:70:25            393           1    0.0    0.0     0.0    0.0
+    solve.slices'                Main                     alleskaesevol.hs:80:5-29          350           1    0.0    0.0     5.1    3.8
+     fromList                    SliceMultiSet            SliceMultiSet.hs:40:1-33          352           0    0.3    0.1     5.1    3.8
+      insert                     SliceMultiSet            SliceMultiSet.hs:(26,1)-(28,58)   353     1955286    3.3    3.1     4.8    3.7
+       insert                    MultiSet                 MultiSet.hs:18:1-33               361     1529903    1.5    0.6     1.5    0.6
+    solve.v                      Main                     alleskaesevol.hs:79:5-22          364           1    0.0    0.0     0.8    0.5
+     volumen                     Main                     alleskaesevol.hs:57:1-33          366           0    0.8    0.5     0.8    0.5
+    unique                       SliceMultiSet            SliceMultiSet.hs:50:1-69          349           0    0.2    0.2     0.3    0.6
+     unique.\                    SliceMultiSet            SliceMultiSet.hs:50:33-55         359      425383    0.2    0.4     0.2    0.4
+      unique                     MultiSet                 MultiSet.hs:27:1-17               360      425383    0.0    0.0     0.0    0.0
+  readSlices                     Main                     alleskaesevol.hs:(101,1)-(104,33) 342           1    0.6    1.8    40.8   41.6
+   sortSlice                     Main                     alleskaesevol.hs:(34,1)-(36,26)   354     1529903    0.4    0.1     0.4    0.1
+   readSlices.slices             Main                     alleskaesevol.hs:103:9-59         343           1    2.6    5.5    39.7   39.6
+    sliceFromString              Main                     alleskaesevol.hs:(95,1)-(97,23)   355     1529903   30.0   29.1    37.2   34.2
+     sliceFromString.(...)       Main                     alleskaesevol.hs:97:5-23          356     1529903    7.1    5.1     7.1    5.1
+     sliceFromString.s1          Main                     alleskaesevol.hs:97:5-23          357     1529903    0.0    0.0     0.0    0.0
+     sliceFromString.s2          Main                     alleskaesevol.hs:97:5-23          358     1529903    0.0    0.0     0.0    0.0
+  slicesToCheeses                Main                     alleskaesevol.hs:(83,1)-(92,53)   395           1    0.3    0.3     2.4    1.1
+   slicesToCheeses.addSlice      Main                     alleskaesevol.hs:(89,9)-(92,53)   399     1529902    1.7    0.6     2.1    0.8
+    sortCheese                   Main                     alleskaesevol.hs:(25,1)-(31,41)   400     1021104    0.4    0.2     0.4    0.2
+   slicesToCheeses.sliceToCheese Main                     alleskaesevol.hs:86:9-55          396           1    0.0    0.0     0.0    0.0
+    sortCheese                   Main                     alleskaesevol.hs:(25,1)-(31,41)   397           1    0.0    0.0     0.0    0.0

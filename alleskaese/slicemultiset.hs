@@ -10,6 +10,7 @@ module SliceMultiSet (
     getLowestEach,
     getHighestEach,
     getMax,
+    getMin,
     member,
 ) where
 
@@ -60,6 +61,11 @@ getMax :: SliceMS -> Slice
 getMax m
     | Map.null m = (0, 0)
     | otherwise = let (s, s') = Map.findMax m in (s, MS.findMax s')
+
+getMin :: SliceMS -> Slice
+getMin m
+    | Map.null m = (0, 0)
+    | otherwise = let (s, s') = Map.findMin m in (s, MS.findMin s')
 
 member :: Slice -> SliceMS -> Bool
 member (s, s') m = s `Map.member` m && s' `MS.member` (m Map.! s)

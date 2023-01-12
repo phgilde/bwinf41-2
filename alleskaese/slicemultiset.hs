@@ -64,7 +64,7 @@ getMax m
 
 getMin :: SliceMS -> Slice
 getMin m
-    | Map.null m = (0, 0)
+    | Map.null m = (maxBound, maxBound)
     | otherwise = let (s, s') = Map.findMin m in (s, MS.findMin s')
 
 member :: Slice -> SliceMS -> Bool

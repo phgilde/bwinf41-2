@@ -1,15 +1,3 @@
-alles kaese/alleskaese.o
-alles kaese/alleskaese.hi
-alles kaese/MultiSet.hi
-alles kaese/MultiSet.o
-alles kaese/alleskaese.exe
-alles kaese/alleskaese.prof
-alles kaese/reversealleskaese.prof
-alles kaese/slicemultiset.hi
-alles kaese/SliceMultiSet.o
-alleskaese/alleskaesevolmaybe.o
-alleskaese/alleskaesevolmaybe.hi
-alleskaese/alleskaesevolmaybe.prof
-alleskaese/alleskaesevolmaybe.exe
-alleskaese/alleskaesevol.o
-alleskaese/alleskaesevol.hi
+*.o
+*.hi
+*.exe

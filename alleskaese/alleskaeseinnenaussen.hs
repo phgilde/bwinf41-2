@@ -1,10 +1,11 @@
+{-# LANGUAGE BangPatterns #-}
+
+import Data.List (intercalate, sort)
+import Data.Set qualified as Set
 import SliceMultiSet
-import qualified Data.Set as Set
+import System.CPUTime
 import System.IO
 import Text.Printf
-import System.CPUTime
-import Data.List (intercalate, sort)
-{-# LANGUAGE BangPatterns #-}
 
 newtype State = St (Cheese, [Slice], SliceMS) deriving (Show)
 instance Eq State where
@@ -98,8 +99,13 @@ main = do
     endTime <- getCPUTime
     let diff = (fromIntegral (endTime - startTime) :: Double) / (10 ^ 12)
     printf "Laufzeit: %.3f Sekunden\n" diff
-    
-    writeFile (path ++ "output.txt") $ intercalate "\n" (zipWith 
-        (\(s1, s2) (c1, c2, c3) -> printf "S: %d %d, K: %d %d %d" s1 s2 c1 c2 c3)
-        order (slicesToCheeses order))
+
+    writeFile (path ++ "output.txt") $
+        intercalate
+            "\n"
+            ( zipWith
+                (\(s1, s2) (c1, c2, c3) -> printf "S: %d %d, K: %d %d %d" s1 s2 c1 c2 c3)
+                order
+                (slicesToCheeses order)
+            )
     putStrLn $ "Fertig! Lösung in " ++ path ++ "output.txt gespeichert."

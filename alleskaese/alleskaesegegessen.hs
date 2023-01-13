@@ -90,7 +90,6 @@ sliceFromString s = (read s1, read s2)
   where
     ![s1, s2] = words s
 
--- reads slices from file at path which starts with number of slices
 readSlices :: String -> IO [Slice]
 readSlices path = do
     content <- readFile path

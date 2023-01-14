@@ -83,7 +83,7 @@ sliceFromString s = (read s1, read s2)
 -- reads slices from file at path which starts with number of slices
 readSlices :: String -> IO [Slice]
 readSlices path = do
-    content <- readFile path
+    !content <- readFile path
     let slices = map sliceFromString $ tail $ lines content
     return $ map sortSlice slices
 

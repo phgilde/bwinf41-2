@@ -83,7 +83,7 @@ for i in range(len(points)):
 print("Starte Berechnung...")
 
 # solve problem while printing the status
-problem.solve(pulp.PULP_CBC_CMD(msg=True, timeLimit=60*20))
+problem.solve(pulp.PULP_CBC_CMD(msg=True, timeLimit=60*float(input("Zeitlimit in Minuten: "))))
 
 print("Fertig!")
 # plot solution if it exists

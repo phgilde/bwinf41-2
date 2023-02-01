@@ -1,44 +1,106 @@
-from itertools import permutations
-from least_flips import least_flips
+from functools import lru_cache
+import math
+import cProfile
+import pstats
 
 
-def reverse_flip(arr, i, new):
-    arr_new = (new,) + arr
-    return arr_new[:i][::-1] + arr_new[i:]
+class FlipOp:
+    def __init__(self, pos):
+        self.pos = pos
+
+    def __repr__(self):
+        return f"FlipOp({self.pos})"
+
+    def __call__(self, seq):
+        return normalize(seq[: self.pos - 1][::-1] + seq[self.pos :])
 
 
-def flip(arr, i):
-    return arr[: i - 1][::-1] + arr[i:]
+class RevFlipOp:
+    def __init__(self, pos, new):
+        self.pos = pos
+        self.new = new
+
+    def __repr__(self):
+        return f"RevFlipOp({self.pos}, {self.new})"
+
+    def __call__(self, seq):
+        pre = (self.new,) + tuple(a + 1 if a >= self.new else a for a in seq)
+        return normalize(pre[: self.pos][::-1] + pre[self.pos :])
 
 
-def next_arrs(arr):
-    for i in range(2, len(arr) + 1):
-        yield flip(arr, i)
+def allFlipOps(n):
+    return [FlipOp(i) for i in range(1, n + 1)]
 
 
-def prev_arrs(arr, max_n):
-    for i in range(1, len(arr) + 1):
-        for new in range(max_n):
-            if not new in arr:
-                yield reverse_flip(arr, i, new)
+def allRevFlipOps(n):
+    return [RevFlipOp(i, j) for i in range(1, n + 1) for j in range(n + 1)]
 
 
-def all_permutations(n):
-    return permutations(range(n))
+@lru_cache(maxsize=2**20)
+def normalize(seq):
+    return tuple(
+        map(
+            lambda x: x[0],
+            sorted(
+                zip(
+                    range(len(seq)),
+                    map(lambda x: x[1], sorted(zip(seq, range(len(seq))))),
+                ),
+                key=lambda x: x[1],
+            ),
+        )
+    )
 
-def hard_permutations(start, end):
-    initial = tuple(range(start))
-    current_hardest = 
-    for i in range(end-start):
+
+@lru_cache(maxsize=None)
+def k(n, a):
+    if a == 0:
+        return {tuple(range(n))}
+    res = set()
+    for rflip in allRevFlipOps(n):
+        for seq in k(n - 1, a - 1):
+            if not (a > 1 or rflip(seq) != tuple(range(n))):
+                continue
+            r1 = True
+            r2 = False
+            for flip in allFlipOps(n):
+                for b in range(a - 1, math.ceil(n / 1.5)):
+                    r2 = False
+                    if flip(rflip(seq)) in k(n - 1, b):
+                        r2 = True
+                        break
+                r1 = r1 and r2
+                if not r1:
+                    break
+            if r1:
+                res.add(rflip(seq))
+    print(n, a, len(res))
+    return res
+    return {
+        rflip(seq)
+        for rflip in allRevFlipOps(n)
+        for seq in k(n - 1, a - 1)
+        if (a > 1 or rflip(seq) != tuple(range(n)))
+        and all(
+            any(
+                flip(rflip(seq)) in k(n - 1, b)
+                for b in range(a - 1, math.ceil(n / 1.5))
+            )
+            for flip in allFlipOps(n)
+        )
+    }
+
 
 def main():
-    size = int(input("Size: "))
-    max_steps = 0
-    for arr in all_permutations(size):
-        steps = len(least_flips(arr))
-        if steps > max_steps:
-            max_steps = steps
-    print("PWUE:", max_steps - 1)
+    n = int(input("n: "))
+    for a in range(1, math.ceil(n / 1.5))[::-1]:
+        print(a, len(k(n, a)))
+        if len(k(n, a)) > 0:
+            break
+
 
 if __name__ == "__main__":
-    main()
+    cProfile.run("main()", "restats")
+
+    p = pstats.Stats("restats")
+    p.strip_dirs().sort_stats("time").print_stats(10)

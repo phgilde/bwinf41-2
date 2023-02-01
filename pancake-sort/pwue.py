@@ -102,6 +102,7 @@ def k_has_solution(n, a):
 
 
 def main():
+    print(RevFlipOp(1,2)((2,0,1)))
     n = int(input("n: "))
     for a in range(1, math.ceil(n / 1.5))[::-1]:
         if k_has_solution(n, a):

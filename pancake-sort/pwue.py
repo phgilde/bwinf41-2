@@ -2,6 +2,7 @@ from functools import lru_cache
 import math
 import cProfile
 import pstats
+from time import time
 
 
 class FlipOp:
@@ -51,12 +52,35 @@ def normalize(seq):
         )
     )
 
-
-@lru_cache(maxsize=None)
-def k(n, a):
+k_cache = {}
+def k(n, a, depth=0):
+    if (n, a) in k_cache:
+        # print(f"Nutze Cache für n={n}, a={a}...")
+        return k_cache[(n, a)]
+    print("|  "*depth + f"| Berechne n={n}, a={a}...")
+    start_time = time()
     if a == 0:
-        return {tuple(range(n))}
-    res = set()
+        result = {tuple(range(n))}
+    else:
+        result = {
+            rflip(seq)
+            for rflip in allRevFlipOps(n)
+            for seq in k(n - 1, a - 1, depth + 1)
+            if (a > 1 or rflip(seq) != tuple(range(n)))
+            and all(
+                any(
+                    flip(rflip(seq)) in k(n - 1, b, depth + 1)
+                    for b in range(a - 1, math.ceil(n / 1.5))
+                )
+                for flip in allFlipOps(n)
+            )
+        }
+    print("|  "*depth + "| {:<6} {:<6} {:<6} {:<9.2f}".format(n, a, len(result), time() - start_time))
+    k_cache[(n, a)] = result
+    return result
+
+
+def k_has_solution(n, a):
     for rflip in allRevFlipOps(n):
         for seq in k(n - 1, a - 1):
             if not (a > 1 or rflip(seq) != tuple(range(n))):
@@ -73,29 +97,15 @@ def k(n, a):
                 if not r1:
                     break
             if r1:
-                res.add(rflip(seq))
-    print(n, a, len(res))
-    return res
-    return {
-        rflip(seq)
-        for rflip in allRevFlipOps(n)
-        for seq in k(n - 1, a - 1)
-        if (a > 1 or rflip(seq) != tuple(range(n)))
-        and all(
-            any(
-                flip(rflip(seq)) in k(n - 1, b)
-                for b in range(a - 1, math.ceil(n / 1.5))
-            )
-            for flip in allFlipOps(n)
-        )
-    }
+                return rflip(seq)
+    return False
 
 
 def main():
     n = int(input("n: "))
     for a in range(1, math.ceil(n / 1.5))[::-1]:
-        print(a, len(k(n, a)))
-        if len(k(n, a)) > 0:
+        if k_has_solution(n, a):
+            print(a)
             break
 
 

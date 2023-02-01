@@ -10,8 +10,8 @@ def flip(arr, k):
 # Gibt alle möglichen nächsten Reihenfolgen zurück.
 # Zeitkomplexität: O(n^2), weil flip() O(n) ist und wir n-1 mal aufrufen.
 def next_arrs(arr):
-    for i in range(2, len(arr) + 1):
-        yield flip(arr, i)
+    for i in range(1, len(arr) + 1):
+        yield normalize(flip(arr, i))
 
 
 # Zählt, wie viele aufeinanderfolgende Pfannkuchen nebeneinander liegen.
@@ -21,6 +21,8 @@ def count_adj(arr):
     for i in range(1, len(arr)):
         if arr[i] - arr[i - 1] in (1, -1):
             adj += 1
+    if arr[-1] == max(arr):
+        adj += 1
     return adj
 
 
@@ -34,7 +36,7 @@ def normalize(arr):
 # Nähert die minimale Anzahl von flips()s mit count_adj() an.
 # Zeitkomplexität: O(n^2), weil normalize() O(n^2) ist.
 def heuristic(arr):
-    return math.floor((len(arr) - count_adj(normalize(arr)) - 1) / 3)
+    return math.floor((len(arr) - count_adj(normalize(arr))) / 3)
 
 
 # prüft, ob die Liste in der richtigen Reihenfolge ist.
@@ -47,6 +49,12 @@ def is_sorted(arr):
 # Zeitkomplexität: ??
 def least_flips(arr):
     return a_star(normalize(arr), is_sorted, next_arrs, lambda a, b: 1, heuristic)
+
+
+def find_flip(pre, post):
+    for i in range(1, len(pre) + 1):
+        if normalize(flip(pre, i)) == post:
+            return i
 
 
 def main():
@@ -64,10 +72,17 @@ def main():
     print(len(pancakes) / 2, "lower bound")
 
     print("-- schritte --")
+    pre = None
+    not_normalized = steps[0]
+    print(not_normalized)
     for step in steps:
-        print(count_adj(normalize(step)), "aufeinanderfolgende Pfannkuchen")
-        print(len(step), "Pfannkuchen")
-        print(normalize(step))
-        print(step)
+        if pre is not None:
+            ix = find_flip(pre, step)
+            print("Wende erste", ix)
+            not_normalized = flip(not_normalized, ix)
+            print(not_normalized)
+        pre = step
+
+
 if __name__ == "__main__":
-    main()        
+    main()

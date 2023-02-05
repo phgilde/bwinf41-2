@@ -2,20 +2,17 @@ import math
 from a_star import a_star
 
 # Pfannkuchenstapel umdrehen und Pfannkuchen essen.
-# Zeitkomplexität: O(k), weil k elemente verändert werden.
 def flip(arr, k):
     return arr[: k - 1][::-1] + arr[k:]
 
 
-# Gibt alle möglichen nächsten Reihenfolgen zurück.
-# Zeitkomplexität: O(n^2), weil flip() O(n) ist und wir n-1 mal aufrufen.
+# Gibt alle moeglichen naechsten Reihenfolgen zurueck.
 def next_arrs(arr):
     for i in range(1, len(arr) + 1):
         yield normalize(flip(arr, i))
 
 
-# Zählt, wie viele aufeinanderfolgende Pfannkuchen nebeneinander liegen.
-# Zeitkomplexität: O(n), weil wir nur einmal durch die Liste laufen.
+# Zaehlt, wie viele aufeinanderfolgende Pfannkuchen nebeneinander liegen.
 def count_adj(arr):
     adj = 0
     for i in range(1, len(arr)):
@@ -26,27 +23,24 @@ def count_adj(arr):
     return adj
 
 
-# Verändert die Zahlen in der Liste so, dass sie in [0, ..., n-1] liegen, wobei die Reihenfolge erhalten bleibt.
-# Zeitkomplexität: O(n^2), weil order.index() O(n) ist und wir n mal aufrufen.
+# Veraendert die Zahlen in der Liste so, dass sie in [0, ..., n-1] liegen, 
+# wobei die Reihenfolge erhalten bleibt.
 def normalize(arr):
     order = sorted(arr)
     return tuple(order.index(x) for x in arr)
 
 
-# Nähert die minimale Anzahl von flips()s mit count_adj() an.
-# Zeitkomplexität: O(n^2), weil normalize() O(n^2) ist.
+# Naehert die minimale Anzahl von flips()s mit count_adj() an.
 def heuristic(arr):
-    return math.floor((len(arr) - count_adj(normalize(arr))) / 3)
+    return math.ceil((len(arr) - count_adj(normalize(arr))) / 3)
 
 
-# prüft, ob die Liste in der richtigen Reihenfolge ist.
-# Zeitkomplexität: O(n), weil wir nur einmal durch die Liste laufen.
+# prueft, ob die Liste in der richtigen Reihenfolge ist.
 def is_sorted(arr):
     return all(arr[i] <= arr[i + 1] for i in range(len(arr) - 1))
 
 
-# Gibt die Optimale Reihenfolge von flip()s zurück, um die Liste zu sortieren.
-# Zeitkomplexität: ??
+# Gibt die Optimale Reihenfolge von flip()s zurueck, um die Liste zu sortieren.
 def least_flips(arr):
     return a_star(normalize(arr), is_sorted, next_arrs, lambda a, b: 1, heuristic)
 

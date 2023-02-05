@@ -51,50 +51,54 @@ def genetic_algorithm(
     stagnation = 0
     best_fitness = -float("inf")
     best_individual = None
-    while (
-        generation < max_generations
-        and stagnation < max_stagnation
-        and time.time() - start < max_time
-    ):
-        population = sorted(population, key=lambda x: fitness_function(x), reverse=True)
-        if fitness_function(population[0]) > best_fitness:
-            best_fitness = fitness_function(population[0])
-            best_individual = population[0]
-            stagnation = 0
-        else:
-            stagnation += 1
-        fitness_history.append(best_fitness)
-        new_population = []
-        new_population = population[:elite_size]
-        weights = softmax([fitness_function(x) for x in population], temperature)
-        while len(new_population) < max_population_size:
-            parent1, parent2 = random.choices(population, weights=weights, k=2)
-            if crossover_rate > random.random():
-                child = random.choice(crossover_operators)(parent1, parent2)
+    try:
+        while (
+            generation < max_generations
+            and stagnation < max_stagnation
+            and time.time() - start < max_time
+        ):
+            population = sorted(population, key=lambda x: fitness_function(x), reverse=True)
+            if fitness_function(population[0]) > best_fitness:
+                best_fitness = fitness_function(population[0])
+                best_individual = population[0]
+                stagnation = 0
             else:
-                child = parent1.copy()
-            if random.random() < mutation_rate:
-                child = random.choice(mutation_operators)(child)
-            new_population.append(child)
-        population = new_population
-        generation += 1
-        if verbose:
-            time_per_generation = (time.time() - start) / generation
-            total_time = min(time_per_generation * max_generations, max_time)
-            remaining_time = total_time - (time.time() - start)
+                stagnation += 1
+            fitness_history.append(best_fitness)
+            new_population = []
+            new_population = population[:elite_size]
+            weights = softmax([fitness_function(x) for x in population], temperature)
+            while len(new_population) < max_population_size:
+                parent1, parent2 = random.choices(population, weights=weights, k=2)
+                if crossover_rate > random.random():
+                    child = random.choice(crossover_operators)(parent1, parent2)
+                else:
+                    child = parent1.copy()
+                if random.random() < mutation_rate:
+                    child = random.choice(mutation_operators)(child)
+                new_population.append(child)
+            population = new_population
+            generation += 1
+            if verbose:
+                time_per_generation = (time.time() - start) / generation
+                total_time = min(time_per_generation * max_generations, max_time)
+                remaining_time = total_time - (time.time() - start)
 
-            print(
-                "\r",
-                f"{generation:>9}",
-                f"{max([fitness_function(x) for x in population]):>14.2f}",
-                f"{sum([fitness_function(x) for x in population]) / len(population):>17.2f}",
-                f"{sorted([fitness_function(x) for x in population])[len(population) // 2]:>16.2f}"
-                f"{stagnation:>13}",
-                f"{str(timedelta(seconds=int(time.time() - start))):>14}"
-                f"{str(timedelta(seconds=int(remaining_time))):>17}             ",
-                end="",
-            )
-    return best_individual, fitness_history
+                print(
+                    "\r",
+                    f"{generation:>9}",
+                    f"{max([fitness_function(x) for x in population]):>14.2f}",
+                    f"{sum([fitness_function(x) for x in population]) / len(population):>17.2f}",
+                    f"{sorted([fitness_function(x) for x in population])[len(population) // 2]:>16.2f}"
+                    f"{stagnation:>13}",
+                    f"{str(timedelta(seconds=int(time.time() - start))):>14}"
+                    f"{str(timedelta(seconds=int(remaining_time))):>17}             ",
+                    end="",
+                )
+    except KeyboardInterrupt:
+        print("\nInterrupted by user")
+    finally:
+        return best_individual, fitness_history
 
 
 @lru_cache(maxsize=1000)
@@ -182,17 +186,17 @@ def main():
         crossover_operators=[OX1, OX2],
         max_generations=20_000,
         max_population_size=100,
-        elite_size=int(0.05 * 100),
+        elite_size=int(0.2 * 100),
         mutation_rate=1.0,
         crossover_rate=0.0,
         max_stagnation=float("inf"),
         verbose=True,
         max_time=60 * 10,
-        temperature=200,
+        temperature=5_000,
     )
     # logaritmic scale
     plt.yscale("log")
-    plt.plot(cost_hist, "b.")
+    plt.plot(list(map(lambda x: -x, cost_hist)), "b.")
     plt.show()
     plt.yscale("linear")
     plt.figure(figsize=(10, 10))

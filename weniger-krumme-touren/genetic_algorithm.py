@@ -1,3 +1,5 @@
+import cProfile
+import pstats
 import random
 import time
 
@@ -40,9 +42,12 @@ def genetic_algorithm(
 ):
     if verbose:
         print("Genetic algorithm")
-        print("Parameters:", f"max_generations={max_generations} max_population_size={max_population_size} max_stagnation={max_stagnation} elite_size={elite_size} mutation_rate={mutation_rate} crossover_rate={crossover_rate} temperature={temperature}")
         print(
-            "Generation   Best fitness   Average fitness   Median fitness   Stagnation   Elapsed time   Remaining time"
+            "Parameters:",
+            f"max_generations={max_generations} max_population_size={max_population_size} max_stagnation={max_stagnation} elite_size={elite_size} mutation_rate={mutation_rate} crossover_rate={crossover_rate} temperature={temperature}",
+        )
+        print(
+            "Generation   Best fitness   Average fitness   Median fitness   Stagnation   Elapsed time   Remaining time   Generations / s"
         )
     start = time.time()
     fitness_history = []
@@ -51,13 +56,17 @@ def genetic_algorithm(
     stagnation = 0
     best_fitness = -float("inf")
     best_individual = None
+    time_last = 0
+    gens_last = 0
     try:
         while (
             generation < max_generations
             and stagnation < max_stagnation
             and time.time() - start < max_time
         ):
-            population = sorted(population, key=lambda x: fitness_function(x), reverse=True)
+            population = sorted(
+                population, key=lambda x: fitness_function(x), reverse=True
+            )
             if fitness_function(population[0]) > best_fitness:
                 best_fitness = fitness_function(population[0])
                 best_individual = population[0]
@@ -65,25 +74,29 @@ def genetic_algorithm(
             else:
                 stagnation += 1
             fitness_history.append(best_fitness)
-            new_population = []
-            new_population = population[:elite_size]
+            new_population = set(population[:elite_size])
             weights = softmax([fitness_function(x) for x in population], temperature)
+       
             while len(new_population) < max_population_size:
                 parent1, parent2 = random.choices(population, weights=weights, k=2)
+                parent1, parent2 = list(parent1), list(parent2)
                 if crossover_rate > random.random():
                     child = random.choice(crossover_operators)(parent1, parent2)
                 else:
                     child = parent1.copy()
                 if random.random() < mutation_rate:
                     child = random.choice(mutation_operators)(child)
-                new_population.append(child)
-            population = new_population
+                new_population.add(tuple(child))
+
+            population = list(new_population)
             generation += 1
-            if verbose:
+            if verbose and time.time() - time_last >= 0.5:
                 time_per_generation = (time.time() - start) / generation
                 total_time = min(time_per_generation * max_generations, max_time)
                 remaining_time = total_time - (time.time() - start)
-
+                gens_ps = (generation - gens_last) / (time.time() - time_last)
+                gens_last = generation
+                time_last = time.time()
                 print(
                     "\r",
                     f"{generation:>9}",
@@ -92,16 +105,17 @@ def genetic_algorithm(
                     f"{sorted([fitness_function(x) for x in population])[len(population) // 2]:>16.2f}"
                     f"{stagnation:>13}",
                     f"{str(timedelta(seconds=int(time.time() - start))):>14}"
-                    f"{str(timedelta(seconds=int(remaining_time))):>17}             ",
+                    f"{str(timedelta(seconds=int(remaining_time))):>17}",
+                    f"{gens_ps:>17.2f}          ",
                     end="",
                 )
     except KeyboardInterrupt:
         print("\nInterrupted by user")
-    finally:
-        return best_individual, fitness_history
+    
+    return best_individual, fitness_history
 
 
-@lru_cache(maxsize=1000)
+@lru_cache(maxsize=100000)
 def cost_func(solution, coords, acute_penalty):
     p1 = coords[solution[0]]
     p2 = coords[solution[1]]
@@ -117,6 +131,7 @@ def cost_func(solution, coords, acute_penalty):
     return cost
 
 
+@lru_cache(maxsize=100000)
 def acute(p1, p2, p3):
     v1 = (p1[0] - p2[0], p1[1] - p2[1])
     v2 = (p3[0] - p2[0], p3[1] - p2[1])
@@ -149,7 +164,7 @@ def ERX(parent1, parent2):
 def init_population(population_size, individual_size):
     population = []
     for _ in range(population_size):
-        individual = sorted(list(range(individual_size)), key=lambda x: random.random())
+        individual = tuple(sorted(tuple(range(individual_size)), key=lambda x: random.random()))
         population.append(individual)
     return population
 
@@ -184,22 +199,22 @@ def main():
             reverse_displace,
         ],
         crossover_operators=[OX1, OX2],
-        max_generations=20_000,
-        max_population_size=100,
-        elite_size=int(0.2 * 100),
-        mutation_rate=1.0,
+        max_generations=float("inf"),
+        max_population_size=50,
+        elite_size=5,
+        mutation_rate=0.9,
         crossover_rate=0.0,
-        max_stagnation=float("inf"),
+        max_stagnation=20_000,
         verbose=True,
         max_time=60 * 10,
-        temperature=5_000,
+        temperature=50_000,
     )
     # logaritmic scale
     plt.yscale("log")
     plt.plot(list(map(lambda x: -x, cost_hist)), "b.")
     plt.show()
-    plt.yscale("linear")
     plt.figure(figsize=(10, 10))
+    plt.yscale("linear")
     plt.xlim(min_coord - 50, max_coord + 50)
     plt.ylim(min_coord - 50, max_coord + 50)
     plt.scatter([p[0] for p in points], [p[1] for p in points])
@@ -211,4 +226,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    
+    cProfile.run("main()", "restats")
+
+    p = pstats.Stats("restats")
+    p.strip_dirs().sort_stats("time").print_stats(10)
+

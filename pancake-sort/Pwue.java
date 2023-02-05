@@ -172,16 +172,18 @@ public class Pwue {
             return result;
         }
         System.out.println("| ".repeat(depth) + "| k(" + n + ", " + a + ") "
-                + n * n * (n + 1) * k(n - 1, a - 1, depth + 1).size() + " Its");
+                + ((int) Math.ceil(n / 1.5) - a + 1) * n * (n + 1)
+                        * k(n - 1, a - 1, depth + 1).size()
+                + " Its");
         HashSet<List<Integer>> result = new HashSet<>();
         for (IntPair rFlip : allRevFlipOps(n)) {
+
             for (List<Integer> seqL : k(n - 1, a - 1, depth + 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
                 Integer[] rFlipped = revFlipOp(seq, rFlip.first(), rFlip.second());
                 if (!(a > 1 || !Arrays.equals(rFlipped, range(n)))) {
                     continue;
                 }
-
                 boolean r1 = true;
                 boolean r2 = false;
                 for (Integer flip : allFlipOps(n)) {
@@ -203,7 +205,7 @@ public class Pwue {
                 }
             }
         }
-        System.out.println("| ".repeat(depth) + "| k(" + n + ", " + a + ") Fertig");
+        System.out.println("| ".repeat(depth) + "| k(" + n + ", " + a + ") Fertig         ");
         memo.put(key, result);
         return result;
     }

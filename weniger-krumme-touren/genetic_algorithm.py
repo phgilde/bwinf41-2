@@ -121,6 +121,36 @@ def reverse(individual):
     return individual
 
 
+def displace(individual):
+    individual = individual.copy()
+    i = random.randint(0, len(individual) - 1)
+    j = random.randint(i, len(individual))
+    k = random.randint(0, len(individual) - (j - i))
+    result = individual[:i] + individual[j:]
+    result = result[:k] + individual[i:j] + result[k:]
+    return result
+
+
+def insert(individual):
+    individual = individual.copy()
+    i = random.randint(0, len(individual) - 1)
+    j = random.randint(0, len(individual) - 1)
+    selected = individual[i]
+    individual = individual[:i] + individual[i + 1 :]
+    individual = individual[:j] + [selected] + individual[j:]
+    return individual
+
+
+def reverse_displace(individual):
+    individual = individual.copy()
+    i = random.randint(0, len(individual) - 1)
+    j = random.randint(i, len(individual))
+    k = random.randint(0, len(individual) - (j - i))
+    result = individual[:i] + individual[j:]
+    result = result[:k] + individual[i:j][::-1] + result[k:]
+    return result
+
+
 def cost_func(solution, coords, acute_penalty):
     p1 = coords[solution[0]]
     p2 = coords[solution[1]]
@@ -227,14 +257,22 @@ def main():
     solution, cost_hist = genetic_algorithm(
         init_population=init_population(300, len(points)),
         fitness_function=fitness_func,
-        mutation_operators=[segment_swap, swap, rotate, reverse],
+        mutation_operators=[
+            segment_swap,
+            swap,
+            rotate,
+            reverse,
+            displace,
+            insert,
+            reverse_displace,
+        ],
         crossover_operators=[OX1, OX2],
         max_generations=10_000,
         max_population_size=300,
         elite_size=10,
         mutation_rate=0.5,
-        crossover_rate=0.5,
-        max_stagnation=100,
+        crossover_rate=1,
+        max_stagnation=1000,
         verbose=True,
         max_time=600,
     )

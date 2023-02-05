@@ -26,7 +26,9 @@ def genetic_algorithm(
     max_time,
 ):
     if verbose:
-        print("Generation   Best fitness   Average fitness   Median fitness   Stagnation   Elapsed time   Remaining time")
+        print(
+            "Generation   Best fitness   Average fitness   Median fitness   Stagnation   Elapsed time   Remaining time"
+        )
     start = time.time()
     fitness_history = []
     population = init_population
@@ -65,7 +67,7 @@ def genetic_algorithm(
             time_per_generation = (time.time() - start) / generation
             total_time = min(time_per_generation * max_generations, max_time)
             remaining_time = total_time - (time.time() - start)
-            
+
             print(
                 "\r",
                 f"{generation:>9}",
@@ -214,8 +216,8 @@ def main():
     min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
     max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
     plt.figure(figsize=(10, 10))
-    plt.xlim(min_coord, max_coord)
-    plt.ylim(min_coord, max_coord)
+    plt.xlim(min_coord - 50, max_coord + 50)
+    plt.ylim(min_coord - 50, max_coord + 50)
     plt.scatter([p[0] for p in points], [p[1] for p in points])
     plt.show()
 
@@ -239,8 +241,8 @@ def main():
     plt.plot(cost_hist, "b.")
     plt.show()
     plt.figure(figsize=(10, 10))
-    plt.xlim(min_coord, max_coord)
-    plt.ylim(min_coord, max_coord)
+    plt.xlim(min_coord - 50, max_coord + 50)
+    plt.ylim(min_coord - 50, max_coord + 50)
     plt.scatter([p[0] for p in points], [p[1] for p in points])
     plt.plot(
         [points[solution[i]][0] for i in range(len(solution))],

@@ -29,7 +29,7 @@ def genetic_algorithm(
     init_population,
     mutation_operators,
     crossover_operators,
-    fitness_function,
+    cost_function,
     max_generations,
     max_population_size,
     max_stagnation,
@@ -47,14 +47,14 @@ def genetic_algorithm(
             f"max_generations={max_generations} max_population_size={max_population_size} max_stagnation={max_stagnation} elite_size={elite_size} mutation_rate={mutation_rate} crossover_rate={crossover_rate} temperature={temperature}",
         )
         print(
-            "Generation   Best fitness   Average fitness   Median fitness   Stagnation   Elapsed time   Remaining time   Generations / s"
+            "Generation    Lowest Cost      Average Cost      Median Cost   Stagnation   Elapsed time   Remaining time   Generations / s"
         )
     start = time.time()
     fitness_history = []
     population = init_population
     generation = 0
     stagnation = 0
-    best_fitness = -float("inf")
+    lowest_cost = float("inf")
     best_individual = None
     time_last = 0
     gens_last = 0
@@ -65,17 +65,17 @@ def genetic_algorithm(
             and time.time() - start < max_time
         ):
             population = sorted(
-                population, key=lambda x: fitness_function(x), reverse=True
+                population, key=lambda x: cost_function(x)
             )
-            if fitness_function(population[0]) > best_fitness:
-                best_fitness = fitness_function(population[0])
+            if cost_function(population[0]) < lowest_cost:
+                lowest_cost = cost_function(population[0])
                 best_individual = population[0]
                 stagnation = 0
             else:
                 stagnation += 1
-            fitness_history.append(best_fitness)
+            fitness_history.append(lowest_cost)
             new_population = set(population[:elite_size])
-            weights = softmax([fitness_function(x) for x in population], temperature)
+            weights = softmax([-cost_function(x) for x in population], temperature)
        
             while len(new_population) < max_population_size:
                 parent1, parent2 = random.choices(population, weights=weights, k=2)
@@ -100,9 +100,9 @@ def genetic_algorithm(
                 print(
                     "\r",
                     f"{generation:>9}",
-                    f"{max([fitness_function(x) for x in population]):>14.2f}",
-                    f"{sum([fitness_function(x) for x in population]) / len(population):>17.2f}",
-                    f"{sorted([fitness_function(x) for x in population])[len(population) // 2]:>16.2f}"
+                    f"{min([cost_function(x) for x in population]):>14.2f}",
+                    f"{sum([cost_function(x) for x in population]) / len(population):>17.2f}",
+                    f"{sorted([cost_function(x) for x in population])[len(population) // 2]:>16.2f}"
                     f"{stagnation:>13}",
                     f"{str(timedelta(seconds=int(time.time() - start))):>14}"
                     f"{str(timedelta(seconds=int(remaining_time))):>17}",
@@ -116,7 +116,7 @@ def genetic_algorithm(
 
 
 @lru_cache(maxsize=100000)
-def cost_func(solution, coords, acute_penalty):
+def penalized_path_cost(solution, coords, acute_penalty):
     p1 = coords[solution[0]]
     p2 = coords[solution[1]]
     cost = ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
@@ -185,10 +185,10 @@ def main():
 
     acute_penalty = length_upper_bound(points)
     print(acute_penalty)
-    fitness_func = lambda solution: -cost_func(tuple(solution), points, acute_penalty)
+    cost_func = lambda solution: penalized_path_cost(tuple(solution), points, acute_penalty)
     solution, cost_hist = genetic_algorithm(
         init_population=init_population(300, len(points)),
-        fitness_function=fitness_func,
+        cost_function=cost_func,
         mutation_operators=[
             segment_swap,
             swap,
@@ -211,7 +211,7 @@ def main():
     )
     # logaritmic scale
     plt.yscale("log")
-    plt.plot(list(map(lambda x: -x, cost_hist)), "b.")
+    plt.plot(cost_hist, "b.")
     plt.show()
     plt.figure(figsize=(10, 10))
     plt.yscale("linear")

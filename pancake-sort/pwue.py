@@ -52,12 +52,15 @@ def normalize(seq):
         )
     )
 
+
 k_cache = {}
+
+
 def k(n, a, depth=0):
     if (n, a) in k_cache:
         # print(f"Nutze Cache für n={n}, a={a}...")
         return k_cache[(n, a)]
-    print("|  "*depth + f"| Berechne n={n}, a={a}...")
+    print("|  " * depth + f"| Berechne n={n}, a={a}...")
     start_time = time()
     if a == 0:
         result = {tuple(range(n))}
@@ -75,7 +78,10 @@ def k(n, a, depth=0):
                 for flip in allFlipOps(n)
             )
         }
-    print("|  "*depth + "| {:<6} {:<6} {:<6} {:<9.2f}".format(n, a, len(result), time() - start_time))
+    print(
+        "|  " * depth
+        + "| {:<6} {:<6} {:<6} {:<9.2f}".format(n, a, len(result), time() - start_time)
+    )
     k_cache[(n, a)] = result
     return result
 
@@ -102,7 +108,7 @@ def k_has_solution(n, a):
 
 
 def main():
-    print(RevFlipOp(1,2)((2,0,1)))
+    print(RevFlipOp(1, 2)((2, 0, 1)))
     n = int(input("n: "))
     for a in range(1, math.ceil(n / 1.5))[::-1]:
         if k_has_solution(n, a):

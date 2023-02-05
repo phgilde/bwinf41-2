@@ -1,3 +1,15 @@
 *.o
 *.hi
 *.exe
+pancake-sort/dokumentation.aux
+pancake-sort/dokumentation.fdb_latexmk
+pancake-sort/dokumentation.fls
+pancake-sort/dokumentation.log
+pancake-sort/dokumentation.synctex(busy)
+pancake-sort/dokumentation.toc
+pancake-sort/pwue.prof
+pancake-sort/restats
+pancake-sort/__pycache__/a_star.cpython-310.pyc
+pancake-sort/__pycache__/least_flips.cpython-310.pyc
+.vscode/tasks.json
+.vscode/c_cpp_properties.json

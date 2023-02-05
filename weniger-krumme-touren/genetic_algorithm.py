@@ -4,10 +4,22 @@ import time
 from matplotlib import pyplot as plt
 import numpy as np
 from datetime import timedelta
+from functools import lru_cache
+from ga_operators import (
+    segment_swap,
+    swap,
+    rotate,
+    reverse,
+    displace,
+    insert,
+    reverse_displace,
+    OX1,
+    OX2,
+)
 
 
-def softmax(x):
-    e_x = np.exp(x - np.max(x))
+def softmax(x, temperature=1.0):
+    e_x = np.exp((x - np.max(x)) / temperature)
     return e_x / e_x.sum()
 
 
@@ -24,8 +36,11 @@ def genetic_algorithm(
     crossover_rate,
     verbose,
     max_time,
+    temperature,
 ):
     if verbose:
+        print("Genetic algorithm")
+        print("Parameters:", f"max_generations={max_generations} max_population_size={max_population_size} max_stagnation={max_stagnation} elite_size={elite_size} mutation_rate={mutation_rate} crossover_rate={crossover_rate} temperature={temperature}")
         print(
             "Generation   Best fitness   Average fitness   Median fitness   Stagnation   Elapsed time   Remaining time"
         )
@@ -51,14 +66,14 @@ def genetic_algorithm(
         fitness_history.append(best_fitness)
         new_population = []
         new_population = population[:elite_size]
-        weights = softmax([fitness_function(x) for x in population])
+        weights = softmax([fitness_function(x) for x in population], temperature)
         while len(new_population) < max_population_size:
             parent1, parent2 = random.choices(population, weights=weights, k=2)
             if crossover_rate > random.random():
                 child = random.choice(crossover_operators)(parent1, parent2)
             else:
                 child = parent1.copy()
-            while random.random() < mutation_rate:
+            if random.random() < mutation_rate:
                 child = random.choice(mutation_operators)(child)
             new_population.append(child)
         population = new_population
@@ -82,75 +97,7 @@ def genetic_algorithm(
     return best_individual, fitness_history
 
 
-def segment_swap(individual):
-    individual = individual.copy()
-    i = random.randint(0, len(individual) - 4)
-    j = random.randint(i, len(individual) - 3)
-    k = random.randint(j + 1, len(individual) - 2)
-    l = random.randint(k + 1, len(individual) - 1)
-    individual = (
-        individual[:i]
-        + individual[k:l]
-        + individual[j:k]
-        + individual[i:j]
-        + individual[l:]
-    )
-    return individual
-
-
-def swap(individual):
-    individual = individual.copy()
-    i = random.randint(0, len(individual) - 2)
-    j = random.randint(i, len(individual) - 1)
-    individual[i], individual[j] = individual[j], individual[i]
-    return individual
-
-
-def rotate(individual):
-    individual = individual.copy()
-    i = random.randint(0, len(individual))
-    individual = individual[i:] + individual[:i]
-    return individual
-
-
-def reverse(individual):
-    individual = individual.copy()
-    i = random.randint(0, len(individual) - 1)
-    j = random.randint(i, len(individual))
-    individual = individual[:i] + individual[i:j][::-1] + individual[j:]
-    return individual
-
-
-def displace(individual):
-    individual = individual.copy()
-    i = random.randint(0, len(individual) - 1)
-    j = random.randint(i, len(individual))
-    k = random.randint(0, len(individual) - (j - i))
-    result = individual[:i] + individual[j:]
-    result = result[:k] + individual[i:j] + result[k:]
-    return result
-
-
-def insert(individual):
-    individual = individual.copy()
-    i = random.randint(0, len(individual) - 1)
-    j = random.randint(0, len(individual) - 1)
-    selected = individual[i]
-    individual = individual[:i] + individual[i + 1 :]
-    individual = individual[:j] + [selected] + individual[j:]
-    return individual
-
-
-def reverse_displace(individual):
-    individual = individual.copy()
-    i = random.randint(0, len(individual) - 1)
-    j = random.randint(i, len(individual))
-    k = random.randint(0, len(individual) - (j - i))
-    result = individual[:i] + individual[j:]
-    result = result[:k] + individual[i:j][::-1] + result[k:]
-    return result
-
-
+@lru_cache(maxsize=1000)
 def cost_func(solution, coords, acute_penalty):
     p1 = coords[solution[0]]
     p2 = coords[solution[1]]
@@ -173,41 +120,6 @@ def acute(p1, p2, p3):
     return (v1[0] * v2[0] + v1[1] * v2[1]) / (
         (v1[0] ** 2 + v1[1] ** 2) ** 0.5 * (v2[0] ** 2 + v2[1] ** 2) ** 0.5
     ) > 0
-
-
-def OX1(parent1, parent2):
-    i = random.randint(0, len(parent1) - 2)
-    j = random.randint(i, len(parent1) - 1)
-    child = [-1 for _ in range(len(parent1))]
-    child[i:j] = parent1[i:j]
-    ptr = j + 1
-    ch_ptr = j + 1
-    while -1 in child:
-        if ptr >= len(child):
-            ptr = 0
-        if ch_ptr >= len(child):
-            ch_ptr = 0
-        if parent2[ptr] not in child:
-            child[ch_ptr] = parent2[ptr]
-            ch_ptr += 1
-        ptr += 1
-    assert set(child) == set(parent1) == set(parent2)
-    return child
-
-
-def OX2(parent1, parent2):
-    positions = []
-    while random.random() < 0.8 and len(positions) < 5:
-        position = random.randint(0, len(parent1) - 1)
-        if position not in positions:
-            positions.append(position)
-    positions.sort()
-    ixs = sorted([parent2.index(parent1[ix]) for ix in positions])
-    child = parent2.copy()
-    for ix, pos in zip(ixs, positions):
-        child[ix] = parent1[pos]
-    assert set(child) == set(parent1) == set(parent2)
-    return child
 
 
 def length_upper_bound(coords):
@@ -243,6 +155,7 @@ def main():
     with open(input("Pfad zur Datei: ")) as f:
         while line := f.readline():
             points.append(tuple(map(float, line.split())))
+    points = tuple(points)
     min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
     max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
     plt.figure(figsize=(10, 10))
@@ -253,7 +166,7 @@ def main():
 
     acute_penalty = length_upper_bound(points)
     print(acute_penalty)
-    fitness_func = lambda solution: -cost_func(solution, points, acute_penalty)
+    fitness_func = lambda solution: -cost_func(tuple(solution), points, acute_penalty)
     solution, cost_hist = genetic_algorithm(
         init_population=init_population(300, len(points)),
         fitness_function=fitness_func,
@@ -267,17 +180,21 @@ def main():
             reverse_displace,
         ],
         crossover_operators=[OX1, OX2],
-        max_generations=10_000,
-        max_population_size=300,
-        elite_size=10,
-        mutation_rate=0.5,
-        crossover_rate=1,
-        max_stagnation=1000,
+        max_generations=20_000,
+        max_population_size=100,
+        elite_size=int(0.05 * 100),
+        mutation_rate=1.0,
+        crossover_rate=0.0,
+        max_stagnation=float("inf"),
         verbose=True,
-        max_time=600,
+        max_time=60 * 10,
+        temperature=200,
     )
+    # logaritmic scale
+    plt.yscale("log")
     plt.plot(cost_hist, "b.")
     plt.show()
+    plt.yscale("linear")
     plt.figure(figsize=(10, 10))
     plt.xlim(min_coord - 50, max_coord + 50)
     plt.ylim(min_coord - 50, max_coord + 50)

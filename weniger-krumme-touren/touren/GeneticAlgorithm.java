@@ -48,9 +48,7 @@ public class GeneticAlgorithm {
         return result;
     }
 
-    static boolean acute(Vector2d a, Vector2d b, Vector2d c) {
-        return a.sub(b).dot(c.sub(b)) > 0;
-    }
+
 
     static double lengthUpperBound(Vector2d[] coords) {
         double[] distances = new double[coords.length * coords.length];

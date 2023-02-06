@@ -1,0 +1,12 @@
+Pfad zur Datei: C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\wenigerkrumm6.txt
+Genetic algorithm started
+Parameters:
+        maxGenerations: 1000000.0
+        maxPopulationSize: 100
+        eliteSize: 5
+        mutationRate: 1.0
+        temperature: 50000.0
+        maxTime: 600
+Generation    Lowest Cost      Average Cost      Median Cost   Stagnation   Elapsed time   Remaining time   Generations / s
+   1000000        3712,75         167411,17        181719,92       921408       00:07:34         00:00:00            240,69      
+[55, 60, 73, 52, 24, 6, 76, 44, 25, 48, 50, 64, 39, 7, 61, 72, 27, 30, 38, 0, 18, 12, 21, 20, 5, 62, 15, 46, 70, 49, 4, 77, 47, 68, 69, 53, 8, 63, 75, 29, 57, 33, 2, 9, 65, 67, 31, 56, 79, 17, 22, 43, 59, 14, 16, 3, 51, 26, 11, 66, 34, 42, 32, 35, 41, 36, 71, 13, 37, 19, 78, 10, 1, 74, 40, 45, 28, 54, 23, 58]

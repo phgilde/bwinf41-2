@@ -44,7 +44,7 @@ def displace(individual):
     individual = individual.copy()
     i = random.randint(0, len(individual) - 1)
     j = random.randint(i, len(individual))
-    k = random.randint(0, len(individual) - (j - i))
+    k = random.randint(0, len(individual))
     result = individual[:i] + individual[j:]
     result = result[:k] + individual[i:j] + result[k:]
     return result

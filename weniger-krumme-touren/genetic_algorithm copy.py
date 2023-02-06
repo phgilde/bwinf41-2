@@ -31,7 +31,6 @@ def weighted_sample_without_replacement(population, weights, k, rng=random):
     return [population[i] for i in order[-k:]]
 
 
-
 def genetic_algorithm(
     init_population,
     mutation_operators,
@@ -50,7 +49,7 @@ def genetic_algorithm(
     cooling_rate,
 ):
     if verbose:
-        print("Genetic algorithm")
+        print("Genetic algorithm ii.")
         print(
             "Parameters:",
             f"max_generations={max_generations} max_population_size={max_population_size} max_stagnation={max_stagnation} elite_size={elite_size} mutation_rate={mutation_rate} crossover_rate={crossover_rate} temperature={temperature}",
@@ -88,7 +87,9 @@ def genetic_algorithm(
             )
             cum_weights = np.cumsum(weights)
             for i in range(children_per_generation):
-                parent1, parent2 = random.choices(population, cum_weights=cum_weights, k=2)
+                parent1, parent2 = random.choices(
+                    population, cum_weights=cum_weights, k=2
+                )
                 parent1, parent2 = list(parent1), list(parent2)
                 if crossover_rate > random.random():
                     child = random.choice(crossover_operators)(parent1, parent2)
@@ -97,14 +98,21 @@ def genetic_algorithm(
                 if random.random() < mutation_rate:
                     child = random.choice(mutation_operators)(child)
                 new_population.add(tuple(child))
-                
-            new_population = list(new_population)
+
+            new_population = sorted(list(new_population), key=cost_function)
             weights = softmax(
                 np.array([-cost_function(x) for x in new_population]), temperature
             )
             cum_weights = np.cumsum(weights)
             i = 0
-            population = weighted_sample_without_replacement(new_population, weights, max_population_size, rng=random)
+            population = new_population[
+                :elite_size
+            ] + weighted_sample_without_replacement(
+                new_population[elite_size:],
+                weights[elite_size:],
+                max_population_size - elite_size,
+                rng=random,
+            )
             population = list(population)
             generation += 1
             temperature *= cooling_rate
@@ -130,7 +138,7 @@ def genetic_algorithm(
                 )
     except KeyboardInterrupt:
         print("\nInterrupted by user")
-    
+
     return best_individual, fitness_history
 
 
@@ -183,7 +191,9 @@ def ERX(parent1, parent2):
 def init_population(population_size, individual_size):
     population = []
     for _ in range(population_size):
-        individual = tuple(sorted(tuple(range(individual_size)), key=lambda x: random.random()))
+        individual = tuple(
+            sorted(tuple(range(individual_size)), key=lambda x: random.random())
+        )
         population.append(individual)
     return population
 
@@ -204,7 +214,9 @@ def main():
 
     acute_penalty = length_upper_bound(points)
     print(acute_penalty)
-    cost_func = lambda solution: penalized_path_cost(tuple(solution), points, acute_penalty)
+    cost_func = lambda solution: penalized_path_cost(
+        tuple(solution), points, acute_penalty
+    )
     solution, cost_hist = genetic_algorithm(
         init_population=init_population(300, len(points)),
         cost_function=cost_func,
@@ -219,16 +231,16 @@ def main():
         ],
         crossover_operators=[OX1, OX2],
         max_generations=float("inf"),
-        max_population_size=50,
+        max_population_size=100,
         elite_size=5,
-        mutation_rate=0.9,
-        crossover_rate=0.1,
+        mutation_rate=1.0,
+        crossover_rate=0.0,
         max_stagnation=20_000,
         verbose=True,
         max_time=60 * 10,
         temperature=50_000,
         children_per_generation=100,
-        cooling_rate=0.9995,
+        cooling_rate=0.9999,
     )
     # logaritmic scale
     plt.yscale("log")
@@ -247,9 +259,8 @@ def main():
 
 
 if __name__ == "__main__":
-    
+
     cProfile.run("main()", "restats")
 
     p = pstats.Stats("restats")
     p.strip_dirs().sort_stats("time").print_stats(10)
-

@@ -107,12 +107,17 @@ public class GeneticAlgorithm {
 
     static Integer[] localSearch(Integer[] individual,
             List<Function<Integer[], Integer[]>> mutationOperators,
-            ToDoubleFunction<Integer[]> costFunction, double maxIterations) {
+            ToDoubleFunction<Integer[]> costFunction, double maxIterations, double temperature) {
         Integer[] result = individual.clone();
         for (int i = 0; i < maxIterations; i++) {
             for (Function<Integer[], Integer[]> mutationOperator : mutationOperators) {
                 Integer[] mutated = mutationOperator.apply(result.clone());
                 if (costFunction.applyAsDouble(mutated) < costFunction.applyAsDouble(result)) {
+                    result = mutated;
+                }
+                if (Math.random() < Math.exp(
+                        (costFunction.applyAsDouble(mutated) - costFunction.applyAsDouble(result))
+                                / temperature)) {
                     result = mutated;
                 }
             }
@@ -124,12 +129,15 @@ public class GeneticAlgorithm {
             List<Function<Integer[], Integer[]>> mutationOperators,
             ToDoubleFunction<Integer[]> costFunction, double maxGenerations, double maxStagnation,
             int maxPopulationSize, int eliteSize, double mutationRate, double temperature,
-            int maxTime, double localSearchIterations, double localSearchDepth) {
+            int maxTime, double localSearchIterations, double localSearchDepth,
+            double lsTemperature) {
         System.out.println("Genetic algorithm started");
         System.out.println("Parameters:" + "\n\tmaxGenerations: " + maxGenerations
                 + "\n\tmaxPopulationSize: " + maxPopulationSize + "\n\teliteSize: " + eliteSize
                 + "\n\tmutationRate: " + mutationRate + "\n\ttemperature: " + temperature
-                + "\n\tmaxTime: " + maxTime);
+                + "\n\tmaxTime: " + maxTime + "\n\tlocalSearchIterations: " + localSearchIterations
+                + "\n\tlocalSearchDepth: " + localSearchDepth + "\n\tlsTemperature: "
+                + lsTemperature);
         System.out.println(
                 "Generation    Lowest Cost      Average Cost      Median Cost   Stagnation   Elapsed time   Remaining time   Generations / s");
         double startTime = System.currentTimeMillis() / 1000.0;
@@ -174,8 +182,12 @@ public class GeneticAlgorithm {
             generation++;
             if (generation % localSearchIterations == 0) {
                 for (int i = 0; i < eliteSize; i++) {
-                    population[i] = localSearch(population[i], mutationOperators, costFunction,
-                            localSearchDepth);
+                    Integer[] candidate = localSearch(population[i], mutationOperators,
+                            costFunction, localSearchDepth, lsTemperature);
+                    if (costFunction.applyAsDouble(candidate) < costFunction
+                            .applyAsDouble(population[i])) {
+                        population[i] = candidate;
+                    }
                 }
             }
             if (System.currentTimeMillis() / 1000.0 - timeLast >= 0.1) {
@@ -220,17 +232,15 @@ public class GeneticAlgorithm {
         scanner.close();
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
-        Integer[] solution = geneticAlgorithm(initPopulation(100, coords.length),
+        Integer[] solution = geneticAlgorithm(initPopulation(200, coords.length),
                 Arrays.asList(GeneticOperators::segmentSwap, GeneticOperators::swap,
                         GeneticOperators::rotate, GeneticOperators::reverse,
                         GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, Double.POSITIVE_INFINITY,
-                100, 5, 1, 5e4, 10 * 60, 1e4, 1e4);
+                200, 50, 1, 5e4, 60, 1e4, 10, 1e-3);
         System.out.println();
         System.out.println(Arrays.toString(solution));
     }
-
-
 }
 

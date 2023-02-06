@@ -238,7 +238,7 @@ public class GeneticAlgorithm {
                         GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, Double.POSITIVE_INFINITY,
-                200, 50, 1, 5e4, 60, 1e4, 10, 1e-3);
+                200, 50, 1, 5e4, 60, 1e9, 10, 1e-3);
         System.out.println();
         System.out.println(Arrays.toString(solution));
     }

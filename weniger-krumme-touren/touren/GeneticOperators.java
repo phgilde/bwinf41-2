@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class GeneticOperators {
     static Integer[] segmentSwap(Integer[] individual) {
@@ -112,5 +113,30 @@ public class GeneticOperators {
         result2.addAll(reverse);
         result2.addAll(result.subList(k, result.size()));
         return result2.toArray(new Integer[0]);
+    }
+
+    public static class OperatorNoAcute implements Function<Integer[], Integer[]>{
+        private Vector2d[] coords;
+        private int maxIterations;
+        private int maxNew;
+        private Function<Integer[], Integer[]> operator;
+
+        public OperatorNoAcute(Vector2d[] coords, int maxIterations, Function<Integer[], Integer[]> operator, int maxNew) {
+            this.coords = coords;
+            this.maxIterations = maxIterations;
+            this.operator = operator;
+            this.maxNew = maxNew;
+        }
+        public Integer[] apply(Integer[] individual) {
+            int count = Vector2d.countAcutes(coords, individual);
+            for (int i = 0; i < maxIterations; i++) {
+                Integer[] newIndividual = operator.apply(individual);
+                int newCount = Vector2d.countAcutes(coords, newIndividual);
+                if (newCount + maxNew <= count) {
+                    return newIndividual;
+                }
+            }
+            return individual;
+        }
     }
 }

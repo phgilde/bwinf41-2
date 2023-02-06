@@ -63,7 +63,7 @@ for i in range(len(points)):
     weight_matrix.append([])
     for j in range(len(points)):
         weight_matrix[i].append(
-            (points[i][0] - points[j][0]) ** 2 + (points[i][1] - points[j][1]) ** 2
+            ((points[i][0] - points[j][0]) ** 2 + (points[i][1] - points[j][1]) ** 2) ** 0.5
         )
     weight_matrix[i].append(0)
 weight_matrix.append([0] * (len(points) + 1))

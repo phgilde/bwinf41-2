@@ -18,6 +18,7 @@ from ga_operators import (
     OX1,
     OX2,
 )
+import numba
 
 
 def softmax(x, temperature=1.0):
@@ -64,9 +65,7 @@ def genetic_algorithm(
             and stagnation < max_stagnation
             and time.time() - start < max_time
         ):
-            population = sorted(
-                population, key=lambda x: cost_function(x)
-            )
+            population = sorted(population, key=lambda x: cost_function(x))
             if cost_function(population[0]) < lowest_cost:
                 lowest_cost = cost_function(population[0])
                 best_individual = population[0]
@@ -76,7 +75,7 @@ def genetic_algorithm(
             fitness_history.append(lowest_cost)
             new_population = set(population[:elite_size])
             weights = softmax([-cost_function(x) for x in population], temperature)
-       
+
             while len(new_population) < max_population_size:
                 parent1, parent2 = random.choices(population, weights=weights, k=2)
                 parent1, parent2 = list(parent1), list(parent2)
@@ -111,12 +110,15 @@ def genetic_algorithm(
                 )
     except KeyboardInterrupt:
         print("\nInterrupted by user")
-    
+
     return best_individual, fitness_history
 
 
-@lru_cache(maxsize=100000)
-def penalized_path_cost(solution, coords, acute_penalty):
+# @lru_cache(maxsize=100000)
+@numba.njit
+def penalized_path_cost(
+    solution: list[int], coords: list[tuple[float]], acute_penalty: float
+) -> float:
     p1 = coords[solution[0]]
     p2 = coords[solution[1]]
     cost = ((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2) ** 0.5
@@ -131,14 +133,12 @@ def penalized_path_cost(solution, coords, acute_penalty):
     return cost
 
 
-@lru_cache(maxsize=100000)
+@numba.njit
 def acute(p1, p2, p3):
     v1 = (p1[0] - p2[0], p1[1] - p2[1])
     v2 = (p3[0] - p2[0], p3[1] - p2[1])
 
-    return (v1[0] * v2[0] + v1[1] * v2[1]) / (
-        (v1[0] ** 2 + v1[1] ** 2) ** 0.5 * (v2[0] ** 2 + v2[1] ** 2) ** 0.5
-    ) > 0
+    return (v1[0] * v2[0] + v1[1] * v2[1]) > 0
 
 
 def length_upper_bound(coords):
@@ -164,7 +164,9 @@ def ERX(parent1, parent2):
 def init_population(population_size, individual_size):
     population = []
     for _ in range(population_size):
-        individual = tuple(sorted(tuple(range(individual_size)), key=lambda x: random.random()))
+        individual = tuple(
+            sorted(tuple(range(individual_size)), key=lambda x: random.random())
+        )
         population.append(individual)
     return population
 
@@ -182,10 +184,18 @@ def main():
     plt.ylim(min_coord - 50, max_coord + 50)
     plt.scatter([p[0] for p in points], [p[1] for p in points])
     plt.show()
-
+    acute_dict = {
+        (p1, p2, p3): acute(p1, p2, p3)
+        for p1 in points
+        for p2 in points
+        for p3 in points
+        if p1 != p2 and p2 != p3 and p1 != p3
+    }
     acute_penalty = length_upper_bound(points)
     print(acute_penalty)
-    cost_func = lambda solution: penalized_path_cost(tuple(solution), points, acute_penalty)
+    cost_func = lambda solution: penalized_path_cost(
+        tuple(solution), points, acute_penalty
+    )
     solution, cost_hist = genetic_algorithm(
         init_population=init_population(300, len(points)),
         cost_function=cost_func,
@@ -200,9 +210,9 @@ def main():
         ],
         crossover_operators=[OX1, OX2],
         max_generations=float("inf"),
-        max_population_size=50,
+        max_population_size=100,
         elite_size=5,
-        mutation_rate=0.9,
+        mutation_rate=1.0,
         crossover_rate=0.0,
         max_stagnation=20_000,
         verbose=True,
@@ -226,9 +236,8 @@ def main():
 
 
 if __name__ == "__main__":
-    
+
     cProfile.run("main()", "restats")
 
     p = pstats.Stats("restats")
     p.strip_dirs().sort_stats("time").print_stats(10)
-

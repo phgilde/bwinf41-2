@@ -107,11 +107,26 @@ public class GeneticAlgorithm {
         return String.format("%02d:%02d:%02d", hours, minutes, (int) seconds);
     }
 
+    static Integer[] localSearch(Integer[] individual,
+            List<Function<Integer[], Integer[]>> mutationOperators,
+            ToDoubleFunction<Integer[]> costFunction, double maxIterations) {
+        Integer[] result = individual.clone();
+        for (int i = 0; i < maxIterations; i++) {
+            for (Function<Integer[], Integer[]> mutationOperator : mutationOperators) {
+                Integer[] mutated = mutationOperator.apply(result.clone());
+                if (costFunction.applyAsDouble(mutated) < costFunction.applyAsDouble(result)) {
+                    result = mutated;
+                }
+            }
+        }
+        return result;
+    }
+
     static Integer[] geneticAlgorithm(Integer[][] initPopulation,
             List<Function<Integer[], Integer[]>> mutationOperators,
             ToDoubleFunction<Integer[]> costFunction, double maxGenerations, double maxStagnation,
             int maxPopulationSize, int eliteSize, double mutationRate, double temperature,
-            int maxTime) {
+            int maxTime, double localSearchIterations, double localSearchDepth) {
         System.out.println("Genetic algorithm started");
         System.out.println("Parameters:" + "\n\tmaxGenerations: " + maxGenerations
                 + "\n\tmaxPopulationSize: " + maxPopulationSize + "\n\teliteSize: " + eliteSize
@@ -159,6 +174,12 @@ public class GeneticAlgorithm {
             }
             population = newPopulation;
             generation++;
+            if (generation % localSearchIterations == 0) {
+                for (int i = 0; i < eliteSize; i++) {
+                    population[i] = localSearch(population[i], mutationOperators, costFunction,
+                            localSearchDepth);
+                }
+            }
             if (System.currentTimeMillis() / 1000.0 - timeLast >= 0.1) {
                 double timePerGen = (System.currentTimeMillis() / 1000.0 - startTime) / generation;
                 double totalTime = Math.min(maxTime, timePerGen * maxGenerations);
@@ -167,7 +188,7 @@ public class GeneticAlgorithm {
                         (generation - gensLast) / (System.currentTimeMillis() / 1000.0 - timeLast);
                 gensLast = generation;
                 timeLast = System.currentTimeMillis() / 1000.0;
-                System.out.printf("\r%9d %14.2f %17.2f %16.2f %13d %14s %17s %17.2f      ",
+                System.out.printf("\r%10d %14.2f %17.2f %16.2f %12d %14s %16s %17.2f      ",
                         generation, costFunction.applyAsDouble(population[0]),
                         Arrays.stream(population).mapToDouble(costFunction).average().getAsDouble(),
                         Arrays.stream(population).mapToDouble(costFunction).sorted()
@@ -203,11 +224,11 @@ public class GeneticAlgorithm {
         double acutePenalty = lengthUpperBound(coords);
         Integer[] solution = geneticAlgorithm(initPopulation(100, coords.length),
                 Arrays.asList(GeneticOperators::segmentSwap, GeneticOperators::swap,
-                        GeneticOperators::rotate, GeneticOperators::rotate,
-                        GeneticOperators::reverse, GeneticOperators::displace,
-                        GeneticOperators::insert, GeneticOperators::reverseDisplace),
-                (x) -> penalizedPathCost(x, coords, acutePenalty), 100000, Double.POSITIVE_INFINITY,
-                500, 20, 1, 50000, 60 * 60);
+                        GeneticOperators::rotate, GeneticOperators::reverse,
+                        GeneticOperators::displace, GeneticOperators::insert,
+                        GeneticOperators::reverseDisplace),
+                (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, Double.POSITIVE_INFINITY,
+                100, 5, 1, 5e4, 10 * 60, 1e4, 1e4);
         System.out.println();
         System.out.println(Arrays.toString(solution));
     }

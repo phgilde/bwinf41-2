@@ -29,5 +29,20 @@ public class Vector2d implements Comparable<Vector2d> {
         } else {
             return 0;
         }
-    }	
+    }
+    public static boolean acute(Vector2d a, Vector2d b, Vector2d c) {
+        return a.sub(b).dot(c.sub(b)) > 0;
+    }
+
+    public static int countAcutes(Vector2d[] coords, Integer[] individual) {
+        int count = 0;
+        for (int i = 0; i < individual.length-2; i++) {
+            int j = (i + 1);
+            int k = (i + 2);
+            if (acute(coords[individual[i]], coords[individual[j]], coords[individual[k]])) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

@@ -73,7 +73,7 @@ public class GeneticAlgorithm {
         double result = p1.sub(p2).length();
         for (int i = 2; i < solution.length; i++) {
             Vector2d p3 = coords[solution[i]];
-            if (acute(p1, p2, p3)) {
+            if (Vector2d.acute(p1, p2, p3)) {
                 result += acutePenalty;
             }
             result += p2.sub(p3).length();

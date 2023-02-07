@@ -97,6 +97,47 @@ public class GeneticAlgorithm {
         return population;
     }
 
+    static Integer[][] nearestNeighborInitPopul(int populationSize, Vector2d[] coords, double acutePenalty) {
+        Integer[][] population = new Integer[populationSize][coords.length];
+        for (int i = 0; i< populationSize; i++) {
+            population[i] = nearestNeighbor(coords, acutePenalty);
+        }
+        return population;
+    }
+
+    private static Integer[] nearestNeighbor(Vector2d[] coords, double acutePenalty) {
+        int first = (int) (Math.random() * coords.length);
+        int secord = (int) (Math.random() * coords.length);
+        while (first == secord) {
+            secord = (int) (Math.random() * coords.length);
+        }
+        Integer[] result = new Integer[coords.length];
+        result[0] = first;
+        result[1] = secord;
+        boolean[] visited = new boolean[coords.length];
+        visited[first] = true;
+        visited[secord] = true;
+        for (int i = 2; i < coords.length; i++) {
+            double minDist = Double.MAX_VALUE;
+            int minIndex = -1;
+            for (int j = 0; j < coords.length; j++) {
+                if (!visited[j]) {
+                    double dist = coords[result[i - 1]].sub(coords[j]).length();
+                    if (Vector2d.acute(coords[result[i - 2]], coords[result[i - 1]], coords[j])) {
+                        dist += acutePenalty;
+                    }
+                    if (dist < minDist) {
+                        minDist = dist;
+                        minIndex = j;
+                    }
+                }
+            }
+            result[i] = minIndex;
+            visited[minIndex] = true;
+        }
+        return result;
+    }
+
     static String secondsToTime(double seconds) {
         int hours = (int) (seconds / 3600);
         seconds -= hours * 3600;
@@ -129,15 +170,12 @@ public class GeneticAlgorithm {
             List<Function<Integer[], Integer[]>> mutationOperators,
             ToDoubleFunction<Integer[]> costFunction, double maxGenerations, double maxStagnation,
             int maxPopulationSize, int eliteSize, double mutationRate, double temperature,
-            int maxTime, double localSearchIterations, double localSearchDepth,
-            double lsTemperature) {
+            int maxTime, double mutationDecay) {
         System.out.println("Genetic algorithm started");
         System.out.println("Parameters:" + "\n\tmaxGenerations: " + maxGenerations
                 + "\n\tmaxPopulationSize: " + maxPopulationSize + "\n\teliteSize: " + eliteSize
                 + "\n\tmutationRate: " + mutationRate + "\n\ttemperature: " + temperature
-                + "\n\tmaxTime: " + maxTime + "\n\tlocalSearchIterations: " + localSearchIterations
-                + "\n\tlocalSearchDepth: " + localSearchDepth + "\n\tlsTemperature: "
-                + lsTemperature);
+                + "\n\tmaxTime: " + maxTime + "\n\tmutationDecay: " + mutationDecay);
         System.out.println(
                 "Generation    Lowest Cost      Average Cost      Median Cost   Stagnation   Elapsed time   Remaining time   Generations / s");
         double startTime = System.currentTimeMillis() / 1000.0;
@@ -176,20 +214,15 @@ public class GeneticAlgorithm {
                     child = mutationOperators.get((int) (Math.random() * mutationOperators.size()))
                             .apply(child);
                 }
+                while (Math.random() < mutationDecay) {
+                    child = mutationOperators.get((int) (Math.random() * mutationOperators.size()))
+                            .apply(child);
+                }
                 newPopulation[i] = child;
             }
             population = newPopulation;
             generation++;
-            if (generation % localSearchIterations == 0) {
-                for (int i = 0; i < eliteSize; i++) {
-                    Integer[] candidate = localSearch(population[i], mutationOperators,
-                            costFunction, localSearchDepth, lsTemperature);
-                    if (costFunction.applyAsDouble(candidate) < costFunction
-                            .applyAsDouble(population[i])) {
-                        population[i] = candidate;
-                    }
-                }
-            }
+
             if (System.currentTimeMillis() / 1000.0 - timeLast >= 0.1) {
                 double timePerGen = (System.currentTimeMillis() / 1000.0 - startTime) / generation;
                 double totalTime = Math.min(maxTime, timePerGen * maxGenerations);
@@ -232,14 +265,15 @@ public class GeneticAlgorithm {
         scanner.close();
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
-        Integer[] solution = geneticAlgorithm(initPopulation(200, coords.length),
+        Integer[] solution = geneticAlgorithm(nearestNeighborInitPopul(200, coords, acutePenalty),
                 Arrays.asList(GeneticOperators::segmentSwap, GeneticOperators::swap,
                         GeneticOperators::rotate, GeneticOperators::reverse,
                         GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, Double.POSITIVE_INFINITY,
-                200, 50, 1, 5e4, 60, 1e9, 10, 1e-3);
+                200, 50, 1, acutePenalty, 60*10, 0.8);
         System.out.println();
+        System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));
     }
 }

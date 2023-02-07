@@ -101,10 +101,10 @@ def genetic_algorithm(
 
             new_population = sorted(list(new_population), key=cost_function)
             weights = softmax(
-                np.array([-cost_function(x) for x in new_population[elite_size:]]), temperature
+                np.array([-cost_function(x) for x in new_population[elite_size:]]),
+                temperature,
             )
             cum_weights = np.cumsum(weights)
-            i = 0
             population = new_population[
                 :elite_size
             ] + weighted_sample_without_replacement(

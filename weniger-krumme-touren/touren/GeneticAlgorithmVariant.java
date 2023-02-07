@@ -26,6 +26,7 @@ public class GeneticAlgorithmVariant {
         }
         return result;
     }
+
     static <T> void sortOn(T[] population, ToDoubleFunction<T> costFunction) {
         Arrays.sort(population, (a, b) -> {
             double costA = costFunction.applyAsDouble(a);
@@ -180,7 +181,8 @@ public class GeneticAlgorithmVariant {
             for (int i = 1; i < weights.length; i++) {
                 cumWeights[i] = cumWeights[i - 1] + weights[i];
             }
-            Integer[][] newPopulation = new Integer[maxPopulationSize + childrenPerGeneration][population[0].length];
+            Integer[][] newPopulation =
+                    new Integer[maxPopulationSize + childrenPerGeneration][population[0].length];
             // Reproduction
             for (int i = 0; i < maxPopulationSize; i++) {
                 newPopulation[i] = population[i];
@@ -197,14 +199,17 @@ public class GeneticAlgorithmVariant {
 
             sortOn(newPopulation, costFunction);
             weights = softmax(Arrays.stream(newPopulation)
-                    .mapToDouble((x) -> -costFunction.applyAsDouble(x)).skip(eliteSize).toArray(), temperature);
-            
+                    .mapToDouble((x) -> -costFunction.applyAsDouble(x)).skip(eliteSize).toArray(),
+                    temperature);
+
             for (int i = 0; i < eliteSize; i++) {
                 population[i] = newPopulation[i];
             }
-            Integer[][] selection = weightedSample(Arrays.copyOfRange(newPopulation, eliteSize, newPopulation.length), weights, maxPopulationSize - eliteSize);
-            
-            for (int i = 0; i<selection.length; i++) {
+            Integer[][] selection = weightedSample(
+                    Arrays.copyOfRange(newPopulation, eliteSize, newPopulation.length), weights,
+                    maxPopulationSize - eliteSize);
+
+            for (int i = 0; i < selection.length; i++) {
                 population[i + eliteSize] = selection[i];
             }
             generation++;
@@ -268,7 +273,7 @@ public class GeneticAlgorithmVariant {
                         GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, Double.POSITIVE_INFINITY,
-                200, 50, 1, 5e4, 60, 1e9, 10, 1e-3, 200);
+                200, 50, 1, 5e4, 60, 1e3, 1e3, 1e-3, 200);
         System.out.println();
         System.out.println(Arrays.toString(solution));
     }

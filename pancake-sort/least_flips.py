@@ -41,8 +41,8 @@ def is_sorted(arr):
 
 
 # Gibt die Optimale Reihenfolge von flip()s zurueck, um die Liste zu sortieren.
-def least_flips(arr):
-    return a_star(normalize(arr), is_sorted, next_arrs, lambda a, b: 1, heuristic)
+def least_flips(arr, count_steps=False):
+    return a_star(normalize(arr), is_sorted, next_arrs, lambda a, b: 1, heuristic, count_steps)
 
 
 def find_flip(pre, post):

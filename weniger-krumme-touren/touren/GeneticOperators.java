@@ -3,7 +3,11 @@ package touren;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 public class GeneticOperators {
@@ -113,6 +117,51 @@ public class GeneticOperators {
         result2.addAll(reverse);
         result2.addAll(result.subList(k, result.size()));
         return result2.toArray(new Integer[0]);
+    }
+
+    static Integer[] ER(Integer[] parent1, Integer[] parent2) {
+        Map<Integer, List<Integer>> adjacencyMap = new HashMap<Integer, List<Integer>>();
+        for (int i = 0; i<parent1.length; i++) {
+            adjacencyMap.put(i, new ArrayList<Integer>());
+        }
+        for (int i = 1; i<parent1.length-1; i++) {
+            adjacencyMap.get(parent1[i]).add(parent1[i-1]);
+            adjacencyMap.get(parent1[i]).add(parent1[i+1]);
+            adjacencyMap.get(parent2[i]).add(parent2[i-1]);
+            adjacencyMap.get(parent2[i]).add(parent2[i+1]);
+        }
+        adjacencyMap.get(parent1[0]).add(parent1[1]);
+        adjacencyMap.get(parent1[parent1.length-1]).add(parent1[parent1.length-2]);
+        adjacencyMap.get(parent2[0]).add(parent2[1]);
+        adjacencyMap.get(parent2[parent2.length-1]).add(parent2[parent2.length-2]);
+        Set<Integer> visited = new HashSet<Integer>();
+        Set<Integer> unvisited = new HashSet<Integer>();
+        for (int i = 0; i<parent1.length; i++) {
+            unvisited.add(i);
+        }
+        List<Integer> result = new ArrayList<Integer>();
+        result.add((int) (Math.random() * parent1.length));
+        while (result.size() < parent1.length) {
+            List<Integer> candidates = adjacencyMap.get(result.get(result.size()-1));
+            Collections.shuffle(candidates);
+            boolean success = false;
+            for (Integer candidate : candidates) {
+                if (!visited.contains(candidate)) {
+                    result.add(candidate);
+                    visited.add(candidate);
+                    unvisited.remove(candidate);
+                    success = true;
+                    break;
+                }
+            }
+            if (!success) {
+                Integer candidate = unvisited.iterator().next();
+                result.add(candidate);
+                visited.add(candidate);
+                unvisited.remove(candidate);
+            }
+        }
+        return result.toArray(new Integer[0]);
     }
 
     public static class OperatorNoAcute implements Function<Integer[], Integer[]>{

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 
@@ -167,9 +168,9 @@ public class GeneticAlgorithm {
     }
 
     static Integer[] geneticAlgorithm(Integer[][] initPopulation,
-            List<Function<Integer[], Integer[]>> mutationOperators,
+            List<Function<Integer[], Integer[]>> mutationOperators, List<BiFunction<Integer[], Integer[], Integer[]>> crossoverOperators,
             ToDoubleFunction<Integer[]> costFunction, double maxGenerations, double maxStagnation,
-            int maxPopulationSize, int eliteSize, double mutationRate, double temperature,
+            int maxPopulationSize, int eliteSize, double mutationRate, double crossoverRate, double temperature,
             int maxTime, double mutationDecay) {
         System.out.println("Genetic algorithm started");
         System.out.println("Parameters:" + "\n\tmaxGenerations: " + maxGenerations
@@ -208,8 +209,13 @@ public class GeneticAlgorithm {
                 newPopulation[i] = population[i];
             }
             for (int i = eliteSize; i < maxPopulationSize; i++) {
-                Integer[] parent = population[cumWeightChoice(cumWeights)];
-                Integer[] child = parent.clone();
+                Integer[] parent1 = population[cumWeightChoice(cumWeights)];
+                Integer[] parent2 = population[cumWeightChoice(cumWeights)];
+                Integer[] child = parent1.clone();
+                if (Math.random() < crossoverRate) {
+                    child = crossoverOperators.get((int) (Math.random() * crossoverOperators.size()))
+                            .apply(parent1, parent2);
+                }
                 if (Math.random() < mutationRate) {
                     child = mutationOperators.get((int) (Math.random() * mutationOperators.size()))
                             .apply(child);
@@ -223,7 +229,7 @@ public class GeneticAlgorithm {
             population = newPopulation;
             generation++;
 
-            if (System.currentTimeMillis() / 1000.0 - timeLast >= 0.1) {
+            if (System.currentTimeMillis() / 1000.0 - timeLast >= 0.25) {
                 double timePerGen = (System.currentTimeMillis() / 1000.0 - startTime) / generation;
                 double totalTime = Math.min(maxTime, timePerGen * maxGenerations);
                 double timeLeft = totalTime - (System.currentTimeMillis() / 1000.0 - startTime);
@@ -266,12 +272,12 @@ public class GeneticAlgorithm {
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
         Integer[] solution = geneticAlgorithm(nearestNeighborInitPopul(200, coords, acutePenalty),
-                Arrays.asList(GeneticOperators::segmentSwap, GeneticOperators::swap,
-                        GeneticOperators::rotate, GeneticOperators::reverse,
+                Arrays.asList(
                         GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace),
-                (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, Double.POSITIVE_INFINITY,
-                200, 50, 1, acutePenalty, 60*10, 0.8);
+                Arrays.asList(GeneticOperators::ER),
+                (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, 2e5,
+                200, 5, 1, 0., acutePenalty, 60, 0.1);
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));

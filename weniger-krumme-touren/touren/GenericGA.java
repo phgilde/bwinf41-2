@@ -1,6 +1,7 @@
 package touren;
 
 import java.util.Arrays;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class GenericGA<T> {
@@ -35,13 +36,16 @@ public class GenericGA<T> {
     private Function<T, T> mutation;
     private Function<T, Double> cost;
     private double mutationRate;
+    private double crossoverRate;
     private double temperature;
     private int eliteSize;
+    private BiFunction<T, T, T> crossover;
 
-    public GenericGA(T[] population, Function<T, T> mutation, Function<T, Double> cost,
-            double mutationRate, double temperature, int eliteSize) {
+    public GenericGA(T[] population, BiFunction<T, T, T> crossover, Function<T, T> mutation, Function<T, Double> cost,
+            double mutationRate, double crossoverRate, double temperature, int eliteSize) {
         this.population = population;
         this.mutation = mutation;
+        this.crossover = crossover;
         this.cost = cost;
         this.mutationRate = mutationRate;
         this.temperature = temperature;
@@ -66,8 +70,12 @@ public class GenericGA<T> {
             newPopulation[i] = population[i];
         }
         for (int i = eliteSize; i < population.length; i++) {
-            T parent = population[cumWeightChoice(cumWeights)];
-            newPopulation[i] = parent;
+            T parent1 = population[cumWeightChoice(cumWeights)];
+            T parent2 = population[cumWeightChoice(cumWeights)];
+            newPopulation[i] = parent1;
+            if (Math.random() < crossoverRate) {
+                newPopulation[i] = crossover.apply(parent1, parent2);
+            }
             if (Math.random() < mutationRate) {
                 newPopulation[i] = mutation.apply(newPopulation[i]);
             }

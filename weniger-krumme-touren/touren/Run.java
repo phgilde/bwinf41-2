@@ -20,6 +20,7 @@ public class Run {
 
         double maxGenerations = 100000;
         double maxPopulationSize = 100;
+        double maxStagnation = 1000;
         double eliteSize = 5;
         double mutationRate = 0.1;
         double crossoverRate = 1;
@@ -42,7 +43,7 @@ public class Run {
         double timeLast = 0;
         int gensLast = 0;
         while (generation < maxGenerations && stagnation < maxStagnation
-                && (System.currentTimeMillis() / 1000.0 - startTime) < maxTime) 
+                && (System.currentTimeMillis() / 1000.0 - startTime) < maxTime) {}
     }
 
     private static Vector2d[] readCoords(String path) {

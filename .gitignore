@@ -15,3 +15,11 @@ pancake-sort/__pycache__/least_flips.cpython-310.pyc
 .vscode/c_cpp_properties.json
 restats
 weniger-krumme-touren/__pycache__
+weniger-krumme-touren/dokumentation.tex
+weniger-krumme-touren/dokumentation.toc
+.gitignore
+weniger-krumme-touren/dokumentation.fls
+weniger-krumme-touren/dokumentation.log
+weniger-krumme-touren/dokumentation.synctex.gz
+weniger-krumme-touren/dokumentation.fdb_latexmk
+weniger-krumme-touren/dokumentation.aux

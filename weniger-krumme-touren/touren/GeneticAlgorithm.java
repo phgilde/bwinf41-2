@@ -229,7 +229,7 @@ public class GeneticAlgorithm {
             population = newPopulation;
             generation++;
 
-            if (System.currentTimeMillis() / 1000.0 - timeLast >= 0.25) {
+            if (System.currentTimeMillis() / 1000.0 - timeLast >= 2) {
                 double timePerGen = (System.currentTimeMillis() / 1000.0 - startTime) / generation;
                 double totalTime = Math.min(maxTime, timePerGen * maxGenerations);
                 double timeLeft = totalTime - (System.currentTimeMillis() / 1000.0 - startTime);
@@ -237,7 +237,7 @@ public class GeneticAlgorithm {
                         (generation - gensLast) / (System.currentTimeMillis() / 1000.0 - timeLast);
                 gensLast = generation;
                 timeLast = System.currentTimeMillis() / 1000.0;
-                System.out.printf("\r%10d %14.2f %17.2f %16.2f %12d %14s %16s %17.2f      ",
+                System.out.printf("%10d %14.2f %17.2f %16.2f %12d %14s %16s %17.2f      \n",
                         generation, costFunction.applyAsDouble(population[0]),
                         Arrays.stream(population).mapToDouble(costFunction).average().getAsDouble(),
                         Arrays.stream(population).mapToDouble(costFunction).sorted()
@@ -274,7 +274,7 @@ public class GeneticAlgorithm {
         Integer[] solution = geneticAlgorithm(nearestNeighborInitPopul(200, coords, acutePenalty),
                 Arrays.asList(
                         GeneticOperators::displace, GeneticOperators::insert,
-                        GeneticOperators::reverseDisplace),
+                        GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
                 Arrays.asList(GeneticOperators::ER),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), 1e6, 2e5,
                 200, 5, 1, 0., acutePenalty, 60, 0.1);

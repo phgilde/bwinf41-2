@@ -29,7 +29,7 @@
 
 % Für Algorithmen
 \usepackage{algpseudocode}
-
+\usepackage{amsthm}
 \usepackage{tabularx}
 \usepackage{booktabs}
 
@@ -67,7 +67,8 @@
   \LARGE Bearbeiter/-in dieser Aufgabe: \\
   \LARGE \Name\\\\}
 \date{\LARGE\today}
-
+\newtheorem{theorem}{Satz}
+\newtheorem{lemma}[theorem]{Lemma}
 \begin{document}
 
 \maketitle
@@ -84,8 +85,27 @@ Die Texte, die hier bereits stehen, geben ein paar Hinweise zur Einsendung. Du
 solltest sie aber in deiner Einsendung wieder entfernen!
 
 \section{Lösungsidee}
-
-\section{Umsetzung}
+\subsection{Einleitung}
+Es ist $\mathcal{NP}$-schwer, das weniger krumme Touren-Problem (WKT) optimal zu lösen. Um das zu zeigen, wird
+eine Reduktion vom eulerschen Pfad-Problem des Handlungsreisenden (E-PTSP) skizziert,
+ welches bekanntermaßen $\mathcal{NP}$-schwer ist.
+ E-PTSP lautet folgendermaßen: Sei $P \subset \mathbb{R}^2$ eine endliche Menge. Dann wird eine Reihenfolge von P gesucht,
+ bei der die Strecke zwischen aufeinanderfolgenden Punkten minimal ist. \\
+ E-PTSP kann nun auf WKT reduziert werden, in dem jeder der Punkte $P$ durch eine Struktur $S$ mit
+ sehr kleinem $d$ ersetzt wird. Wie das Diagramm zeigt, kann Struktur S aus beliebigen Richtungen angeflogen werden.
+ Wenn die Struktur sehr klein ist, verhält sie sich wie ein Punkt im E-PTSP. Die Reihenfolge, in welcher die Strukturen optimal angeflogen werden,
+ ist demnach auch die optimale Reihenfolge der Punkte $P$ für E-PTSP. \\\\
+ Unter der Annahme $\mathcal{P} \neq \mathcal{NP}$ gibt es deshalb keinen Algorithmus, der WKT in polynomieller Zeit optimal lößt.
+ Stattdessen stelle ich einen Algorithmus vor, der eine optimale Lösung in polynomieller Zeit annähert,
+ sowie einen Lösungsansatz, der das Problem in exponentieller Zeit optimal lößt.
+ \subsection{Annäherung}
+ Das Problem wird mit Hilfe des simulated Annealing gelößt.
+ \subsection{Optimale Lösung}
+ Zur optimalen Lösung von WKT wird dieses als Integer-Programming-Problem formuliert. Integer Programming ist
+ $\mathcal{NP}$-schwer, weshalb dafür nur Algorithmen exponentieller Laufzeit bekannt sind. \\
+Das verwandte Problem des Handlungsreisenden kann durch die Formulierung von Miller-Tucker-Zenlin als Integer Programming
+formuliert werden. 
+ \section{Umsetzung}
 Hier wird kurz erläutert, wie die Lösungsidee im Programm tatsächlich umgesetzt
 wurde. Hier können auch Implementierungsdetails erwähnt werden.
 

@@ -207,7 +207,7 @@ public class ThresholdAccepting {
         scanner.close();
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
-        Integer[] solution = thresholdAcc(nearestNeighborInitPopul(1, coords, acutePenalty)[0],
+        Integer[] solution = thresholdAcc(initPopulation(1, coords.length)[0],
                 Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), (int) 1e9, 3 * acutePenalty,

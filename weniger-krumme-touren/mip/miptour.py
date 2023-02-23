@@ -5,6 +5,7 @@ from math import sqrt
 from matplotlib import pyplot as plt
 import networkx as nx
 from mip import Model, xsum, BINARY, minimize, ConstrsGenerator, CutPool, OptimizationStatus
+import sim_ann
 
 # checks if the angle between the three points is acute
 def acute(p1, p2, p3):
@@ -111,7 +112,7 @@ for i in range(len(points)):
 weight_matrix.append([0] * (len(points) + 1))
 
 # create problem
-problem, x = tsp_instance(len(points) + 1, weight_matrix)
+model, x = tsp_instance(len(points) + 1, weight_matrix)
 
 # acute angle constraint
 for i in range(len(points)):
@@ -120,12 +121,39 @@ for i in range(len(points)):
             for k in range(len(points)):
                 if i != k and j != k:
                     if acute(points[i], points[j], points[k]):
-                        problem += x[i][j] + x[j][k] <= 1
+                        model += x[i][j] + x[j][k] <= 1
 
-problem.optimize(max_seconds=60*float(input("Zeit in Minuten: ")))
-print('status: %s route length %g' % (problem.status, problem.objective_value))
+print("Suche Startlösung...")
 
-if problem.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
+init_solution, succ, cost = sim_ann.solve(points, verbose=True)
+if succ:
+    print(f"Startlösung gefunden mit Kosten {cost}!")
+    # plot initial solution
+    plt.figure(figsize=(10, 10))
+    plt.scatter([p[0] for p in points], [p[1] for p in points])
+    for i in range(len(init_solution) - 1):
+        plt.plot(
+            [points[init_solution[i]][0], points[init_solution[i + 1]][0]],
+            [points[init_solution[i]][1], points[init_solution[i + 1]][1]],
+            color="red",
+        )
+    plt.show()
+
+
+    p1 = init_solution[0]
+    start = []
+    for p2 in init_solution[1:]:
+        start.append((x[p1][p2], 1.0))
+        p1 = p2
+    start.append((x[-1][init_solution[0]], 1.0))
+    start.append((x[init_solution[-1]][-1], 1.0))
+    model.start = start
+
+print("Suche optimale Lösung...")
+model.optimize(max_seconds=60*float(input("Zeit in Minuten: ")))
+print(model.status)
+
+if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     plt.figure(figsize=(10, 10))
     plt.scatter([p[0] for p in points], [p[1] for p in points])
     for i in range(len(points)):
@@ -135,3 +163,5 @@ if problem.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
                     [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
                 )
     plt.show()
+if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
+    print("Keine weitere Lösung gefunden!")

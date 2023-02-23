@@ -176,8 +176,7 @@ public class ThresholdAccepting {
             threshold *= coolingRate;
             iteration++;
             if (System.currentTimeMillis() - startTime > 1000.0 * printIteration) {
-                System.out.print("\rIteration: " + iteration + " Cost: "
-                        + costBest + " Time: "
+                System.out.print("\rIteration: " + iteration + " Cost: " + costBest + " Time: "
                         + secondsToTime((System.currentTimeMillis() - startTime) / 1000.0) + " TH: "
                         + threshold + "    ");
                 printIteration++;
@@ -211,10 +210,25 @@ public class ThresholdAccepting {
                 Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), (int) 1e9, 3 * acutePenalty,
-                0.999999, 60);
+                0.999999, 15);
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));
+    }
+
+    public static Integer[] thresholdAccForPy(double[][] coords, int maxIterations,
+            double threshold, double coolingRate, double maxTime) {
+        Vector2d[] coordsVec = new Vector2d[coords.length];
+        for (int i = 0; i < coords.length; i++) {
+            coordsVec[i] = new Vector2d(coords[i][0], coords[i][1]);
+        }
+        double acutePenalty = lengthUpperBound(coordsVec);
+
+        return thresholdAcc(initPopulation(1, coords.length)[0],
+                Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
+                        GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
+                (x) -> penalizedPathCost(x, coordsVec, acutePenalty), maxIterations, threshold,
+                coolingRate, maxTime);
     }
 }
 

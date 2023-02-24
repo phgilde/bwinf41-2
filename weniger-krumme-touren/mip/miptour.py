@@ -4,7 +4,15 @@ from itertools import product
 from math import sqrt
 from matplotlib import pyplot as plt
 import networkx as nx
-from mip import Model, xsum, BINARY, minimize, ConstrsGenerator, CutPool, OptimizationStatus
+from mip import (
+    Model,
+    xsum,
+    BINARY,
+    minimize,
+    ConstrsGenerator,
+    CutPool,
+    OptimizationStatus,
+)
 import sim_ann
 
 # checks if the angle between the three points is acute
@@ -92,6 +100,7 @@ with open(input("Pfad zur Datei: ")) as f:
     while line := f.readline():
         points.append(tuple(map(float, line.split())))
 
+main_time = float(input("Zeit für MIP-Löser in Minuten: "))
 # plot points
 plt.figure(figsize=(10, 10))
 plt.scatter([p[0] for p in points], [p[1] for p in points])
@@ -122,7 +131,6 @@ for i in range(len(points)):
                 if i != k and j != k:
                     if acute(points[i], points[j], points[k]):
                         model += x[i][j] + x[j][k] <= 1
-
 print("Suche Startlösung...")
 
 init_solution, succ, cost = sim_ann.solve(points, verbose=True)
@@ -139,7 +147,6 @@ if succ:
         )
     plt.show()
 
-
     p1 = init_solution[0]
     start = []
     for p2 in init_solution[1:]:
@@ -150,7 +157,7 @@ if succ:
     model.start = start
 
 print("Suche optimale Lösung...")
-model.optimize(max_seconds=60*float(input("Zeit in Minuten: ")))
+model.optimize(max_seconds=60 * main_time)
 print(model.status)
 
 if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
@@ -165,3 +172,5 @@ if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     plt.show()
 if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
     print("Keine weitere Lösung gefunden!")
+if model.status == OptimizationStatus.INFEASIBLE and succ:
+    print("Startlösung ist optimal!")

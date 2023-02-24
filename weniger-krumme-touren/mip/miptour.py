@@ -138,6 +138,10 @@ init_solution = java_interface.solveTA(path)
 if True:
     # plot initial solution
     plt.figure(figsize=(10, 10))
+    min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
+    max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
+    plt.xlim(min_coord - 50, max_coord + 50)
+    plt.ylim(min_coord - 50, max_coord + 50)
     plt.scatter([p[0] for p in points], [p[1] for p in points])
     for i in range(len(init_solution) - 1):
         plt.plot(
@@ -155,13 +159,19 @@ if True:
     start.append((x[-1][init_solution[0]], 1.0))
     start.append((x[init_solution[-1]][-1], 1.0))
     model.start = start
-
+print(model.validate_mip_start())
+model.preprocess = 1
+model.emphasis = 2
 print("Suche optimale Lösung...")
 model.optimize(max_seconds=60 * main_time)
 print(model.status)
 
 if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     plt.figure(figsize=(10, 10))
+    min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
+    max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
+    plt.xlim(min_coord - 50, max_coord + 50)
+    plt.ylim(min_coord - 50, max_coord + 50)
     plt.scatter([p[0] for p in points], [p[1] for p in points])
     for i in range(len(points)):
         for j in range(len(points)):

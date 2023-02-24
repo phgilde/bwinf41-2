@@ -10,6 +10,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+/*
+ * Operatoren nach Larranaga et al.:
+ * "Genetic Algorithms for the Travelling Salesman Problem: A Review of Representations and Operators"
+ * (1999)
+ */
+
 public class GeneticOperators {
     static Integer[] segmentSwap(Integer[] individual) {
         Integer[] result = individual.clone();
@@ -126,28 +132,28 @@ public class GeneticOperators {
         int i = (int) (Math.random() * (individual.length - 1));
         int j = (int) (Math.random() * (individual.length - i)) + i;
         int k = (int) (Math.random() * (individual.length - j)) + j;
-        Integer[] order = new Integer[] { 0, 1, 2, 3 };
-        for (int l = 0; l<4; l++) {
+        Integer[] order = new Integer[] {0, 1, 2, 3};
+        for (int l = 0; l < 4; l++) {
             int m = (int) (Math.random() * (4));
             int tmp = order[0];
             order[0] = order[m];
             order[m] = tmp;
         }
-        for (int l = 0; l<4; l++) {
+        for (int l = 0; l < 4; l++) {
             List<Integer> segment;
             switch (order[l]) {
-            case 0:
-                segment = list.subList(0, i);
-                break;
-            case 1:
-                segment = (list.subList(i, j));
-                break;
-            case 2:
-                segment = (list.subList(j, k));
-                break;
-            default:
-                segment = (list.subList(k, individual.length));
-                break;
+                case 0:
+                    segment = list.subList(0, i);
+                    break;
+                case 1:
+                    segment = (list.subList(i, j));
+                    break;
+                case 2:
+                    segment = (list.subList(j, k));
+                    break;
+                default:
+                    segment = (list.subList(k, individual.length));
+                    break;
             }
             if (Math.random() < 0.5) {
                 Collections.reverse(segment);

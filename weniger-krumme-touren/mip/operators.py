@@ -1,5 +1,8 @@
 from random import randint, sample
 
+# Operatoren nach Larranaga et al.: "Genetic Algorithms for the Travelling
+# Salesman Problem: A Review of Representations and Operators" (1999)
+
 
 def three_opt(route):
     p1 = randint(0, len(route) - 3)

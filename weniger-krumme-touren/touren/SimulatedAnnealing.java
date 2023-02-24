@@ -204,10 +204,7 @@ public class SimulatedAnnealing {
     }
 
     public static void main(String[] args) {
-        System.out.print("Pfad zur Datei: ");
-        Scanner scanner = new Scanner(System.in);
-        String path = scanner.nextLine();
-        scanner.close();
+        String path = args[0];
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
         Integer[] solution = simulatedAnnealing(initPopulation(1, coords.length)[0],
@@ -218,6 +215,12 @@ public class SimulatedAnnealing {
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));
+        // write solution to file
+        try {
+            Files.write(Paths.get(path + ".solution"), Arrays.toString(solution).getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }   
     }
 }
 

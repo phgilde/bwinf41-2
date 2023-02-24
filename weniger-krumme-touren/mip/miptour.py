@@ -14,6 +14,7 @@ from mip import (
     OptimizationStatus,
 )
 import sim_ann
+import java_interface
 
 # checks if the angle between the three points is acute
 def acute(p1, p2, p3):
@@ -96,7 +97,7 @@ def tsp_instance(n: int, c: List[List[int]]):
 
 
 points = []
-with open(input("Pfad zur Datei: ")) as f:
+with open(path := input("Pfad zur Datei: ")) as f:
     while line := f.readline():
         points.append(tuple(map(float, line.split())))
 
@@ -133,9 +134,8 @@ for i in range(len(points)):
                         model += x[i][j] + x[j][k] <= 1
 print("Suche Startlösung...")
 
-init_solution, succ, cost = sim_ann.solve(points, verbose=True)
-if succ:
-    print(f"Startlösung gefunden mit Kosten {cost}!")
+init_solution = java_interface.solveTA(path)
+if True:
     # plot initial solution
     plt.figure(figsize=(10, 10))
     plt.scatter([p[0] for p in points], [p[1] for p in points])
@@ -172,5 +172,5 @@ if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     plt.show()
 if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
     print("Keine weitere Lösung gefunden!")
-if model.status == OptimizationStatus.INFEASIBLE and succ:
+if model.status == OptimizationStatus.INFEASIBLE:
     print("Startlösung ist optimal!")

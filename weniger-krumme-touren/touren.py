@@ -12,6 +12,7 @@ def acute(p1, p2, p3):
         return True
     return False
 
+
 # creates an instance of the tsp problem
 def tsp_instance(n_points, weight_matrix):
     problem = pulp.LpProblem("Tourenplanung", pulp.LpMinimize)
@@ -28,7 +29,11 @@ def tsp_instance(n_points, weight_matrix):
 
     # create objective function
     problem += pulp.lpSum(
-        [weight_matrix[i][j] * x[(i, j)] for i in range(n_points) for j in range(n_points)]
+        [
+            weight_matrix[i][j] * x[(i, j)]
+            for i in range(n_points)
+            for j in range(n_points)
+        ]
     )
 
     # create constraints
@@ -36,14 +41,15 @@ def tsp_instance(n_points, weight_matrix):
         problem += pulp.lpSum([x[(i, j)] for j in range(n_points)]) == 1
         problem += pulp.lpSum([x[(j, i)] for j in range(n_points)]) == 1
         problem += x[(i, i)] == 0
-    
+
     for i in range(1, n_points):
         for j in range(1, n_points):
             if i != j:
                 problem += u[i] - u[j] + n_points * x[(i, j)] <= n_points - 1
-    
+    problem += u[-1] == 0
 
-    return problem, x
+    return problem, x, u
+
 
 points = []
 with open(input("Pfad zur Datei: ")) as f:
@@ -63,13 +69,14 @@ for i in range(len(points)):
     weight_matrix.append([])
     for j in range(len(points)):
         weight_matrix[i].append(
-            ((points[i][0] - points[j][0]) ** 2 + (points[i][1] - points[j][1]) ** 2) ** 0.5
+            ((points[i][0] - points[j][0]) ** 2 + (points[i][1] - points[j][1]) ** 2)
+            ** 0.5
         )
     weight_matrix[i].append(0)
 weight_matrix.append([0] * (len(points) + 1))
 
 # create problem
-problem, x = tsp_instance(len(points) + 1, weight_matrix)
+problem, x, u = tsp_instance(len(points) + 1, weight_matrix)
 
 # acute angle constraint
 for i in range(len(points)):
@@ -83,7 +90,9 @@ for i in range(len(points)):
 print("Starte Berechnung...")
 
 # solve problem while printing the status
-problem.solve(pulp.PULP_CBC_CMD(msg=True, timeLimit=60*float(input("Zeitlimit in Minuten: "))))
+problem.solve(
+    pulp.PULP_CBC_CMD(msg=True, timeLimit=60 * float(input("Zeitlimit in Minuten: ")))
+)
 
 print("Fertig!")
 # plot solution if it exists
@@ -94,6 +103,14 @@ if problem.status == 1:
     for i in range(len(points)):
         for j in range(len(points)):
             if x[(i, j)].value() == 1:
-                plt.plot([points[i][0], points[j][0]], [points[i][1], points[j][1]], "r")
+                plt.plot(
+                    [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
+                )
     plt.show()
     print("Länge der Strecke: ", pulp.value(problem.objective))
+    # print order of points
+    print("Reihenfolge der Punkte: ", end="")
+    for i in range(len(points)):
+        for j in range(len(points)):
+            if u[j].value() == i:
+                print(j, end=" ")

@@ -50,10 +50,6 @@ def tsp_instance(n: int, c: List[List[int]]):
                     if sum(f for v, f in aInS) >= (len(S) - 1) + 1e-4:
                         cut = xsum(1.0 * v for v, fm in aInS) <= len(S) - 1
                         cp.add(cut)
-                        if len(cp.cuts) > 256:
-                            for cut in cp.cuts:
-                                model += cut
-                            return
             for cut in cp.cuts:
                 model += cut
 

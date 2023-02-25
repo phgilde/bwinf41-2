@@ -134,13 +134,22 @@ gilt $C(S) > C(S')$. Diese obere Schranke erschließt sich aus der Überlegung, 
 Dieser Pfad kann höchstens die Kosten der teuersten $N-1$ Kanten haben. \\
 Um Nachbarn einer Lösung zu finden, habe ich die für das klassische TSP bekannten Mutationsoperatoren \textbf{Insert}, \textbf{Displace}, \textbf{Reverse-Displace}
 //TODO quote mutationsoperatoren
-und einen eigenen, auf dem 3-Opt-Verfahren basierenden Mutationsoperator, den ich \textbf{3-Opt} nenne, verwendet. Die Operatoren basieren auf der
+und einen eigenen, auf dem 3-Opt-Verfahren basierenden Mutationsoperator, den ich \textbf{3-Opt} nenne, verwendet. Es wird zufällig einer der Operatoren angewendet.
+Die Operatoren basieren auf der
 Darstellung eines Pfades als Permutation von $(1, 2, \ldots, N)$. In dieser Darstellung gibt das $k$-te Element der Permutation
 an, welcher Landeplatz als $k$-tes besucht wird.
 \begin{description}
-  \item[Insert] wählt einen zufälligen Landeplatz der Permutation aus und setzt ihn an eine zufällige neue Stelle.
-  \item[Displace] wählt ein zufälliges Segment der Permutation aus und setzt es an eine zufällige neue Stelle.
-  \item[Reverse-Displace] wählt ein zufälliges Segment der Permutation aus und setzt es in umgekehrter Reihenfolge an eine zufällige neue Stelle.
+  \item[Insert] wählt einen zufälligen Landeplatz der Permutation aus und setzt ihn an
+    eine zufällige neue Stelle.
+  \item[Displace] wählt ein zufälliges Segment der Permutation aus und setzt es an eine
+    zufällige neue Stelle.
+  \item[Reverse-Displace] wählt ein zufälliges Segment der Permutation aus und setzt es
+    in umgekehrter Reihenfolge an eine zufällige neue Stelle.
+  \item[3-Opt] teilt den Pfad an zufälligen Stellen in vier Segmente auf. Diese werden 
+  in einer zufälligen neuen Reihenfolge zusammengesetzt, wobei sie mit Wahrscheinlichkeit 
+  0.5 umgekehrt werden. Der Operator ähnelt der 3-Opt-Heuristik, welche 3 Kanten einer 
+  Lösung löscht und die Segmente in einer Reihenfolge zusammensetzt, welche die Gesamtkosten 
+  minimiert, denn er ersetzt auch 3 Kanten durch neue.
 \end{description}
 \subsection{Optimale Lösung}
 Zur optimalen Lösung von WKT wird dieses als Integer-Programming-Problem

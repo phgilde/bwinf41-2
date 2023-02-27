@@ -206,11 +206,12 @@ public class ThresholdAccepting {
         scanner.close();
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
+        System.out.println("Acute Penalty: " + acutePenalty);
         Integer[] solution = thresholdAcc(initPopulation(1, coords.length)[0],
                 Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
-                (x) -> penalizedPathCost(x, coords, acutePenalty), (int) 1e9, 3 * acutePenalty,
-                0.999999, 15);
+                (x) -> penalizedPathCost(x, coords, acutePenalty), (int) 1e9, 3*acutePenalty,
+                0.999999, 60);
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));

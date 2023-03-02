@@ -153,7 +153,9 @@ an, welcher Landeplatz als $k$-tes besucht wird.
 \end{description}
 \subsection{Optimale Lösung}
 Zur optimalen Lösung von WKT wird dieses als Integer-Programming-Problem
-formuliert. Integer Programming ist $\mathcal{NP}$-schwer, weshalb dafür nur
+formuliert. Integer Programming bezeichnet einen linearen Term mit ganzzahligen Variablen,
+den es unter Einhaltung linearer Ungleichung zu maximieren gilt.
+Integer Programming ist $\mathcal{NP}$-schwer, weshalb dafür nur
 Algorithmen exponentieller Laufzeit bekannt sind. \\ Sei also $I$ eine Instanz
 von $WKT$ mit den Punkten $P \subset \mathbb{R}^2$. Die Landeplätze sind
 $L=\{1,2,\ldots,|P|\}$ Die Variable $x_{i,j} \in \{0, 1\}$ it $i, j \in L; i<j$
@@ -173,7 +175,9 @@ Der zu minimierende Term (1) bedeutet, dass die Gesamtlänge des Pfades möglich
 zwei Landeplätze hat, die direkt vor und nach ihm im Pfad angeflogen werden, oder genau einen, wenn der Landeplatz an einem Ende des Pfades liegt.
 (3) sorgt dafür, dass es nur 2 solcher Endlandeplätze gibt. (4) verhindert, dass es im Pfad spitze Winkel gibt. Wenn zwei Kanten einen Spitzen
 Winkel bilden, dann darf maximal eine dieser Kanten in der Lösung sein. (5) sorgt dafür, dass die Lösung nur ein Pfad ist, und nicht ein Pfad und
-Kreise durch die restlichen Knoten. Weil (5) exponentiell viele Bedingungen beinhaltet, muss es als Lazy Constraint formuliert werden. Wenn es
+Kreise durch die restlichen Knoten. \\
+Weil (5) exponentiell viele Ungleichungen beinhaltet, muss es als Lazy Constraint formuliert werden, die Ungleichungen werden also im Laufe des Lösungsprozesses
+hinzugefügt. Wenn es
 eine potentielle Lösung gibt, wird ein Algorithmus auf diese Lösung angewendet, der Kreise in ihr sucht, und aus den Kreisen die entsprechenden Bedingungen
 formuliert. Auf diese Weise kann diese Bedingung auch Schnittebenen aus Relaxationen formulieren, wobei in der Relaxationslösung Kreise gesucht werden. \\
 Dieses Integer-Programming-Problem kann mit dem Branch-and-Cut-Algorithmus gelößt werden. Als Startlösung verwende ich dabei das Ergebnis des beschriebenen

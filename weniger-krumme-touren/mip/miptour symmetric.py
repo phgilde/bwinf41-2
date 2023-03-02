@@ -38,13 +38,12 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
     class SubTourCutGenerator(ConstrsGenerator):
         """Class to generate cutting planes for the TSP"""
 
-        def __init__(self, x_, V_, name):
-            self.x, self.V = x_, V_
+        def __init__(self, x_, V_, c_, name):
+            self.x, self.V, self.c = x_, V_, c_
             self.name = name
 
         def generate_constrs(self, model: Model, depth: int = 0, npass: int = 0):
-            # print(self.name)
-            xf, V_, cp, G = model.translate(self.x), self.V, CutPool(), nx.Graph()
+            xf, V_, G = model.translate(self.x), self.V, nx.Graph()
             for (u, v) in [
                 (k, l) for (k, l) in product(V_, V_) if k < l and xf[(k, l)].x > 0.01
             ]:
@@ -52,16 +51,17 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
             # show the graph
             # nx.draw(G, with_labels=True, pos=points)
             # plt.show()
-            for cycle in nx.cycle_basis(G):
+            try:
+                cycle = nx.algorithms.cycles.find_cycle(G, orientation="ignore")
                 cut = (
-                    xsum(xf[edge(cycle[i], cycle[i + 1])] for i in range(len(cycle)-1))
-                    + xf[edge(cycle[0], cycle[-1])]
+                    xsum(xf[edge(u, v)] for u,v,_ in cycle)
                     <= len(cycle) - 1
                 )
-                cp.add(cut)
-                
-            for cut in cp.cuts:
                 model += cut
+            except nx.NetworkXNoCycle:
+                pass
+            
+            
 
     V = set(range(n))
     Arcs = [(i, j) for (i, j) in product(V, V) if i < j]
@@ -82,6 +82,10 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
 
     # computing farthest point for each point, these will be checked first for
     # isolated subtours
+    F = []
+    for i in V:
+        f = max(V, key=lambda j: c[i][j])
+        F.append((i, f))
 
     model.cuts_generator = SubTourCutGenerator(x, V, "cuts_generator")
     model.lazy_constrs_generator = SubTourCutGenerator(x, V, "lazy_constrs_generator")
@@ -154,6 +158,7 @@ if True:
 print(model.validate_mip_start())
 
 print("Suche optimale Lösung...")
+model.emphasis = 2
 model.optimize(max_seconds=main_time * 60)
 print(model.status)
 

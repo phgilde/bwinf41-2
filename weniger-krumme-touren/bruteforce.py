@@ -1,8 +1,9 @@
 from matplotlib import pyplot as plt
 from scipy.spatial import ConvexHull
 from numpy import array
+from functools import lru_cache
 
-
+@lru_cache(maxsize=100000)
 def acute(p1, p2, p3):
     v1 = (p1[0] - p2[0], p1[1] - p2[1])
     v2 = (p3[0] - p2[0], p3[1] - p2[1])
@@ -19,9 +20,9 @@ def count_acutes(hull):
     count = 0
     for i in range(len(hull.vertices)):
         if acute(
-            hull.points[hull.vertices[i - 2]],
-            hull.points[hull.vertices[i - 1]],
-            hull.points[hull.vertices[i]],
+            tuple(hull.points[hull.vertices[i - 2]]),
+            tuple(hull.points[hull.vertices[i - 1]]),
+            tuple(hull.points[hull.vertices[i]]),
         ):
             count += 1
     return count
@@ -31,13 +32,19 @@ def get_acute(hull):
     result = []
     for i in range(len(hull.vertices)):
         if acute(
-            hull.points[hull.vertices[i - 2]],
-            hull.points[hull.vertices[i - 1]],
-            hull.points[hull.vertices[i]],
+            tuple(hull.points[hull.vertices[i - 2]]),
+            tuple(hull.points[hull.vertices[i - 1]]),
+            tuple(hull.points[hull.vertices[i]]),
         ):
             result.append(tuple(hull.points[hull.vertices[i - 1]]))
     return result
 
+def count_not_acute(prev1, prev2, points):
+    result = 0
+    for point in points:
+        if not acute(prev1, prev2, point):
+            result += 1
+    return result
 
 def solve(prev1, prev2, points, depth):
     if len(points) == 0:
@@ -60,7 +67,7 @@ def solve(prev1, prev2, points, depth):
         sorted(
             points_check,
             key=lambda p: (
-                p in hull_points if hull_points != None else 0,
+                -count_not_acute(prev2, p, points - {p}),
                 (p[0] - prev2[0]) ** 2 + (p[1] - prev2[1]) ** 2,
             ),
         )

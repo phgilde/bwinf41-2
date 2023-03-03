@@ -39,9 +39,10 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
     class SubTourCutGenerator(ConstrsGenerator):
         """Class to generate cutting planes for the TSP"""
 
-        def __init__(self, x_, V_, c_, name):
+        def __init__(self, x_, V_, c_, name, use_johnson):
             self.x, self.V, self.c = x_, V_, c_
             self.name = name
+            self.use_johnson = use_johnson
 
         def generate_constrs(self, model: Model, depth: int = 0, npass: int = 0):
             xf, V_, G = model.translate(self.x), self.V, nx.Graph()
@@ -62,12 +63,15 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
             except nx.NetworkXNoCycle:
                 pass
             
-            # let node1 and node2 be the nodes with highest cost in G between them
-            D = nx.algorithms.shortest_paths.weighted.johnson(G, weight="capacity")
-            node1, node2 = max(
-                product(V_, V_),
-                key=lambda x: nx.path_weight(G, D[x[0]].get(x[1], [0]), "capacity") if x[0] != x[1] else 0,
-            )
+            if self.use_johnson:
+                # let node1 and node2 be the nodes with highest cost in G between them
+                D = nx.algorithms.shortest_paths.weighted.johnson(G, weight="capacity")
+                node1, node2 = max(
+                    product(V_, V_),
+                    key=lambda x: nx.path_weight(G, D[x[0]].get(x[1], [0]), "capacity") if x[0] != x[1] else 0,
+                )
+            else:
+                node1, node2 = max(product(V_, V_), key=lambda x: c[x[0]][x[1]] if x[0] != x[1] else 0)
             
 
             # find minimum cut between node1 and node2
@@ -83,6 +87,7 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
     Arcs = [(i, j) for (i, j) in product(V, V) if i < j]
 
     model = Model()
+    model.threads = 4
 
     # binary variables indicating if arc (i,j) is used on the route or not
     x = {arc: model.add_var(name=f"Arc {arc}", var_type=BINARY) for arc in Arcs}
@@ -103,8 +108,8 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
         f = max(V, key=lambda j: c[i][j])
         F.append((i, f))
 
-    model.cuts_generator = SubTourCutGenerator(x, V, "cuts_generator", c)
-    model.lazy_constrs_generator = SubTourCutGenerator(x, V, "lazy_constrs_generator", c)
+    model.cuts_generator = SubTourCutGenerator(x, V, "cuts_generator", c, False)
+    model.lazy_constrs_generator = SubTourCutGenerator(x, V, "lazy_constrs_generator", c, False)
     return model, x, ends
 
 

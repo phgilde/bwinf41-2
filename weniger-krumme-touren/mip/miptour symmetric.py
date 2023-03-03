@@ -1,3 +1,4 @@
+from time import sleep
 from typing import List, Tuple
 from random import seed, randint
 from itertools import product
@@ -61,7 +62,22 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
             except nx.NetworkXNoCycle:
                 pass
             
+            # let node1 and node2 be the nodes with highest cost in G between them
+            D = nx.algorithms.shortest_paths.weighted.johnson(G, weight="capacity")
+            node1, node2 = max(
+                product(V_, V_),
+                key=lambda x: nx.path_weight(G, D[x[0]].get(x[1], [0]), "capacity") if x[0] != x[1] else 0,
+            )
             
+
+            # find minimum cut between node1 and node2
+            cut_value, (T, TS) = nx.algorithms.flow.minimum_cut(
+                G, node1, node2, capacity="capacity"
+            )
+            if cut_value < 1 - 1e-6:
+                cut = xsum(xf[edge(u, v)] for u, v in G.subgraph(TS).edges) <= len(G.subgraph(TS).edges) - 1
+                model += cut
+
 
     V = set(range(n))
     Arcs = [(i, j) for (i, j) in product(V, V) if i < j]
@@ -87,8 +103,8 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
         f = max(V, key=lambda j: c[i][j])
         F.append((i, f))
 
-    model.cuts_generator = SubTourCutGenerator(x, V, "cuts_generator")
-    model.lazy_constrs_generator = SubTourCutGenerator(x, V, "lazy_constrs_generator")
+    model.cuts_generator = SubTourCutGenerator(x, V, "cuts_generator", c)
+    model.lazy_constrs_generator = SubTourCutGenerator(x, V, "lazy_constrs_generator", c)
     return model, x, ends
 
 
@@ -161,6 +177,8 @@ print("Suche optimale Lösung...")
 model.emphasis = 2
 model.optimize(max_seconds=main_time * 60)
 print(model.status)
+import winsound
+winsound.MessageBeep()
 
 if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     print("Lösung gefunden!")

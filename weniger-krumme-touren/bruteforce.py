@@ -81,55 +81,8 @@ def solve(prev1, prev2, points, depth):
             if nextroute != None:
                 return [point] + nextroute
 
-    # plot points with convex hull
-    if depth < 0:
-        plt.figure(figsize=(10, 10))
-        if prev1 != None and prev2 != None:
-            plt.arrow(
-                prev1[0],
-                prev1[1],
-                prev2[0] - prev1[0],
-                prev2[1] - prev1[1],
-                head_width=10,
-                head_length=10,
-                color="green",
-            )
-        else:
-            print("prev1 or prev2 is None")
-        min_coord = min(
-            (
-                min([p[0] for p in points | {prev1, prev2}]),
-                min([p[1] for p in points | {prev1, prev2}]),
-            )
-        )
-        max_coord = max(
-            (
-                max([p[0] for p in points | {prev1, prev2}]),
-                max([p[1] for p in points | {prev1, prev2}]),
-            )
-        )
-        plt.xlim(min_coord - 50, max_coord + 50)
-        plt.ylim(min_coord - 50, max_coord + 50)
-        plt.scatter([p[0] for p in points], [p[1] for p in points])
-        if len(points) > 2:
-            plt.plot(
-                [hull_points[i][0] for i in range(len(hull_points))],
-                [hull_points[i][1] for i in range(len(hull_points))],
-                color="red",
-            )
-            # plot line from hull_points[-1] to hull_points[0]
 
-            plt.plot(
-                [hull_points[-1][0], hull_points[0][0]],
-                [hull_points[-1][1], hull_points[0][1]],
-                color="red",
-            )
-
-        # draw arrow from prev1 to prev2
-
-        plt.show()
-
-        return None
+    return None
 
 
 def bruteforce(points):

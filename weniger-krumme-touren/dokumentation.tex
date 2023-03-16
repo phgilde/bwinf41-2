@@ -76,109 +76,13 @@
 
 \vspace{0.5cm}
 
-\textbf{Anleitung:} Trage oben in den Zeilen 8 bis 10 die Aufgabennummer, die Teilnahme-ID und die/den Bearbeiterin/Bearbeiter dieser Aufgabe mit Vor- und Nachnamen ein.
-Vergiss nicht, auch den Aufgabennamen anzupassen (statt "`\LaTeX-Dokument"')!
-
-Dann kannst du dieses Dokument mit deiner \LaTeX-Umgebung übersetzen.
-
-Die Texte, die hier bereits stehen, geben ein paar Hinweise zur Einsendung. Du
-solltest sie aber in deiner Einsendung wieder entfernen!
-
 \section{Lösungsidee}
 \section{Beliebige Lösung}
-\subsection{Einleitung}
-\begin{figure}[t]
-\includegraphics[scale=.2]{struktur}
-\centering
-\caption{Die 16-Struktur.}
-\end{figure}
-\begin{figure}[t]
-\includegraphics[scale=0.5]{richtungen}
-\centering
-\caption{Ein von unten in die 16-Struktur kommendes Flugzeug kann in alle Richtungen weiter fliegen. Für andere Herkunftsrichtungen müssen die Pfade entsprechend gedreht werden.}
-\end{figure}
-Es ist $\mathcal{NP}$-schwer, das weniger krumme Touren-Problem (WKT) optimal
-zu lösen. Um das zu zeigen, wird eine Reduktion vom eulerschen Pfad-Problem des
-Handlungsreisenden (E-PTSP) skizziert, welches bekanntermaßen
-$\mathcal{NP}$-schwer ist. E-PTSP lautet folgendermaßen: Es dei $P \subset
-  \mathbb{R}^2$ eine endliche Menge. Dann wird eine Reihenfolge von P gesucht,
-bei der die Strecke zwischen aufeinanderfolgenden Punkten minimal ist. \\
-E-PTSP kann nun auf WKT reduziert werden, in dem jeder der Punkte $P$ durch
-eine 16-Struktur an dessen Position ersetzt wird (Siehe Abbildung 1).\\
-Diese Transformation heißt im folgenden $T_d: \mathfrak{P}(\mathbb{R}) \rightarrow \mathfrak{P}(\mathbb{R})$
- mit $d \in \mathbb{R}$,
-wobei $\mathfrak{P}$ für die Potenzmenge steht.
-\begin{lemma}
-  Es sei $P$ eine Instanz von E-PTSP und $P'=T_d(P)$ mit $d$ so dass sich die 16-Strukturen nicht überschneiden.
-  Dann entspricht eine Permutation der 16-Strukturen von $P'$ einer Lösung von $P'$.
-\end{lemma}
-\begin{proof}
- Die erste 16-Struktur der Permutation kann in einer der Reihenfolgen in Abbildung 2 abgeflogen werden, so dass
- die beiden zuletzt angeflogenen Punkte in Richtung der nächsten 16-Struktur in der Permutation zeigen.
- Alle 16-Strukturen der Permutation bis auf die letzte liegen dann zwischen zwei anderen 16-Strukturen.
- Abbildung 2 zeigt, dass diese dei 16-Strukturen nacheinander angeflogen werden könne, egal wie sie zuenander
- liegen. Die letzte 16-Struktur kann dann in einer beliebigen Reihenfolge angeflogen werden.
-\end{proof}
-\begin{lemma}
- Es sei $P$ eine Instanz von E-PTSP. 
- $P' = T_d(P)$ kann in eine mögliche Lösung von $P$ umgewandelt werden,
- wenn die Punkte jeder 16-Struktur jeweils unmittelbar nacheinander angeflogen werden.
-\end{lemma}
-\begin{proof}
- Jeder Punkt in $P'$ darf genau einmal besucht werden. Wenn die Punkte einer 16-Struktur
- unmittelbar nacheinander angeflogen werden, kann diese Struktur danach nicht mehr angeflogen werden.
- Dadurch wird in einer solchen Lösung jede 16-Struktur nur einmal angeflogen. Die Lösung stellt also
- eine Permutation der 16-Strukturen dar. Da jede 16-Struktur einen entsprechenden Punkt in $P$ hat,
- kann die Permutation der 16-Strukturen so in eine Permutation von $P$ umgewandelt werden.
-\end{proof}
-Nun sei $\lim \limits_{d \to 0}$. Die Abstände zwischen Punkten gleicher 16-Strukturen
-nähert sich dann $0$ an, während die Abstände zwischen Punkten unterschiedlicher 16-Strukturen den Abständen
-der entsprechenden Punkte in der E-PTSP-Instanz annähern. Die Länge eines Pfades, der die Punkte einer
-16-Struktur unmittelbar nacheinander besucht, nähert sich dann der Länge des entsprechenen Pfad in der E-PTSP-Instanz an.
-Es muss jetzt noch gezeigt werden, dass eine optimale Lösung die Punkte einer Struktur unmittelbar nacheinander
-besucht und deshalb in eine Lösung des entsprechenden E-PTSP umgewandelt werden kann. Nach dem Beweis von
-Lemma 1 ist das äquivalent mit der Aussage, dass eine optimale Lösung jede 16-Struktur nur einmal besucht.
-\begin{lemma}
-  Es sei $P$ eine Instanz von E-PTSP und $P'=T_d(P)$. \\
-  1.
-  Wenn eine mögliche Lösung $L$ 16-Strukturen mehrmals besucht,
-  gibt es eine bessere oder gleichgute Lösung $L'$, die sie nur einmal besucht. \\
-  2.
-  $L'$ kann in polynomieller Zeit gefunden werden.
-\end{lemma}
-\begin{proof}
-  1.
-  Wir betrachten die Reihenfolge, in der $L$ die 16-Strukturen besucht. $L$ besucht $n \geq 2$ 16-Strukturen, bevor
-  es eine 16-Struktur besucht, die es schon besucht hat. Wenn $n=|P|$ besucht $L$ keine 16-Strukturen mehrmals.
-  Andernfalls besucht $L$ danach eine 16-Struktur, die es schon besucht hat. Diese 16-Struktur können wir überspringen,
-  wodurch wir eine neue Verkettung von 16-Strukturen erhalten, in der $n$ um 1 größer ist. Nach der Dreiecksungleichung
-  ist diese Verkettung kürzer als die davor. Wir erhalten so lange neue Verkettungen, bis $n=|P|$ und keine Struktur mehrmals
-  besucht wird. Es handelt sich dann um eine Permutation der 16-Strukturen.\\
-  2. $L'$ wird gefunden, in dem die Verkettung von 16-Strukturen $L$ durchgegangen wird und jede 16-Struktur,
-  die schon einmal darin vorkam gelöscht wird. Es wird also jede der $n=|L|$ in $L$ vorkommenden
-  16-Strukturen mit allen Vorangegangenen verglichen. Da es maximal $n$ vorangegangene 16-Strukturen gibt,
-  haben wir $\mathcal{O}(n^2)$ Vergleiche, es ist unter der Annahme von konstanter Vergleichszeit $t \in \mathcal{O}(n^2)$.
-\end{proof}
-Eine optimale Lösung kann deshalb immer in eine Lösung für E-PTSP umgewandelt werden. Diese hat mit $\lim \limits_{d \to 0}$
-die gleichen Kosten wie die entsprechende Lösung für WKT. Zuletzt muss noch gezeigt werden, dass jede Lösung für E-PTSP auch
-eine entsprechende Lösung in WKT hat, wodurch eine optimale Lösung in WKT auch in E-PTSP optimal ist.
-\begin{lemma}
-  Es sei $P$ eine Instanz von E-PTSP und $P'=T_d(P)$. Jede Lösung von $P$ ist auch eine Lösung von $P'$.
-\end{lemma}
-\begin{proof}
-  Eine Lösung für $P$ ist eine Permutation der Punkte von $P$. Da jeder Punkt von $P$ eine entsprechende 16-Struktur in $P'$
-  hat, kann über diese Zuordnung die Permutation von $P$ in eine Permutation der 16-Strukturen in $P'$ umgewandelt werden.
-\end{proof}
-Demnach ist
-$$\text{WKT} \geq_{\mathcal{P}} \text{E-PTSP}$$
-
-Unter der Annahme $\mathcal{P} \neq \mathcal{NP}$ 
-gibt es deshalb keinen Algorithmus, der WKT in polynomieller Zeit
-optimal lößt. Stattdessen stelle ich einen Algorithmus vor, der eine optimale
+\subsection{Einleitung}Stattdessen stelle ich einen Algorithmus vor, der eine optimale
 Lösung in polynomieller Zeit annähert, sowie einen Lösungsansatz, der das
 Problem in exponentieller Zeit optimal lößt.
 \subsection{Annäherung}
-Das Problem wird mit Hilfe des Simulated Annealing gelößt.
+Das Problem wird mit Hilfe des Simulated Annealing \cite{kirkpatrick_1983} gelößt.
 \begin{algorithmic}
   \Procedure{Simulated Annealing}{Startlösung $S$, Temperatur $T_0$, Abkühlkoeffizient $\alpha$, Iterationen $n$}
   \State{$S_{Beste} \gets S$}
@@ -227,6 +131,94 @@ an, welcher Landeplatz als $k$-tes besucht wird.
   minimiert, denn er ersetzt auch 3 Kanten durch neue.
 \end{description}
 \subsection{Optimale Lösung}
+
+\begin{figure}[t]
+\includegraphics[scale=.2]{struktur}
+\centering
+\caption{Die 16-Struktur.}
+\end{figure}
+\begin{figure}[t]
+\includegraphics[scale=0.5]{richtungen}
+\centering
+\caption{Ein von unten in die 16-Struktur kommendes Flugzeug kann in alle Richtungen weiter fliegen. Für andere Herkunftsrichtungen müssen die Pfade entsprechend gedreht werden.}
+\end{figure}
+Es ist $\mathcal{NP}$-schwer, das weniger krumme Touren-Problem (WKT) optimal
+zu lösen. Um das zu zeigen, wird eine Reduktion vom eulerschen Pfad-Problem des
+Handlungsreisenden (E-PTSP) skizziert, welches $\mathcal{NP}$-schwer ist \cite{papadimitriou_1977}. E-PTSP lautet folgendermaßen: Es dei $P \subset
+  \mathbb{R}^2$ eine endliche Menge. Dann wird eine Reihenfolge von P gesucht,
+bei der die Strecke zwischen aufeinanderfolgenden Punkten minimal ist. \\
+E-PTSP kann nun auf WKT reduziert werden, in dem jeder der Punkte $P$ durch
+eine 16-Struktur an dessen Position ersetzt wird (Siehe Abbildung 1).\\
+Diese Transformation heißt im folgenden $T_d: \mathfrak{P}(\mathbb{R}) \rightarrow \mathfrak{P}(\mathbb{R})$
+  mit $d \in \mathbb{R}$,
+wobei $\mathfrak{P}$ für die Potenzmenge steht.
+\begin{lemma}
+  Es sei $P$ eine Instanz von E-PTSP und $P'=T_d(P)$ mit $d$ so dass sich die 16-Strukturen nicht überschneiden.
+  Dann entspricht eine Permutation der 16-Strukturen von $P'$ einer Lösung von $P'$.
+\end{lemma}
+\begin{proof}
+  Die erste 16-Struktur der Permutation kann in einer der Reihenfolgen in Abbildung 2 abgeflogen werden, so dass
+  die beiden zuletzt angeflogenen Punkte in Richtung der nächsten 16-Struktur in der Permutation zeigen.
+  Alle 16-Strukturen der Permutation bis auf die letzte liegen dann zwischen zwei anderen 16-Strukturen.
+  Abbildung 2 zeigt, dass diese dei 16-Strukturen nacheinander angeflogen werden könne, egal wie sie zuenander
+  liegen. Die letzte 16-Struktur kann dann in einer beliebigen Reihenfolge angeflogen werden.
+\end{proof}
+\begin{lemma}
+  Es sei $P$ eine Instanz von E-PTSP. 
+  $P' = T_d(P)$ kann in eine mögliche Lösung von $P$ umgewandelt werden,
+  wenn die Punkte jeder 16-Struktur jeweils unmittelbar nacheinander angeflogen werden.
+\end{lemma}
+\begin{proof}
+  Jeder Punkt in $P'$ darf genau einmal besucht werden. Wenn die Punkte einer 16-Struktur
+  unmittelbar nacheinander angeflogen werden, kann diese Struktur danach nicht mehr angeflogen werden.
+  Dadurch wird in einer solchen Lösung jede 16-Struktur nur einmal angeflogen. Die Lösung stellt also
+  eine Permutation der 16-Strukturen dar. Da jede 16-Struktur einen entsprechenden Punkt in $P$ hat,
+  kann die Permutation der 16-Strukturen so in eine Permutation von $P$ umgewandelt werden.
+\end{proof}
+Nun sei $\lim \limits_{d \to 0}$. Die Abstände zwischen Punkten gleicher 16-Strukturen
+nähert sich dann $0$ an, während die Abstände zwischen Punkten unterschiedlicher 16-Strukturen den Abständen
+der entsprechenden Punkte in der E-PTSP-Instanz annähern. Die Länge eines Pfades, der die Punkte einer
+16-Struktur unmittelbar nacheinander besucht, nähert sich dann der Länge des entsprechenen Pfad in der E-PTSP-Instanz an.
+Es muss jetzt noch gezeigt werden, dass eine optimale Lösung die Punkte einer Struktur unmittelbar nacheinander
+besucht und deshalb in eine Lösung des entsprechenden E-PTSP umgewandelt werden kann. Nach dem Beweis von
+Lemma 1 ist das äquivalent mit der Aussage, dass eine optimale Lösung jede 16-Struktur nur einmal besucht.
+\begin{lemma}
+  Es sei $P$ eine Instanz von E-PTSP und $P'=T_d(P)$. \\
+  1.
+  Wenn eine mögliche Lösung $L$ 16-Strukturen mehrmals besucht,
+  gibt es eine bessere oder gleichgute Lösung $L'$, die sie nur einmal besucht. \\
+  2.
+  $L'$ kann in polynomieller Zeit gefunden werden.
+\end{lemma}
+\begin{proof}
+  1.
+  Wir betrachten die Reihenfolge, in der $L$ die 16-Strukturen besucht. $L$ besucht $n \geq 2$ 16-Strukturen, bevor
+  es eine 16-Struktur besucht, die es schon besucht hat. Wenn $n=|P|$ besucht $L$ keine 16-Strukturen mehrmals.
+  Andernfalls besucht $L$ danach eine 16-Struktur, die es schon besucht hat. Diese 16-Struktur können wir überspringen,
+  wodurch wir eine neue Verkettung von 16-Strukturen erhalten, in der $n$ um 1 größer ist. Nach der Dreiecksungleichung
+  ist diese Verkettung kürzer als die davor. Wir erhalten so lange neue Verkettungen, bis $n=|P|$ und keine Struktur mehrmals
+  besucht wird. Es handelt sich dann um eine Permutation der 16-Strukturen.\\
+  2. $L'$ wird gefunden, in dem die Verkettung von 16-Strukturen $L$ durchgegangen wird und jede 16-Struktur,
+  die schon einmal darin vorkam gelöscht wird. Es wird also jede der $n=|L|$ in $L$ vorkommenden
+  16-Strukturen mit allen Vorangegangenen verglichen. Da es maximal $n$ vorangegangene 16-Strukturen gibt,
+  haben wir $\mathcal{O}(n^2)$ Vergleiche, es ist unter der Annahme von konstanter Vergleichszeit $t \in \mathcal{O}(n^2)$.
+\end{proof}
+Eine optimale Lösung kann deshalb immer in eine Lösung für E-PTSP umgewandelt werden. Diese hat mit $\lim \limits_{d \to 0}$
+die gleichen Kosten wie die entsprechende Lösung für WKT. Zuletzt muss noch gezeigt werden, dass jede Lösung für E-PTSP auch
+eine entsprechende Lösung in WKT hat, wodurch eine optimale Lösung in WKT auch in E-PTSP optimal ist.
+\begin{lemma}
+  Es sei $P$ eine Instanz von E-PTSP und $P'=T_d(P)$. Jede Lösung von $P$ ist auch eine Lösung von $P'$.
+\end{lemma}
+\begin{proof}
+  Eine Lösung für $P$ ist eine Permutation der Punkte von $P$. Da jeder Punkt von $P$ eine entsprechende 16-Struktur in $P'$
+  hat, kann über diese Zuordnung die Permutation von $P$ in eine Permutation der 16-Strukturen in $P'$ umgewandelt werden.
+\end{proof}
+Demnach ist
+$$\text{WKT} \geq_{\mathcal{P}} \text{E-PTSP}$$
+
+Unter der Annahme $\mathcal{P} \neq \mathcal{NP}$ 
+gibt es deshalb keinen Algorithmus, der WKT in polynomieller Zeit
+optimal lößt. 
 Zur optimalen Lösung von WKT wird dieses als Integer-Programming-Problem
 formuliert. Integer Programming bezeichnet einen linearen Term mit ganzzahligen Variablen,
 den es unter Einhaltung linearer Ungleichung zu maximieren gilt.
@@ -268,4 +260,9 @@ sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier
 einfügen!
 
 \section{Quellcode}
+\bibliographystyle{apalike}
+\begingroup
+\def\chapter*#1{}
+\bibliography{refs.bib}
+\endgroup
 \end{document}

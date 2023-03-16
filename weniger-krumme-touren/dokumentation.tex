@@ -105,6 +105,15 @@ Das Problem wird mit Hilfe des Simulated Annealing \cite{kirkpatrick_1983} gelö
   \Return{$S_{Beste}$}
   \EndProcedure
 \end{algorithmic}
+Die grundlegende Idee des Algorithmus ist, das Problem als ein sich abkühlendes thermodynamisches System zu modellieren,
+wobei die Kosten für eine Lösung der Energie des Systems entspricht. Die Wahrscheinlichkeit, in einen anderen
+Zustand überzugehen, ist dann abhängig von der Energiedifferenz. Die auch von der Temperatur abhängige Wahrscheinlichkeit
+ist von der Boltzmann-Verteilung inspiriert. Das thermodynamische System befindet sich nach dem Abkühlen in einem
+energiearmen Zustand, genauso sollte der Algorithmus eine möglichst kostengüstige Lösung finden. Mit $T\to 0$ handelt es sich
+bei dieser Methode um einen einfachen Bergsteigeralgorithmus, der immer eine kostengüstigere benachbarte Lösung auswählt. Dieser
+kann leicht in lokalen Minima stecken bleiben, also bei Lösungen, die keine besseren Nachbarn haben, aber nicht das globale Minimum sind.
+Um das zu vermeiden kann Simulated Annealing durch die temperatur- und kostendifferenzabhängige Übergangswahrscheinlichkeit anfangs lokale
+Minima überwinden.\\
 Gültige Lösungen sind hier alle möglichen Permutationen von $N$ Landeplätzen. Die Beschränkung, dass eine
 Lösung keine Spitzen Winkel beinhalten darf, wird über die Kostenfunktion $C(S)$ kodiert. Die Kostenfunktion
 setzt sich zusammen aus der Länge des von $S$ gebildeten Pfades und einer Gebühr $g \in \mathbb{R}$ für jeden spitzen Winkel. $g$

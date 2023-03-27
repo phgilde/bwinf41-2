@@ -227,11 +227,12 @@ Demnach ist
 $$\text{WKT} \geq_{\mathcal{P}} \text{E-PTSP}$$
 
 Unter der Annahme $\mathcal{P} \neq \mathcal{NP}$ gibt es deshalb keinen
-Algorithmus, der WKT in polynomieller Zeit optimal lößt. Zur optimalen Lösung
-von WKT wird dieses als Integer-Programming-Problem formuliert. Integer
-Programming bezeichnet einen linearen Term mit ganzzahligen Variablen, den es
-unter Einhaltung linearer Ungleichung zu maximieren gilt. Integer Programming
-ist $\mathcal{NP}$-schwer, weshalb dafür nur Algorithmen exponentieller
+Algorithmus, der WKT in polynomieller Zeit optimal lößt. 
+\\\\
+Zur optimalen Lösung von WKT wird dieses als Integer-Programming-Problem formuliert. Integer
+Programming bezeichnet einen linearen Term mit ganzzahligen Variablen, der
+unter Einhaltung linearer Ungleichung maximiert werden soll. Integer Programming
+ist $\mathcal{NP}$-schwer \cite{karp_1972}, weshalb dafür nur Algorithmen exponentieller
 Laufzeit bekannt sind. \\ Es sei also $I$ eine Instanz von $WKT$ mit den Punkten
 $P \subset \mathbb{R}^2$. Die Landeplätze sind $L=\{1,2,\ldots,|P|\}$ Die
 Variable $x_{i,j} \in \{0, 1\}$ it $i, j \in L; i<j$ kodiert, ob die Route die

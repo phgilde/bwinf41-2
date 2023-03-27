@@ -1,0 +1,90 @@
+Starting solution of the Linear programming relaxation problem using Primal Simplex
+
+Coin0506I Presolve 173705 (-173624) rows, 3240 (0) columns and 353728 (-347248) elements
+Clp0030I 23 infeas 94.81977, obj 226.78283 - mu 0.45692739, its 105, 36 interior
+Clp0030I 33 infeas 3.5815729, obj 1448.1292 - mu 0.01691816, its 105, 174 interior
+Clp0030I 41 infeas 0.35435765, obj 1471.7144 - mu 0.00062641057, its 105, 289 interior
+Clp0030I 49 infeas 0.056773841, obj 1474.0104 - mu 2.3193432e-05, its 105, 290 interior
+Clp0030I 57 infeas 0.00060770604, obj 1474.9694 - mu 2.5765326e-06, its 105, 473 interior
+Clp1000I sum of infeasibilities 8.13536e-05 - average 4.68343e-10, 2769 fixed columns
+Coin0506I Presolve 3391 (-170314) rows, 471 (-2769) columns and 7562 (-346166) elements
+Clp0006I 0  Obj 1474.9652 Primal inf 2.1557112e-05 (34) Dual inf 2.53e+10 (465)
+Clp0029I End of values pass after 471 iterations
+Clp0014I Perturbing problem by 0.001% of 1 - largest nonzero change 2.9819115e-05 ( 0.0014909558%) - largest zero change 2.982246e-05
+Clp0000I Optimal - objective value 1465.2638
+Clp0000I Optimal - objective value 1465.2638
+Coin0511I After Postsolve, objective 1465.2638, infeasibilities - dual 0 (0), primal 0 (0)
+Clp0006I 0  Obj 1465.2638 Dual inf 7.1669609 (3)
+Clp0014I Perturbing problem by 0.001% of 1 - largest nonzero change 2.9990041e-05 ( 0.001499502%) - largest zero change 2.9669812e-05
+Clp0000I Optimal - objective value 1465.2638
+Clp0000I Optimal - objective value 1465.2638
+Clp0000I Optimal - objective value 1465.2638
+Coin0511I After Postsolve, objective 1465.2638, infeasibilities - dual 0 (0), primal 0 (0)
+Clp0032I Optimal objective 1465.263788 - 0 iterations time 4.562, Presolve 0.34, Idiot 4.18
+
+Starting MIP optimization
+Cbc0045I MIPStart provided solution with cost 1607.69
+Cbc0012I Integer solution of 1607.6873 found by Reduced search after 0 iterations and 0 nodes (0.83 seconds)
+Cbc0031I 23 added rows had average density of 109.21739
+Cbc0013I At root node, 23 cuts changed objective from 1465.2638 to 1518.6243 in 2 passes
+Cbc0014I Cut generator 0 (LazyConstraints) - 2 row cuts average 804.5 elements, 0 column cuts (0 active)  in 0.079 seconds - new frequency is 1
+Cbc0014I Cut generator 1 (Probing) - 32 row cuts average 3.0 elements, 20 column cuts (20 active)  in 0.310 seconds - new frequency is 1
+Cbc0014I Cut generator 2 (Gomory) - 17 row cuts average 376.7 elements, 0 column cuts (0 active)  in 0.088 seconds - new frequency is 1
+Cbc0014I Cut generator 3 (Knapsack) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.129 seconds - new frequency is -100
+Cbc0014I Cut generator 4 (MixedIntegerRounding2) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.094 seconds - new frequency is -100
+Cbc0014I Cut generator 6 (TwoMirCuts) - 26 row cuts average 75.7 elements, 0 column cuts (0 active)  in 0.391 seconds - new frequency is 1
+Cbc0014I Cut generator 7 (ZeroHalf) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 72.309 seconds - new frequency is -100
+Cbc0010I After 1 nodes, 2 on tree, 1607.6873 best solution, best possible 1518.6243 (75.87 seconds)
+Cbc0010I After 2 nodes, 3 on tree, 1607.6873 best solution, best possible 1518.6243 (76.65 seconds)
+Cbc0010I After 5 nodes, 3 on tree, 1607.6873 best solution, best possible 1518.6243 (77.56 seconds)
+Cbc0010I After 10 nodes, 3 on tree, 1607.6873 best solution, best possible 1520.2736 (78.44 seconds)
+Cbc0010I After 13 nodes, 6 on tree, 1607.6873 best solution, best possible 1520.2736 (79.54 seconds)
+Cbc0010I After 16 nodes, 9 on tree, 1607.6873 best solution, best possible 1520.2736 (80.33 seconds)
+Cbc0010I After 18 nodes, 11 on tree, 1607.6873 best solution, best possible 1520.2736 (81.13 seconds)
+Cbc0010I After 21 nodes, 12 on tree, 1607.6873 best solution, best possible 1520.2736 (82.53 seconds)
+Cbc0010I After 24 nodes, 12 on tree, 1607.6873 best solution, best possible 1520.2736 (83.28 seconds)
+Cbc0010I After 27 nodes, 11 on tree, 1607.6873 best solution, best possible 1520.2736 (84.31 seconds)
+Cbc0010I After 30 nodes, 14 on tree, 1607.6873 best solution, best possible 1520.2736 (85.02 seconds)
+Cbc0010I After 33 nodes, 16 on tree, 1607.6873 best solution, best possible 1520.2736 (85.83 seconds)
+Cbc0010I After 38 nodes, 16 on tree, 1607.6873 best solution, best possible 1520.2736 (86.60 seconds)
+Cbc0010I After 44 nodes, 17 on tree, 1607.6873 best solution, best possible 1520.2736 (87.37 seconds)
+Cbc0038I Full problem 347352 rows 3240 columns, reduced to 19979 rows 1216 columns
+Cbc0044I Reduced cost fixing - 19979 rows, 1216 columns - restarting search
+Cbc0012I Integer solution of 1607.6873 found by Previous solution after 0 iterations and 0 nodes (88.99 seconds)
+Cbc0031I 46 added rows had average density of 37.413043
+Cbc0013I At root node, 46 cuts changed objective from 1465.2638 to 1569.37 in 7 passes
+Cbc0014I Cut generator 0 (LazyConstraints) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.078 seconds - new frequency is 1
+Cbc0014I Cut generator 1 (Probing) - 75 row cuts average 4.4 elements, 38 column cuts (38 active)  in 0.121 seconds - new frequency is 1
+Cbc0014I Cut generator 2 (Gomory) - 19 row cuts average 161.7 elements, 0 column cuts (0 active)  in 0.028 seconds - new frequency is 1
+Cbc0014I Cut generator 3 (Knapsack) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.029 seconds - new frequency is -100
+Cbc0014I Cut generator 4 (MixedIntegerRounding2) - 1 row cuts average 115.0 elements, 0 column cuts (0 active)  in 0.039 seconds - new frequency is -100
+Cbc0014I Cut generator 5 (FlowCover) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.004 seconds - new frequency is -100
+Cbc0014I Cut generator 6 (TwoMirCuts) - 174 row cuts average 146.8 elements, 0 column cuts (0 active)  in 0.098 seconds - newModell wird erstellt...
+Suche Startlösung...
+None
+Suche optimale Lösung...
+OptimizationStatus.INFEASIBLE
+C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\80\803.txt
+Startlösung ist optimal!
+ frequency is 1
+Cbc0014I Cut generator 7 (ZeroHalf) - 2 row cuts average 5.0 elements, 0 column cuts (0 active)  in 1.999 seconds - new frequency is -100
+Cbc0014I Cut generator 9 (Stored from first) - 23 row cuts average 66.0 elements, 0 column cuts (0 active)
+Cbc0014I Cut generator 10 (Clique) - 36 row cuts average 12.8 elements, 0 column cuts (0 active)  in 0.002 seconds - new frequency is -100
+Cbc0004I Integer solution of 1569.37 found after 388 iterations and 0 nodes (91.50 seconds)
+Cbc0001I Search completed - best objective 1569.37003315744, took 388 iterations and 0 nodes (91.50 seconds)
+Cbc0035I Maximum depth 0, 456 variables fixed on reduced cost
+Cbc0038I LazyConstraints was tried 7 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.078 seconds)
+Cbc0038I Probing was tried 7 times and created 113 cuts of which 0 were active after adding rounds of cuts (0.121 seconds)
+Cbc0038I Gomory was tried 7 times and created 19 cuts of which 0 were active after adding rounds of cuts (0.028 seconds)
+Cbc0038I Knapsack was tried 7 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.029 seconds)
+Cbc0038I MixedIntegerRounding2 was tried 7 times and created 1 cuts of which 0 were active after adding rounds of cuts (0.039 seconds)
+Cbc0038I FlowCover was tried 7 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.004 seconds)
+Cbc0038I TwoMirCuts was tried 7 times and created 174 cuts of which 0 were active after adding rounds of cuts (0.098 seconds)
+Cbc0038I ZeroHalf was tried 7 times and created 2 cuts of which 0 were active after adding rounds of cuts (1.999 seconds)
+Cbc0038I Stored from first was tried 7 times and created 23 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+Cbc0038I Clique was tried 7 times and created 36 cuts of which 0 were active after adding rounds of cuts (0.002 seconds)
+Cbc0001I Search completed - best objective 1607.687268619768, took 3199 iterations and 50 nodes (91.85 seconds)
+Cbc0032I Strong branching done 798 times (14647 iterations), fathomed 7 nodes and fixed 17 variables
+Cbc0035I Maximum depth 19, 6990 variables fixed on reduced cost
+Total time (CPU seconds):       92.05   (Wallclock seconds):       92.05
+

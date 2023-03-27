@@ -1,0 +1,45 @@
+Starting solution of the Linear programming relaxation problem using Primal Simplex
+
+Coin0506I Presolve 21731 (-21690) rows, 820 (0) columns and 45020 (-43380) elements
+Clp1000I sum of infeasibilities 0.000174515 - average 8.03068e-09, 621 fixed columns
+Coin0506I Presolve 1079 (-20652) rows, 199 (-621) columns and 2474 (-42546) elements
+Clp0006I 0  Obj 1089.6073 Primal inf 0.00011725014 (54) Dual inf 1.64e+10 (193)
+Clp0029I End of values pass after 199 iterations
+Clp0014I Perturbing problem by 0.001% of 1.0000001 - largest nonzero change 2.9914801e-05 ( 0.0014957401%) - largest zero change 2.9576128e-05
+Clp0000I Optimal - objective value 1088.9345
+Clp0000I Optimal - objective value 1088.9345
+Coin0511I After Postsolve, objective 1088.9345, infeasibilities - dual 0 (0), primal 0 (0)
+Clp0006I 0  Obj 1088.9345 Dual inf 2.139921 (1)
+Clp0014I Perturbing problem by 0.001% of 1 - largest nonzero change 2.9936918e-05 ( 0.0014968459%) - largest zero change 2.9576128e-05
+Clp0000I Optimal - objective value 1088.9345
+Clp0000I Optimal - objective value 1088.9345
+Clp0000I Optimal - objective value 1088.9345
+Coin0511I After Postsolve, objective 1088.9345, infeasibilities - dual 0 (0), primal 0 (0)
+Clp0032I Optimal objective 1088.934473 - 0 iterations time 0.592, Presolve 0.03, Idiot 0.56
+
+Starting MIP optimization
+Modell wird erstellt...
+Suche Startlösung...
+None
+Suche optimale Lösung...
+OptimizationStatus.OPTIMAL
+C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\40\404.txt
+Lösung gefunden!
+Cbc0045I MIPStart provided solution with cost 1178.29
+Cbc0012I Integer solution of 1178.2889 found by Reduced search after 0 iterations and 0 nodes (0.11 seconds)
+Cbc0013I At root node, 0 cuts changed objective from 1088.9345 to 1088.9345 in 1 passes
+Cbc0014I Cut generator 0 (LazyConstraints) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.023 seconds - new frequency is 1
+Cbc0014I Cut generator 1 (Probing) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.000 seconds - new frequency is -100
+Cbc0014I Cut generator 2 (Gomory) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.000 seconds - new frequency is -100
+Cbc0014I Cut generator 3 (Knapsack) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.000 seconds - new frequency is -100
+Cbc0014I Cut generator 4 (MixedIntegerRounding2) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.000 seconds - new frequency is -100
+Cbc0014I Cut generator 5 (FlowCover) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.000 seconds - new frequency is -100
+Cbc0014I Cut generator 6 (TwoMirCuts) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.000 seconds - new frequency is -100
+Cbc0014I Cut generator 7 (ZeroHalf) - 0 row cuts average 0.0 elements, 0 column cuts (0 active)  in 0.000 seconds - new frequency is -100
+Cbc0010I After 11 nodes, 4 on tree, 1178.2889 best solution, best possible 1100.9126 (0.99 seconds)
+Cbc0004I Integer solution of 1150.2171 found after 750 iterations and 20 nodes (1.36 seconds)
+Cbc0001I Search completed - best objective 1150.217057181518, took 1024 iterations and 24 nodes (1.40 seconds)
+Cbc0032I Strong branching done 276 times (5150 iterations), fathomed 8 nodes and fixed 26 variables
+Cbc0035I Maximum depth 7, 1675 variables fixed on reduced cost
+Total time (CPU seconds):       1.43   (Wallclock seconds):       1.43
+

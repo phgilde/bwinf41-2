@@ -16,7 +16,9 @@ from mip import (
     CBC,
 )
 import sim_ann
+import sys
 import java_interface
+import time
 
 
 def edge(a, b):
@@ -43,6 +45,10 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
             self.x, self.V, self.c = x_, V_, c_
             self.name = name
             self.use_johnson = use_johnson
+            self.count = 0
+            self.time_cycle = 0
+            self.time_components = 0
+            self.time_cut = 0
 
         def generate_constrs(self, model: Model, depth: int = 0, npass: int = 0):
             xf, V_, G = model.translate(self.x), self.V, nx.Graph()
@@ -67,19 +73,25 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
             # nx.draw(G, with_labels=True, pos=points)
             # plt.show()
             try:
+                start = time.time()
                 cycle = nx.algorithms.cycles.find_cycle(G, orientation="ignore")
+                self.time_cycle += time.time() - start
                 S = {u for u, _, _ in cycle}
                 if sum(xf[edge(u, v)].x for u in S for v in S if u < v) > len(S) - 1:
                     cut = xsum(xf[edge(u, v)] for u in S for v in S if u < v) <= len(S) - 1
                     model += cut
             except nx.NetworkXNoCycle:
                 pass
+            start = time.time()
             components = list(nx.algorithms.components.connected_components(G))
+            self.time_components += time.time() - start
             if len(components) == 1:
+                start = time.time()
                 cut_value, (
                     S,
                     ST,
                 ) = nx.algorithms.connectivity.stoerwagner.stoer_wagner(G)
+                self.time_cut += time.time() - start
                 if len(S) == 1 or len(ST) == 1:
                     return
                 if cut_value < 1 - 1e-6:
@@ -120,7 +132,6 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
                         )
                         model += cut
 
-
     V = set(range(n))
     Arcs = [(i, j) for (i, j) in product(V, V) if i < j]
 
@@ -147,25 +158,16 @@ def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
 
     model.cuts_generator = SubTourCutGenerator(x, V, c, "cuts_generator", False)
     model.lazy_constrs_generator = SubTourCutGenerator(
-        x, V, "lazy_constrs_generator", c, False
+        x, V, "lazy_constrs_generator", c, True
     )
     return model, x, ends
 
 
 points = []
-with open(path := input("Pfad zur Datei: ")) as f:
+with open(path := sys.argv[1]) as f:
     while line := f.readline():
         points.append(tuple(map(float, line.split())))
 
-main_time = float(input("Zeit für MIP-Löser in Minuten: "))
-# plot points
-plt.figure(figsize=(10, 10))
-min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
-max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
-plt.xlim(min_coord - 50, max_coord + 50)
-plt.ylim(min_coord - 50, max_coord + 50)
-plt.scatter([p[0] for p in points], [p[1] for p in points])
-plt.show()
 
 print("Modell wird erstellt...")
 
@@ -193,33 +195,19 @@ for i in range(len(points)):
 print("Suche Startlösung...")
 
 init_solution = java_interface.solveTA(path)
-if False:
-    # plot initial solution
-    plt.figure(figsize=(10, 10))
-    plt.xlim(min_coord - 50, max_coord + 50)
-    plt.ylim(min_coord - 50, max_coord + 50)
-    plt.scatter([p[0] for p in points], [p[1] for p in points])
-    for i in range(len(init_solution) - 1):
-        plt.plot(
-            [points[init_solution[i]][0], points[init_solution[i + 1]][0]],
-            [points[init_solution[i]][1], points[init_solution[i + 1]][1]],
-            color="red",
-        )
-    plt.show()
-if True:
-    p1 = init_solution[0]
-    start = []
-    for p2 in init_solution[1:]:
-        start.append((x[edge(p1, p2)], 1.0))
-        p1 = p2
-    start.append((ends[init_solution[0]], 1.0))
-    start.append((ends[init_solution[-1]], 1.0))
-    model.start = start
+p1 = init_solution[0]
+start = []
+for p2 in init_solution[1:]:
+    start.append((x[edge(p1, p2)], 1.0))
+    p1 = p2
+start.append((ends[init_solution[0]], 1.0))
+start.append((ends[init_solution[-1]], 1.0))
+model.start = start
 print(model.validate_mip_start())
 
 print("Suche optimale Lösung...")
 model.emphasis = 2
-model.optimize(max_seconds=main_time * 60)
+model.optimize(max_seconds=float("inf"))
 print(model.status)
 import winsound
 
@@ -228,20 +216,11 @@ print(path)
 if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     print("Lösung gefunden!")
 
-    plt.figure(figsize=(10, 10))
-    min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
-    max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
-    plt.xlim(min_coord - 50, max_coord + 50)
-    plt.ylim(min_coord - 50, max_coord + 50)
-    plt.scatter([p[0] for p in points], [p[1] for p in points])
-    for i in range(len(points)):
-        for j in range(i + 1, len(points)):
-            if x[(i, j)].x == 1:
-                plt.plot(
-                    [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
-                )
-    plt.show()
 if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
     print("Keine weitere Lösung gefunden!")
 if model.status == OptimizationStatus.INFEASIBLE:
     print("Startlösung ist optimal!")
+
+print("Cuts: ", model.cuts_generator.time_cut)
+print("Components: ", model.cuts_generator.time_components)
+print("Cycle: ", model.cuts_generator.time_cycle)

@@ -245,3 +245,16 @@ if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
     print("Keine weitere Lösung gefunden!")
 if model.status == OptimizationStatus.INFEASIBLE:
     print("Startlösung ist optimal!")
+    plt.figure(figsize=(10, 10))
+    min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
+    max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
+    plt.xlim(min_coord - 50, max_coord + 50)
+    plt.ylim(min_coord - 50, max_coord + 50)
+    plt.scatter([p[0] for p in points], [p[1] for p in points])
+    for i in range(len(points)):
+        for j in range(i + 1, len(points)):
+            if x[(i, j)].x == 1:
+                plt.plot(
+                    [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
+                )
+    plt.show()

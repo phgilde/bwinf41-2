@@ -214,6 +214,17 @@ Da jeder Stapel $S \in \mathsf{P}_n$ in $\lceil \frac{n}{1.5}\rceil$ Schritten s
 Damit lässt sich auch $\exists b \geq a-1: vws \in K(n-1,b)$ durch $\exists \lceil \frac{n}{1.5}\rceil \geq b \geq a-1: vwS \in K(n-1,b)$ ersetzen wodurch nicht unendlich viele Werte für $b$
 ausprobiert werden müssen. Zuletzt muss noch ein Ende der Rekursion eingeführt werden, wir setzen
 $K(n,0) = \{(1, \dots, n)\}$, denn ein sortierter Stapel kann in 0 Schritten sortiert werden.
+\section{Zeit- und Speicherkomplexität}
+\subsection{Sortieren}
+Sowohl Dijkstra's Algorithmus als auch der A*-Algorithmus haben für einen Graphen mit Knoten $V$ und Kanten $E$ eine Zeitkomplexität von $\mathcal{O}(|E| + |V| \cdot log |V|)$,
+wenn als Prioritätswarteschlange ein binärer Heap verwendet wird. Wenn wir einen Stapel der Höhe $h$ haben, sind die Knoten des zu untersuchenden Graphs 
+$V = \overset{.}\cup_{n=1}^{h-1} \mathsf{P}_n$. Da es $n!$ Permutationen von $n$ Elementen gibt, ist $|V| = \Sigma_{n=1}^{h-1}n!$. Diese Summe ist in $\mathcal{O}(h!)$:
+\begin{align*}
+  \Sigma_{n=1}^{h-1}n! &= (h-1)! \cdot (1 + \frac{1}{h-1} + \frac{1}{(h-1)(h-2)} + \ldots + \frac{1}{(h-1)!}) \\
+                        &= (h-1)! \cdot (1 + \mathcal{O}(1)) \\
+                        &= \mathcal{O}(h!)
+\end{align*}
+Von einem Knoten können maximal $h$ Kanten ausgehen, denn das ist die Anzahl möglicher PWUE-Operationen des Stapels mit Höhe $h$. Es ist also $|E| = \mathcal{O}(h) \cdot \mathcal{O}(h!)$. 
 \section{Umsetzung}
 Zur Lösung der ersten Aufgabe habe ich Python verwendet. Für die zweite Aufgabe habe ich Java verwendet.
 

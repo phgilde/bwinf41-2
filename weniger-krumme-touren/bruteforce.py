@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 from scipy.spatial import ConvexHull
 from numpy import array
 from functools import lru_cache
+from time import time
 
 @lru_cache(maxsize=100000)
 def acute(p1, p2, p3):
@@ -46,6 +47,8 @@ def count_not_acute(prev1, prev2, points):
             result += 1
     return result
 
+steps = 0
+
 def solve(prev1, prev2, points, depth):
     if len(points) == 0:
         return []
@@ -75,8 +78,6 @@ def solve(prev1, prev2, points, depth):
         else hull_points
     ):
         if prev1 == None or prev2 == None or not acute(prev1, prev2, point):
-            if depth < 10:
-                print("Trying", point)
             nextroute = solve(prev2, tuple(point), points - {tuple(point)}, depth + 1)
             if nextroute != None:
                 return [point] + nextroute
@@ -95,24 +96,28 @@ with open(path := input("Pfad zur Datei: ")) as f:
         points.append(tuple(map(float, line.split())))
 
 # plot points
-plt.figure(figsize=(10, 10))
+"""plt. figure(figsize=(10, 10))
 min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
 max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
 plt.xlim(min_coord - 50, max_coord + 50)
 plt.ylim(min_coord - 50, max_coord + 50)
 plt.scatter([p[0] for p in points], [p[1] for p in points])
 plt.show()
+ """
 
+start = time()
 tour = bruteforce(points)
+print(f"Time: {time() - start}")
 
 if tour != None:
     indices = [points.index(tuple(p)) for p in tour]
     tour = indices
     print(f"Tour: {tour}")
 
+
     min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
     max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
-    plt.figure(figsize=(10, 10))
+    """ plt.figure(figsize=(10, 10))
     plt.xlim(min_coord - 50, max_coord + 50)
     plt.ylim(min_coord - 50, max_coord + 50)
     plt.scatter([p[0] for p in points], [p[1] for p in points])
@@ -121,3 +126,4 @@ if tour != None:
         [points[tour[i]][1] for i in range(len(tour))],
     )
     plt.show()
+ """

@@ -1,0 +1,6 @@
+java -jar --enable-preview annealingterminal.jar C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\80\800.txt 3 0.9999999 100000000 > result9999999.txt
+java -jar --enable-preview annealingterminal.jar C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\80\800.txt 3 0.999999 100000000 > result999999.txt
+java -jar --enable-preview annealingterminal.jar C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\80\800.txt 3 0.99999 100000000 > result99999.txt
+java -jar --enable-preview annealingterminal.jar C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\80\800.txt 3 0.9999 100000000 > result9999.txt
+java -jar --enable-preview annealingterminal.jar C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\80\800.txt 3 0.999 100000000 > result999.txt
+java -jar --enable-preview annealingterminal.jar C:\Users\Philip\Documents\programmieren\python\bwinf41-2\weniger-krumme-touren\beispiele\random\80\800.txt 3 0.99 100000000 > result99.txt

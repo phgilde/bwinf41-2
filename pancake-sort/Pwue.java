@@ -113,22 +113,36 @@ public class Pwue {
         return normalize(b);
     }
 
+    // O(n)
     static Integer[] normalize(Integer[] a) {
-        IntPair[] b = new IntPair[a.length];
+        Integer min = Integer.MAX_VALUE;
+        Integer max = Integer.MIN_VALUE;
         for (int i = 0; i < a.length; i++) {
-            b[i] = new IntPair(a[i], i);
+            if (a[i] < min)
+                min = a[i];
+            if (a[i] > max)
+                max = a[i];
         }
-        Arrays.sort(b);
-        for (int i = 0; i < a.length; i++) {
-            b[i].setFirst(i);
-            b[i].swap();
-        }
-        Arrays.sort(b);
-        Integer[] c = new Integer[a.length];
-        for (int i = 0; i < a.length; i++) {
-            c[i] = b[i].second();
-        }
-        return c;
+        Integer[] values = new Integer[max - min + 1];
+
+        for (int i = 0; i < values.length; i++)
+            values[i] = -1;
+
+        for (int i = 0; i < a.length; i++)
+            values[a[i] - min] = a[i];
+
+        Integer counter = 0;
+
+        for (int i = 0; i < values.length; i++)
+            if (values[i] != -1)
+                values[i] = counter++;
+        
+        Integer[] result = new Integer[a.length];
+        for (int i = 0; i < a.length; i++)
+            result[i] = values[a[i] - min];
+        
+        return result;
+        
     }
 
     static Integer[] allFlipOps(int n) {

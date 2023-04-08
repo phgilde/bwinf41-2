@@ -25,9 +25,20 @@ def count_adj(arr):
 
 # Veraendert die Zahlen in der Liste so, dass sie in [0, ..., n-1] liegen, 
 # wobei die Reihenfolge erhalten bleibt.
+# Algorithmus mit O(n), was auch die kleinstmoegliche Zeitkomplexitaet ist,
+# da ja schon die ausgabe des ergebnisses Zeit O(n) braucht
 def normalize(arr):
-    order = sorted(arr)
-    return tuple(order.index(x) for x in arr)
+    a_min = min(arr)
+    a_max = max(arr)
+    values = [-1 for _ in range(a_max - a_min + 1)]
+    for item in arr:
+        values[item - a_min] = item
+    counter = 0
+    for i in range(len(values)):
+        if values[i] != -1:
+            values[i] = counter
+            counter += 1
+    return tuple(values[x - a_min] for x in arr)
 
 
 # Naehert die minimale Anzahl von flips()s mit count_adj() an.

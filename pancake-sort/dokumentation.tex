@@ -77,19 +77,20 @@
 
 \section{Lösungsidee}
 \subsection{Notation}
-Die Menge der möglichen Stapel der Höhe $n$ wird mit $\mathsf{P}_n$ bezeichnet.
-Die Möglichen Pfannkuchen-Wende-und-Ess-Operationen für einem Stapel mit $n$
-Pfannkuchen wird mit $\mathsf{W}_n$ bezeichnet. Die Menge der möglichen
-Umkehroperationen für solch einen Stapel wird mit $\mathsf{W}^{-1}_n$
-bezeichnet. Wenn der Stapel $S \in \mathsf{P}_n$ durch die Operation $w \in
-  \mathsf{W}_n$ verändert wird, so wird der neue Stapel $S' = w S$ bezeichnet.
-Operationen assoziieren nach rechts, d.h. $w_1 w_2 S = w_1 (w_2 S)$. Die
-Funktionen $A$ und $P$ werden aus der Aufgabenstellung übernommen. Wird ein
-Stapel im Text dargestellt, dann steht der erste Pfannkuchen für den obersten,
-der zweite für den zweitobersten und so weiter. Pfannkuchenstapel werden
-entweder in Klammern durch Kommas getrennt (z.B. $(2,7,1,8)$) oder als nicht
-getrennte Ziffern dargestellt (z.B. $2718$). Bei der zweiten Notation können
-Pfannkuchen dann maximal die Breite 9 haben, um die Eindeutigkeit der
+Mit "Stapel" ist im Folgenden immer der Begriff der Aufgabenstellung gemeint,
+nicht die Datenstruktur. Die Menge der möglichen Stapel der Höhe $n$ wird mit
+$\mathsf{P}_n$ bezeichnet. Die Möglichen Pfannkuchen-Wende-und-Ess-Operationen
+für einem Stapel mit $n$ Pfannkuchen wird mit $\mathsf{W}_n$ bezeichnet. Die
+Menge der möglichen Umkehroperationen für solch einen Stapel wird mit
+$\mathsf{W}^{-1}_n$ bezeichnet. Wenn der Stapel $S \in \mathsf{P}_n$ durch die
+Operation $w \in \mathsf{W}_n$ verändert wird, so wird der neue Stapel $S' = w
+  S$ bezeichnet. Operationen assoziieren nach rechts, d.h. $w_1 w_2 S = w_1 (w_2
+  S)$. Die Funktionen $A$ und $P$ werden aus der Aufgabenstellung übernommen.
+Wird ein Stapel im Text dargestellt, dann steht der erste Pfannkuchen für den
+obersten, der zweite für den zweitobersten und so weiter. Pfannkuchenstapel
+werden entweder in Klammern durch Kommas getrennt (z.B. $(2,7,1,8)$) oder als
+nicht getrennte Ziffern dargestellt (z.B. $2718$). Bei der zweiten Notation
+können Pfannkuchen dann maximal die Breite 9 haben, um die Eindeutigkeit der
 Darstellung zu gewährleisten.
 \subsection{Sortieren}
 \begin{figure}[t]
@@ -101,10 +102,40 @@ Die möglichen Stapel können in einem gerichteten Graphen dargestellt werden (S
 sind die Stapel, die Kanten sind die Operationen. Die Kanten sind gerichtet, denn eine PWUE-Operation
 wandelt einen Stapel in einen anderen um. Die Identität eines Stapels wird durch die Reihenfolge der Pfannkuchen bestimmt,
 nicht deren genauen Größen. Das heißt, dass zum Beispiel die Stapel $(10,12,3)$ und $(2,3,1)$ gleich sind, denn die Elemente haben die gleiche
-Reihenfolge. Das hängt damit zusammen, dass der Zielstapel nur durch seine aufsteigende Reihenfolge definiert ist. Equivalente Stapel können
+Reihenfolge. Das hängt damit zusammen, dass der Zielstapel nur durch seine aufsteigende Reihenfolge definiert ist. Äquivalente Stapel können
 in eine kanonische Form gebracht werden, in dem die kleinste Größe durch 1, die zweitkleinste durch 2 und so weiter ersetzt werden. Dadurch ist
-$(2,3,1)$ in kanonischer Form.
-\\
+$(2,3,1)$ in kanonischer Form. Die kanonische Form kann folgendermaßen bestimmt werden:
+\begin{algorithmic}
+  \Procedure{Kanonische Form}{Stapel $S$}
+  \State{Initialisiere Integer-Array $V$ der Länge $\max(S) - \min(S) + 1$}
+  \State{Setze jeden Wert von $V$ auf $-1$}
+  \For{$s \in S$}
+  \State{$V_{s - \min(S)} \gets 1$}
+  \EndFor
+  \State{Initalisiere Zähler $c=1$}
+
+  \For{$s \in (0, 1, \ldots, |V|-1)$}
+  \If{$V_s \neq -1$}
+  \State{$V_s \gets c$}
+  \State{$s \gets s+1$}
+  \EndIf
+  \EndFor
+  \State{Initalisiere Integer-Array $E$ der Länge $|S|$}
+  \For{$s \in (0, 1, \ldots, |S|-1)$}
+  \State{$E_s \gets V_{s-\min(S)}$}
+  \EndFor
+
+  \Return{$E$}
+  \EndProcedure
+\end{algorithmic}
+Dieser Algorithmus konstruiert im Array $V$ eine Abbildung der Zahlenwerte der ursprünglichen Pfannkuchen in
+jene der kanonischen Form, wobei der Array-Index den Parameter der Abbildung darstellt. Dafür wird zunächst jeder
+Index, der zu einer Breite im ursprünglichen Stapel gehört, markiert. Die markierten Indices werden dann aufsteigend
+nummeriert, der kleinste bekommt also den Wert $1$, der zweitkleinste $2$ und so weiter. So ist die Konstruktion
+der Abbildung vollständig. Im letzten Schritt wird die Abbildung auf die Elemente von $S$ angewandt. Da die Abbildung
+nur für bestimmte Werte zwischen einschließlich dem kleinsten und größten von $S$ definiert ist, kann die Länge des Arrays
+auf $\max(S)-\min(S)$ begrenzt werden. Für die Abbildung muss deshalb immer noch $\min(S)$ vom Parameter abgezogen werden.
+\\\\
 Um die Operationen zu bestimmen, die einen Stapel optimal sortieren, muss
 ein kürzester Pfad im Graphen vom Stapel zu einem sortierten Stapel gefunden werden. Dafür lässt sich
 Dijkstra's Algorithmus \cite{dijkstra_1959} verwenden.
@@ -214,19 +245,49 @@ Da jeder Stapel $S \in \mathsf{P}_n$ in $\lceil \frac{n}{1.5}\rceil$ Schritten s
 Damit lässt sich auch $\exists b \geq a-1: vws \in K(n-1,b)$ durch $\exists \lceil \frac{n}{1.5}\rceil \geq b \geq a-1: vwS \in K(n-1,b)$ ersetzen wodurch nicht unendlich viele Werte für $b$
 ausprobiert werden müssen. Zuletzt muss noch ein Ende der Rekursion eingeführt werden, wir setzen
 $K(n,0) = \{(1, \dots, n)\}$, denn ein sortierter Stapel kann in 0 Schritten sortiert werden.
-\section{Zeit- und Speicherkomplexität}
+\section{Laufzeit und Speicherbedarf}
 \subsection{Sortieren}
-Sowohl Dijkstra's Algorithmus als auch der A*-Algorithmus haben für einen Graphen mit Knoten $V$ und Kanten $E$ eine Zeitkomplexität von $\mathcal{O}(|E| + |V| \cdot log |V|)$,
-wenn als Prioritätswarteschlange ein binärer Heap verwendet wird. Wenn wir einen Stapel der Höhe $h$ haben, sind die Knoten des zu untersuchenden Graphs 
-$V = \overset{.}\cup_{n=1}^{h-1} \mathsf{P}_n$. Da es $n!$ Permutationen von $n$ Elementen gibt, ist $|V| = \Sigma_{n=1}^{h-1}n!$. Diese Summe ist in $\mathcal{O}(h!)$:
+Der A*-Algorithmus hat für einen Graph mit Kanten $V$ und Knoten $E$ eine
+Laufzeit in\footnote{Da die Landau-Symbole Mengen von Funktionen darstellen, ist es mathematisch korrekt zu sagen, die Zeit (-funktion) ist in $\mathcal{O}(f(x))$.
+In den Gleichungen weiter unten knüpfe ich an die verbreitere Notation an, in der $\mathcal{O}(f(x))$ für einen anonymen Funktionsterm dieser Menge steht.} 
+$\mathcal{O}(|E| \log |V|)$ und einen Speicherbedarf in
+$\mathcal{O}(V)$ \cite[654]{sedgewick_wayne_2011}. Wenn wir einen
+Ausgangsstapel der Höhe $h$ haben, sind die Knoten des zu untersuchenden Graphs
+$V = \overset{.}\cup_{n=1}^{h-1} \mathsf{P}_n$. Da es $n!$ Permutationen von
+$n$ Elementen gibt, ist $|V| = \Sigma_{n=1}^{h-1}n!$. Diese Summe ist in
+$\mathcal{O}(h!)$:
 \begin{align*}
-  \Sigma_{n=1}^{h-1}n! &= (h-1)! \cdot (1 + \frac{1}{h-1} + \frac{1}{(h-1)(h-2)} + \ldots + \frac{1}{(h-1)!}) \\
-                        &= (h-1)! \cdot (1 + \mathcal{O}(1)) \\
-                        &= \mathcal{O}(h!)
+  |V| & = \Sigma_{n=1}^{h-1}n!                                                                \\
+      & = (h-1)! \cdot (1 + \frac{1}{h-1} + \frac{1}{(h-1)(h-2)} + \ldots + \frac{1}{(h-1)!}) \\
+      & = (h-1)! \cdot (1 + \mathcal{O}(1))                                                   \\
+      & = \mathcal{O}((h-1)!) & | \log \\
+  \log |V| & = \mathcal{O}((h-1) \log (h-1))
 \end{align*}
-Von einem Knoten können maximal $h$ Kanten ausgehen, denn das ist die Anzahl möglicher PWUE-Operationen des Stapels mit Höhe $h$. Es ist also $|E| = \mathcal{O}(h) \cdot \mathcal{O}(h!)$. 
+Von einem Knoten, der zu einem Stapel der Höhe $n$ gehört, gibt es maximal $n$ verschiedene PWUE-Operationen und somit auch maximal $n$ ausgehende Kanten. Das heißt
+\begin{align*}
+  |E| & = \Sigma_{n=1}^{h-1} n \cdot |\mathsf{P}_n|                                                   \\
+      & = \Sigma_{n=1}^{h-1} n \cdot n!                                                               \\
+      & = (h-1) \cdot (h-1)! \cdot (1 + \frac{h-2}{(h-1)^2} + \frac{h-3}{(h-1)^2(h-2)} + \ldots \frac{1}{(h-1) \cdot (h-1)!})
+      & = (h-1) \cdot (h-1)! \cdot (1 + \mathcal{O}(1))
+      & = \mathcal{O}((h-1) \cdot (h-1)!)
+      & = \mathcal{O}(h!)
+\end{align*}
+Demnach wäre die Laufzeit $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$ und der Speicherbedarf $\mathcal{O}(h!)$. Leider ist das etwas zu kurz gedacht, denn
+in jedem Expansionsschritt des Algorithmus muss für jeden neuen Knoten noch die kanonische Form gebildet werden. Außerdem kann der zu erweiternde Knoten nicht direkt
+mit einem Zielknoten verglichen werden, sondern es muss geprüft werden, ob seine Pfannkuchen in aufsteigender Reihenfolge sind. Diese Prüfung nimmt pro Stapel eine Zeit in
+$\mathcal{O}(h)$ in Anspruch, da jeder Pfannkuchen mit seinem Vorgänger verglichen wird und jeder Stapel nicht mehr als $h$ Pfannkuchen enthält, was zu $h$ Vergleichsoperationen führt.
+Im schlechtesten Fall wird maximal jeder der Knoten überprüft, das heißt diese Operation nimmt eine Zeit in $\mathcal{O}(h \cdot |V|) = \mathcal{O}(h!)$ in Anspruch. Dieser Term
+wächst langsamer als $h! \cdot (h-1) \cdot \log (h-1)$, die Zeit bleibt also in $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1) + h!) = \mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$. Die
+Prüfung auf Sortiertheit nimmt keinen zusätzlichen Speicher in Anspruch.\\
+Betrachten wir nun die Zeit, in der die Stapel in kanonische Form gebracht werden. Die benötigte Zeit liegt für einen Stapel liegt in $\mathcal{O}(h)$: Um $\min(S)$ und $\max(S)$ zu finden, muss der 
+Stapel, der nicht mehr als $h$ Pfannkuchen enthält, durchgegangen werden. Dann wird der gleiche Stapel noch einmal durchgegangen, um die Werte im Array $V$ zu ändern, wo wieder nicht mehr als
+$h$ Iterationen benötigt werden. Dann werden die Elemente des Array $V$ durchgegangen. Dieses hat die Länge $\max(S) - \min(S) + 1$. Diese Länge ist auch niemals größer als $h$, weil 
+der größte Pfannkuchen die Breite $h$ und der kleinste die Breite $1$ hat. Zuletzt wird noch einmal $S$ durchgegangen, um die Abbildung anzuwenden. Diese Operation wird für jeden neu
+erkundeten Stapel durchgeführt, also für jede Kante. Insgesamt wird dadurch die Zeit $\mathcal{O}(h \cdot |V|) = \mathcal{O}(h \cdot (h-1)!) = \mathcal{O}(h!)$ benötigt, was auch langsamer
+als der schon ermittelte Term für die Zeit wächst und somit vernachlässigt werden kann. Der zusätzliche Speicherbedarf liegt in $\mathcal{O}(h)$ für das Array $V$, was auch vernachlässigbar ist.
 \section{Umsetzung}
-Zur Lösung der ersten Aufgabe habe ich Python verwendet. Für die zweite Aufgabe habe ich Java verwendet.
+Zur Lösung der ersten Aufgabe habe ich Python verwendet. Für die zweite Aufgabe
+habe ich Java verwendet.
 
 \section{Beispiele}
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier

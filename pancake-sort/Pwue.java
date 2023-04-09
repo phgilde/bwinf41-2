@@ -171,10 +171,12 @@ public class Pwue {
         return a;
     }
 
+    // Hier werden die Zwischenergebnisse der dynamischen Programmierung gespeichert
     static Map<IntPair, Set<List<Integer>>> memo = new HashMap<>();
 
 
     static Set<List<Integer>> k(int n, int a, int depth) {
+        // Dynamische Programmierung: ggf. schon vorhandenes Ergebnis zurueckgeben
         IntPair key = new IntPair(n, a);
         if (memo.containsKey(key)) {
             return memo.get(key);

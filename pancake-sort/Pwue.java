@@ -238,7 +238,7 @@ public class Pwue {
                 boolean r1 = true;
                 boolean r2 = false;
                 for (Integer flip : allFlipOps(n)) {
-                    for (int b = a - 1; b < Math.ceil(n / 1.5); b++) {
+                    for (int b = a - 1; b < 2*Math.floor(n/3)+2; b++) {
                         r2 = false;
                         if (k(n - 1, b, 0).contains(Arrays.asList(flipOp(rFlipped, flip)))) {
                             r2 = true;

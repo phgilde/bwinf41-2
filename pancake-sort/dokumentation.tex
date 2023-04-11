@@ -32,7 +32,7 @@
 
 \usepackage{tabularx}
 \usepackage{booktabs}
-
+\usepackage{amsthm}
 % Für Quelltext
 \usepackage{listings}
 \usepackage{color}
@@ -67,6 +67,8 @@
   \LARGE Bearbeiter/-in dieser Aufgabe: \\
   \LARGE \Name\\\\}
 \date{\LARGE\today}
+\newtheorem{theorem}{Satz}
+\newtheorem{lemma}[theorem]{Lemma}
 
 \begin{document}
 
@@ -195,9 +197,13 @@ für den Stapel $S$ lautet der Algorithmus:\\\\
   \EndWhile
   \EndProcedure
 \end{algorithmic}
-Eine Heuristik für das Pfannkuchensortieren ist die Anzahl der Adjazenzen \cite{gates_1979}. Als Adjazenz bezeichne ich zwei
+Eine Heuristik für das Pfannkuchen sortieren ist die Anzahl der Adjazenzen \cite{gates_1979}. Als Adjazenz bezeichne ich zwei
 Pfannkuchen die direkt nebeneinander im Stapel liegen und für die es keinen Pfannkuchen gibt, dessen Größe zwischen den beiden liegt.
 Mit Hilfe der Adjazenzen lässt sich eine untere Schranke für die Anzahl der Sortierschritte eines Stapels berechnen.
+\begin{lemma}
+  Ein Stapel der Höhe $h$ mit $a_0$ Adjazenzen kann in nicht weniger als $\lceil\frac{h - a_0}{3}\rceil$ Schritten sortiert werden.
+\end{lemma}
+\begin{proof}
 In einer Operation können sich höchstens zwei neue Adjazenzen bilden. Weil in einer Operation sich nur die Nachbarn von zwei
 Pfannkuchen ändern, (nämlich des obersten, der nach unten gewendet wird, und dessen, der direkt unter dem Pfannenwender liegen bleibt)
 kann sich nur zwischen diesen beiden eine Adjazenz bilden. Eine weitere Adjazenz lässt sich dadurch bilden, dass der aufgegessene
@@ -215,6 +221,7 @@ $a_f$ und $h_f$ die Anzahl der Adjazenzen und die Höhe des sortierten Stapels. 
   \noalign{Weil $n \in \mathbb{N}^+$ kann aufgerundet werden:}                                                                              \\
                   &  & n        & \geq \lceil\frac{h - a_0}{3}\rceil                                                                        \\
 \end{align*}
+\end{proof}
 Als untere Schranke kann diese Erkenntnis als für den A*-Algorithmus geeignete Heuristik verwendet werden,
 mit $a(S)$ als Anzahl der Adjazenzen im Stapel $S$ und $h(S)$ als Höhe des Stapels $S$:
 \begin{align*}
@@ -234,17 +241,40 @@ berechnen:
 $K(n,a)$ enthält also alle Stapel, die durch eine Umkehroperation aus Stapeln der Höhe $n-1$ mit mindestens $a-1$ Sortieroperationen entstehen können
 und für die keine andere Sortieroperation eine Stapel bildet, der in weniger als $a-1$ Schritten sortiert werden kann.
 Nach dieser Definition würde $K(n, 1)$ allerdings auch die komplett sortierten Stapel enthalten, weshalb noch die Bedingung
-$(a>1)\vee (s \notin K(n,0))$ ergänzt werden muss. Die Funktion $K(n,a)$ ist also definiert als
+$(a>1)\vee (s \notin K(n,0))$ ergänzt werden muss. Da die komplett sortierten Stapel nicht weiter sortiert werden müssen,
+setzen wir $K(n,0) = \{(1, \dots, n)\}$, es handelt sich dabei um das Ende der Rekursion.
+Die Funktion $K(n,a)$ ist also definiert als
 \begin{align*}
+  K(n,0) & = \{(1, \dots, n)\} \\
   K(n,a) & = \{wS, w \in \mathsf{W}^{-1}_{n-1}, S \in K(n-1,a-1)\} | \forall v \in \mathsf{W}_n: \exists b \geq a-1: vwS \in K(n-1,b) \wedge ((a>1)\vee (S \notin K(n,0)))\} \\
 \end{align*}
 Dass diese Definition richtig ist, lässt sich überprüfen durch die Substitution
 $A(S)=k, S \in \mathsf{P}_n \iff (\forall w \in \mathsf{W}_n: A(ws) \geq k-1)\wedge(\exists w \in \mathsf{W}_n: A(ws) = k-1)$.
+Ein Problem bei der Berechnung dieser Funktion ist, dass $\exists b \geq a-1: vwS \in K(n-1,b) \wedge ((a>1)\vee (S \notin K(n,0)))$
+nicht begrenzt ist, sondern alle natürlichen Zahlen durchprobieren müsste. Das ist natürlich Unfug, denn wir können nicht alle natürlichen
+Zahlen in endlicher Zeit durchprobieren. Dass wir das nicht brauchen, zeigt folgendes Lemma:
+\begin{lemma}
+  Jeder Stapel der Höhe $3n+b$ mit $n,b\in mathbb{N}$ und $b<3$ kann in weniger als oder gleich $2n+1$ Schritten sortiert werden.
+\end{lemma}
+\begin{proof}
+  Wir beweisen durch starke Induktion nach $n$. Für $n=0$ kann der Stapel die Höhe $1$ oder $2$ haben. Im ersten Fall ist er Stapel schon sortiert
+  und die Aussage ist erfüllt. Im zweiten Fall ist der Stapel sortiert oder noch falsch herum. In beiden Fällen ist nicht mehr als $2n+1=1$ Sortierschritt
+  notwendig. \\Für einen Stapel mit $n>0$ liegt der größte Pfannkuchen des Stapels entweder ganz unten oder über anderen Pfannkuchen. Im zweiten Fall können wir
+  den Stapel zuerst so wenden, dass der größte Pfannkuchen nach dem Essen ganz oben liegt, und dann den ganzen Stapel wenden, wobei zwei Pfannkuchen verspeist werden.
+  Der Stapel ohne den größten Pfannkuchen ganz unten hat die Höhe $3n+b-3=3(n-1)+b$. Weil dieser durch die Induktion in $2(n-1)+1$ Schritten sortiert werden kann,
+  brauchen wir mit den beiden PWUE-Operationen $2(n-1)+1+2=2n+1$ Sortierschritte. Liegt der größte Pfannkuchen ganz unten, können wir die gleiche Fallunterscheidung für den
+  zweitgrößten Pfannkuchen machen. Liegt dieser nicht an zweiter Stelle von hinten, können wir ihn genauso in zwei Schritten an diese Stelle bringen, es bleibt ein Stapel
+  der Höhe $3n+b-4=4(n-1)+b-1$ zu sortieren. Das ist auch in $2(n-1)+1$ Schritten möglich, wir sind wieder bei insgesamt $2(n-1)+1+2=2n+1$ Schritten. Liegt der zweitgrößte
+  Pfannkuchen an zweitletzer Stelle, machen wir das Gleiche mit dem drittgrößten. Liegt dieser an drittletzer Stelle, müssen nur die darüber liegenden $3n+b-3=3(n-1)+b$ Pfannkuchen
+  sortiert werden, was nach der Induktion in $2(n-1)+1\leq 2n+1$ Schritten möglich ist.
+\end{proof}
+Es folgt sofort, dass für einen Stapel der Höhe $h$ gilt $n=\lfloor\frac{h}{3}\rfloor$ und dieser deshalb in $2\lfloor\frac{h}{3}\rfloor+1$ Schritten sortiert werden kann.
+Da jeder Stapel $S \in \mathsf{P}_n$ in $2\lfloor\frac{h}{3}\rfloor+1$ Schritten sortiert werden kann, reicht es aus, 
+die Funktion $K(n,a)$ für alle $\lceil \frac{n}{1.5}\rceil$ zu berechnen.
+Damit lässt sich auch $\exists b \geq a-1: vws \in K(n-1,b)$ durch $\exists \lceil \frac{n}{1.5}\rceil \geq b \geq a-1: vwS \in K(n-1,b)$ 
+ersetzen, wodurch nicht unendlich viele Werte für $b$
+ausprobiert werden müssen.
 Um jetzt die PWUE-Zahl zu berechnen, muss nur noch die Funktion $K(n,a)$ für alle $a$ berechnet werden und überprüft werden, ob sie Elemente enthält.
-Da jeder Stapel $S \in \mathsf{P}_n$ in $\lceil \frac{n}{1.5}\rceil$ Schritten sortiert werden kann, reicht es aus, die Funktion $K(n,a)$ für alle $\lceil \frac{n}{1.5}\rceil$ zu berechnen.
-Damit lässt sich auch $\exists b \geq a-1: vws \in K(n-1,b)$ durch $\exists \lceil \frac{n}{1.5}\rceil \geq b \geq a-1: vwS \in K(n-1,b)$ ersetzen wodurch nicht unendlich viele Werte für $b$
-ausprobiert werden müssen. Zuletzt muss noch ein Ende der Rekursion eingeführt werden, wir setzen
-$K(n,0) = \{(1, \dots, n)\}$, denn ein sortierter Stapel kann in 0 Schritten sortiert werden.
 \section{Laufzeit und Speicherbedarf}
 \subsection{Sortieren}
 Der A*-Algorithmus hat für einen Graph mit Kanten $V$ und Knoten $E$ eine
@@ -267,9 +297,9 @@ Von einem Knoten, der zu einem Stapel der Höhe $n$ gehört, gibt es maximal $n$
 \begin{align*}
   |E| & = \Sigma_{n=1}^{h-1} n \cdot |\mathsf{P}_n|                                                   \\
       & = \Sigma_{n=1}^{h-1} n \cdot n!                                                               \\
-      & = (h-1) \cdot (h-1)! \cdot (1 + \frac{h-2}{(h-1)^2} + \frac{h-3}{(h-1)^2(h-2)} + \ldots \frac{1}{(h-1) \cdot (h-1)!})
-      & = (h-1) \cdot (h-1)! \cdot (1 + \mathcal{O}(1))
-      & = \mathcal{O}((h-1) \cdot (h-1)!)
+      & = (h-1) \cdot (h-1)! \cdot (1 + \frac{h-2}{(h-1)^2} + \frac{h-3}{(h-1)^2(h-2)} + \ldots \frac{1}{(h-1) \cdot (h-1)!})\\
+      & = (h-1) \cdot (h-1)! \cdot (1 + \mathcal{O}(1)) \\
+      & = \mathcal{O}((h-1) \cdot (h-1)!) \\
       & = \mathcal{O}(h!)
 \end{align*}
 Demnach wäre die Laufzeit $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$ und der Speicherbedarf $\mathcal{O}(h!)$. Leider ist das etwas zu kurz gedacht, denn

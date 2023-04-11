@@ -136,13 +136,13 @@ public class Pwue {
         for (int i = 0; i < values.length; i++)
             if (values[i] != -1)
                 values[i] = counter++;
-        
+
         Integer[] result = new Integer[a.length];
         for (int i = 0; i < a.length; i++)
             result[i] = values[a[i] - min];
-        
+
         return result;
-        
+
     }
 
     static Integer[] allFlipOps(int n) {
@@ -164,6 +164,7 @@ public class Pwue {
     }
 
     static Integer[] range(int n) {
+        assert n >= 0;
         Integer[] a = new Integer[n];
         for (int i = 0; i < n; i++) {
             a[i] = i;
@@ -175,7 +176,7 @@ public class Pwue {
     static Map<IntPair, Set<List<Integer>>> memo = new HashMap<>();
 
 
-    static Set<List<Integer>> k(int n, int a, int depth) {
+    static Set<List<Integer>> k(int n, int a) {
         // Dynamische Programmierung: ggf. schon vorhandenes Ergebnis zurueckgeben
         IntPair key = new IntPair(n, a);
         if (memo.containsKey(key)) {
@@ -187,14 +188,10 @@ public class Pwue {
             memo.put(key, result);
             return result;
         }
-        System.out.println("| ".repeat(depth) + "| k(" + n + ", " + a + ") "
-                + ((int) Math.ceil(n / 1.5) - a + 1) * n * (n + 1)
-                        * k(n - 1, a - 1, depth + 1).size()
-                + " Its");
         HashSet<List<Integer>> result = new HashSet<>();
         for (IntPair rFlip : allRevFlipOps(n)) {
 
-            for (List<Integer> seqL : k(n - 1, a - 1, depth + 1)) {
+            for (List<Integer> seqL : k(n - 1, a - 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
                 Integer[] rFlipped = revFlipOp(seq, rFlip.first(), rFlip.second());
                 if (!(a > 1 || !Arrays.equals(rFlipped, range(n)))) {
@@ -203,10 +200,9 @@ public class Pwue {
                 boolean r1 = true;
                 boolean r2 = false;
                 for (Integer flip : allFlipOps(n)) {
-                    for (int b = a - 1; b < Math.ceil(n / 1.5); b++) {
+                    for (int b = a - 1; b < 2 * Math.floor(n / 3) + 2; b++) {
                         r2 = false;
-                        if (k(n - 1, b, depth + 1)
-                                .contains(Arrays.asList(flipOp(rFlipped, flip)))) {
+                        if (k(n - 1, b).contains(Arrays.asList(flipOp(rFlipped, flip)))) {
                             r2 = true;
                             break;
                         }
@@ -221,14 +217,13 @@ public class Pwue {
                 }
             }
         }
-        System.out.println("| ".repeat(depth) + "| k(" + n + ", " + a + ") Fertig         ");
         memo.put(key, result);
         return result;
     }
 
     static Optional<Integer[]> kHasSolution(int n, int a) {
         for (IntPair rFlip : allRevFlipOps(n)) {
-            for (List<Integer> seqL : k(n - 1, a - 1, 0)) {
+            for (List<Integer> seqL : k(n - 1, a - 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
                 Integer[] rFlipped = revFlipOp(seq, rFlip.first(), rFlip.second());
                 if (!(a > 1 || !Arrays.equals(rFlipped, range(n)))) {
@@ -238,9 +233,9 @@ public class Pwue {
                 boolean r1 = true;
                 boolean r2 = false;
                 for (Integer flip : allFlipOps(n)) {
-                    for (int b = a - 1; b < 2*Math.floor(n/3)+2; b++) {
+                    for (int b = a - 1; b < 2 * Math.floor(n / 3) + 2; b++) {
                         r2 = false;
-                        if (k(n - 1, b, 0).contains(Arrays.asList(flipOp(rFlipped, flip)))) {
+                        if (k(n - 1, b).contains(Arrays.asList(flipOp(rFlipped, flip)))) {
                             r2 = true;
                             break;
                         }

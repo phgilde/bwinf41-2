@@ -254,21 +254,20 @@ Ein Problem bei der Berechnung dieser Funktion ist, dass $\exists b \geq a-1: vw
 nicht begrenzt ist, sondern alle natürlichen Zahlen durchprobieren müsste. Das ist natürlich Unfug, denn wir können nicht alle natürlichen
 Zahlen in endlicher Zeit durchprobieren. Dass wir das nicht brauchen, zeigt folgendes Lemma:
 \begin{lemma}
-  Jeder Stapel der Höhe $3n+b$ mit $n,b\in mathbb{N}$ und $b<3$ kann in weniger als oder gleich $2n+1$ Schritten sortiert werden.
+  Jeder Stapel der Höhe $3n+b$ mit $n,b\in \mathbb{N}$ und $b<3$ kann in weniger als oder gleich $2n+1$ Schritten sortiert werden.
 \end{lemma}
 \begin{proof}
   Wir beweisen durch starke Induktion nach $n$. Für $n=0$ kann der Stapel die Höhe $1$ oder $2$ haben. Im ersten Fall ist er Stapel schon sortiert
   und die Aussage ist erfüllt. Im zweiten Fall ist der Stapel sortiert oder noch falsch herum. In beiden Fällen ist nicht mehr als $2n+1=1$ Sortierschritt
-  notwendig. \\Für einen Stapel mit $n>0$ liegt der größte Pfannkuchen des Stapels entweder ganz unten oder über anderen Pfannkuchen. Im zweiten Fall können wir
-  den Stapel zuerst so wenden, dass der größte Pfannkuchen nach dem Essen ganz oben liegt, und dann den ganzen Stapel wenden, wobei zwei Pfannkuchen verspeist werden.
-  Der Stapel ohne den größten Pfannkuchen ganz unten hat die Höhe $3n+b-3=3(n-1)+b$. Weil dieser durch die Induktion in $2(n-1)+1$ Schritten sortiert werden kann,
-  brauchen wir mit den beiden PWUE-Operationen $2(n-1)+1+2=2n+1$ Sortierschritte. Liegt der größte Pfannkuchen ganz unten, können wir die gleiche Fallunterscheidung für den
-  zweitgrößten Pfannkuchen machen. Liegt dieser nicht an zweiter Stelle von hinten, können wir ihn genauso in zwei Schritten an diese Stelle bringen, es bleibt ein Stapel
-  der Höhe $3n+b-4=4(n-1)+b-1$ zu sortieren. Das ist auch in $2(n-1)+1$ Schritten möglich, wir sind wieder bei insgesamt $2(n-1)+1+2=2n+1$ Schritten. Liegt der zweitgrößte
-  Pfannkuchen an zweitletzer Stelle, machen wir das Gleiche mit dem drittgrößten. Liegt dieser an drittletzer Stelle, müssen nur die darüber liegenden $3n+b-3=3(n-1)+b$ Pfannkuchen
-  sortiert werden, was nach der Induktion in $2(n-1)+1\leq 2n+1$ Schritten möglich ist.
+  notwendig. \\
+  Für einen Stapel mit $n>0$ liegen die $m$ größten Pfannkuchen in richtiger Reihenfolge ganz unten. Wenn $m\geq3$ muss somit nur der darüberliegende Stapel mit $3m+c;m<n$ Pfannkuchen
+  sortiert werden. Das ist nach Induktion in $2m+1$ Schritten möglich, was kleiner als $2n+1$ ist, wodurch die Aussage erfüllt ist. Wenn $m<3$, können wir den $m+1$t-größten Pfannkuchen
+  in einer Operation nach oben bringen und in einer zweiten an die richtige Stelle am Ende. Danach hat der unsortierte Teil des Stapels, also alles vor den letzten $m+1$ Pfannkuchen,
+  die Höhe $3n+b-2-(m+1)=3n+b-3-m=3(n-1)+b-m$, weil zwei Pfannkuchen verspeist wurden und der sortierte Teil um einen größer geworden ist. Nach der Induktion kann dieser Teil der Höhe
+  $3(n-1)+b-m$ in $2(n-1)+1$ Schritten sortiert werden. Zusammen mit den zwei Wendeoperationen wurde der Stapel in $2(n-1)+1+2=2n+1$ Schritten sortert.
 \end{proof}
 Es folgt sofort, dass für einen Stapel der Höhe $h$ gilt $n=\lfloor\frac{h}{3}\rfloor$ und dieser deshalb in $2\lfloor\frac{h}{3}\rfloor+1$ Schritten sortiert werden kann.
+Allerdings lässt sich dadurch nicht direkt die PWUE-Zahl bestimmen, es handelt sich lediglich um eine obere Schranke für diese.
 Da jeder Stapel $S \in \mathsf{P}_n$ in $2\lfloor\frac{h}{3}\rfloor+1$ Schritten sortiert werden kann, reicht es aus, 
 die Funktion $K(n,a)$ für alle $\lceil \frac{n}{1.5}\rceil$ zu berechnen.
 Damit lässt sich auch $\exists b \geq a-1: vws \in K(n-1,b)$ durch $\exists \lceil \frac{n}{1.5}\rceil \geq b \geq a-1: vwS \in K(n-1,b)$ 

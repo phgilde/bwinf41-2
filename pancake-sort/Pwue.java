@@ -12,7 +12,6 @@ public class Pwue {
         private int num1;
         private int num2;
 
-
         public IntPair(int key, int value) {
             this.num1 = key;
             this.num2 = value;
@@ -38,6 +37,7 @@ public class Pwue {
 
         @Override
         public int hashCode() {
+            // Polynom-hash mit horner schema
             int hash = 17;
             hash = hash * 31 + num1;
             hash = hash * 31 + num2;
@@ -65,20 +65,6 @@ public class Pwue {
             }
             return 0;
         }
-
-        public void setFirst(int num1) {
-            this.num1 = num1;
-        }
-
-        public void setSecond(int num2) {
-            this.num2 = num2;
-        }
-
-        public void swap() {
-            int temp = num1;
-            num1 = num2;
-            num2 = temp;
-        }
     }
 
     static Integer[] flipOp(Integer[] a, int i) {
@@ -89,7 +75,7 @@ public class Pwue {
         for (int j = i; j < a.length; j++) {
             b[j - 1] = a[j];
         }
-        return normalize(b);
+        return canonical(b);
     }
 
     static Integer[] revFlipOp(Integer[] a, int i, int n) {
@@ -110,11 +96,13 @@ public class Pwue {
                 b[j + 1] = a[j];
             }
         }
-        return normalize(b);
+        return canonical(b);
     }
 
-    // O(n)
-    static Integer[] normalize(Integer[] a) {
+    // Bringt die Permutation in die kanonische Form, die allerdings bei 0 statt 1 anfaengt.
+    // Folgt der Konvention, dass Indices bei 0 anfangen, nicht bei 1, der kleinste Pfannkuchen
+    // ist also der nullte hat also den Index 0.
+    static Integer[] canonical(Integer[] a) {
         Integer min = Integer.MAX_VALUE;
         Integer max = Integer.MIN_VALUE;
         for (int i = 0; i < a.length; i++) {
@@ -175,7 +163,6 @@ public class Pwue {
     // Hier werden die Zwischenergebnisse der dynamischen Programmierung gespeichert
     static Map<IntPair, Set<List<Integer>>> memo = new HashMap<>();
 
-
     static Set<List<Integer>> k(int n, int a) {
         // Dynamische Programmierung: ggf. schon vorhandenes Ergebnis zurueckgeben
         IntPair key = new IntPair(n, a);
@@ -185,6 +172,11 @@ public class Pwue {
         if (a == 0) {
             Set<List<Integer>> result = new HashSet<>();
             result.add(Arrays.asList(range(n)));
+            memo.put(key, result);
+            return result;
+        }
+        if (n == 1 && a != 0) {
+            Set<List<Integer>> result = new HashSet<>();
             memo.put(key, result);
             return result;
         }
@@ -221,49 +213,59 @@ public class Pwue {
         return result;
     }
 
+    // Gibt nur ein Element aus k(n, a) zurueck, falls es eins gibt
     static Optional<Integer[]> kHasSolution(int n, int a) {
+        if (a == 0) {
+            return Optional.of(range(n));
+        }
+        if (n == 1 && a != 0) {
+            return Optional.empty();
+        }
         for (IntPair rFlip : allRevFlipOps(n)) {
             for (List<Integer> seqL : k(n - 1, a - 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
                 Integer[] rFlipped = revFlipOp(seq, rFlip.first(), rFlip.second());
-                if (!(a > 1 || !Arrays.equals(rFlipped, range(n)))) {
+                if (!(a > 1 || !Arrays.equals(rFlipped, range(n))))
                     continue;
-                }
 
-                boolean r1 = true;
-                boolean r2 = false;
+                // forall steht fuer den Existenzquantor ueber P_n
+                // exists steht fuer den Allquantor ueber N zwischen a-1 und 2*floor(n/3)+1
+                boolean forall = true;
+                boolean exists = false;
                 for (Integer flip : allFlipOps(n)) {
+                    exists = false;
                     for (int b = a - 1; b < 2 * Math.floor(n / 3) + 2; b++) {
-                        r2 = false;
                         if (k(n - 1, b).contains(Arrays.asList(flipOp(rFlipped, flip)))) {
-                            r2 = true;
+                            exists = true;
                             break;
                         }
                     }
-                    r1 = r1 && r2;
-                    if (!r1) {
+                    forall = forall && exists;
+                    if (!forall)
                         break;
-                    }
                 }
-                if (r1) {
+                if (forall)
                     return Optional.of(rFlipped);
-                }
             }
         }
         return Optional.empty();
     }
 
     public static void main(String[] args) {
-        System.out.println(Arrays.deepToString(allRevFlipOps(5)));
         Scanner scanner = new Scanner(System.in);
         System.out.print("n: ");
         int n = scanner.nextInt();
         scanner.close();
-        for (int a = (int) Math.ceil(n / 1.5); a > 0; a--) {
+        long startTime = System.currentTimeMillis();
+        for (int a = (int) Math.floor(n / 3) * 2 + 1; a > 0; a--) {
             Optional<Integer[]> result = kHasSolution(n, a);
             if (result.isPresent()) {
                 System.out.println("max a: " + a);
-                System.out.println(Arrays.deepToString(result.get()));
+                for (int i = 0; i < result.get().length; i++) {
+                    System.out.print((result.get()[i] + 1) + " ");
+                }
+                System.out.println();
+                System.out.println("time: " + (System.currentTimeMillis() - startTime) + "ms");
                 break;
             }
         }

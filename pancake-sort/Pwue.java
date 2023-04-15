@@ -78,24 +78,22 @@ public class Pwue {
         return canonical(b);
     }
 
-    static Integer[] revFlipOp(Integer[] a, int i, int n) {
-        i--;
+    static Integer[] revFlipOp(Integer[] a, int pos, int newSize) {
         Integer[] b = new Integer[a.length + 1];
-        for (int j = 0; j < i; j++) {
-            if (a[i - j - 1] >= n) {
-                b[j] = a[i - j - 1] + 1;
+        b[0] = newSize;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] >= newSize) {
+                b[i + 1] = a[i] + 1;
             } else {
-                b[j] = a[i - j - 1];
+                b[i + 1] = a[i];
             }
         }
-        b[i] = n;
-        for (int j = i; j < a.length; j++) {
-            if (a[j] >= n) {
-                b[j + 1] = a[j] + 1;
-            } else {
-                b[j + 1] = a[j];
-            }
+        for (int i = 0; i < pos / 2; i++) {
+            int tmp = b[i];
+            b[i] = b[pos - i - 1];
+            b[pos - i - 1] = tmp;
         }
+        //System.out.println("revFlipOp(" + Arrays.toString(a) + ", " + pos + ", " + newSize + ") = " + Arrays.toString(b));
         return canonical(b);
     }
 
@@ -142,10 +140,10 @@ public class Pwue {
     }
 
     static IntPair[] allRevFlipOps(int n) {
-        IntPair[] a = new IntPair[n * (n + 1)];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j <= n; j++) {
-                a[i * (n + 1) + j] = new IntPair(i + 1, j);
+        IntPair[] a = new IntPair[(n + 1) * (n + 1)];
+        for (int pos = 0; pos <= n; pos++) {
+            for (int newSize = 0; newSize <= n; newSize++) {
+                a[pos * (n + 1) + newSize] = new IntPair(pos + 1, newSize);
             }
         }
         return a;
@@ -162,6 +160,13 @@ public class Pwue {
 
     // Hier werden die Zwischenergebnisse der dynamischen Programmierung gespeichert
     static Map<IntPair, Set<List<Integer>>> memo = new HashMap<>();
+    static Map<List<Integer>, IntPair> backref = new HashMap<>();
+
+    static void memoBackref(Set<List<Integer>> s, IntPair p) {
+        for (List<Integer> l : s) {
+            backref.put(l, p);
+        }
+    }
 
     static Set<List<Integer>> k(int n, int a) {
         // Dynamische Programmierung: ggf. schon vorhandenes Ergebnis zurueckgeben
@@ -173,15 +178,17 @@ public class Pwue {
             Set<List<Integer>> result = new HashSet<>();
             result.add(Arrays.asList(range(n)));
             memo.put(key, result);
+            memoBackref(result, key);
             return result;
         }
         if (n == 1 && a != 0) {
             Set<List<Integer>> result = new HashSet<>();
             memo.put(key, result);
+            memoBackref(result, key);
             return result;
         }
         HashSet<List<Integer>> result = new HashSet<>();
-        for (IntPair rFlip : allRevFlipOps(n)) {
+        for (IntPair rFlip : allRevFlipOps(n-1)) {
 
             for (List<Integer> seqL : k(n - 1, a - 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
@@ -189,27 +196,36 @@ public class Pwue {
                 if (!(a > 1 || !Arrays.equals(rFlipped, range(n)))) {
                     continue;
                 }
-                boolean r1 = true;
-                boolean r2 = false;
+                boolean forall = true;
                 for (Integer flip : allFlipOps(n)) {
+                    if (backref.containsKey(Arrays.asList(flipOp(rFlipped, flip)))) {
+                        IntPair p = backref.get(Arrays.asList(flipOp(rFlipped, flip)));
+                        if (p.second() < a - 1) {
+                            forall = false;
+                            break;
+                        } else {
+                            continue;
+                        }
+                    }
+                    boolean exists = false;
                     for (int b = a - 1; b < 2 * Math.floor(n / 3) + 2; b++) {
-                        r2 = false;
                         if (k(n - 1, b).contains(Arrays.asList(flipOp(rFlipped, flip)))) {
-                            r2 = true;
+                            exists = true;
                             break;
                         }
                     }
-                    r1 = r1 && r2;
-                    if (!r1) {
+                    forall = forall && exists;
+                    if (!forall) {
                         break;
                     }
                 }
-                if (r1) {
+                if (forall) {
                     result.add(Arrays.asList(rFlipped));
                 }
             }
         }
         memo.put(key, result);
+        memoBackref(result, key);
         return result;
     }
 
@@ -221,7 +237,7 @@ public class Pwue {
         if (n == 1 && a != 0) {
             return Optional.empty();
         }
-        for (IntPair rFlip : allRevFlipOps(n)) {
+        for (IntPair rFlip : allRevFlipOps(n-1)) {
             for (List<Integer> seqL : k(n - 1, a - 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
                 Integer[] rFlipped = revFlipOp(seq, rFlip.first(), rFlip.second());
@@ -233,6 +249,15 @@ public class Pwue {
                 boolean forall = true;
                 boolean exists = false;
                 for (Integer flip : allFlipOps(n)) {
+                    if (backref.containsKey(Arrays.asList(flipOp(rFlipped, flip)))) {
+                        IntPair p = backref.get(Arrays.asList(flipOp(rFlipped, flip)));
+                        if (p.second() < a - 1) {
+                            forall = false;
+                            break;
+                        } else {
+                            continue;
+                        }
+                    }
                     exists = false;
                     for (int b = a - 1; b < 2 * Math.floor(n / 3) + 2; b++) {
                         if (k(n - 1, b).contains(Arrays.asList(flipOp(rFlipped, flip)))) {

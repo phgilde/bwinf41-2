@@ -30,6 +30,9 @@
 % Für Algorithmen
 \usepackage{algpseudocode}
 
+\usepackage{caption}
+\usepackage{subcaption}
+
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage{amsthm}
@@ -204,23 +207,23 @@ Mit Hilfe der Adjazenzen lässt sich eine untere Schranke für die Anzahl der So
   Ein Stapel der Höhe $h$ mit $a_0$ Adjazenzen kann in nicht weniger als $\lceil\frac{h - a_0}{3}\rceil$ Schritten sortiert werden.
 \end{lemma}
 \begin{proof}
-In einer Operation können sich höchstens zwei neue Adjazenzen bilden. Weil in einer Operation sich nur die Nachbarn von zwei
-Pfannkuchen ändern, (nämlich des obersten, der nach unten gewendet wird, und dessen, der direkt unter dem Pfannenwender liegen bleibt)
-kann sich nur zwischen diesen beiden eine Adjazenz bilden. Eine weitere Adjazenz lässt sich dadurch bilden, dass der aufgegessene
-Pfannkuchen die Breite zwischen zwei nebeneinanderliegenden hatte, welche nach der Operation keine Pfannkuchen mit Größe zwischen ihnen haben.
-Als Ajdazenz wird auch gezählt, wenn der größte Pfannkuchen ganz unten liegt. Ein sortierter Stapel der Höhe $n$ hat $n$ Adjazenzen.
-Seien $a_0$ die Anzahl der Adjazenzen im untersuchten Stapel, $h$ die Höhe des Stapels und $n$ die Anzahl der Sortieroperationen. Weiterhin seien
-$a_f$ und $h_f$ die Anzahl der Adjazenzen und die Höhe des sortierten Stapels. Dann gilt:
-\begin{align*}
-  I.              &  & a_f      & = h_f                              & \text{Adjazenzen und Höhe des Stapels müssen gleich sein}            \\
-  II.             &  & a_f      & \leq a_0 + 2n                      & \text{Pro Operation können höchstens zwei neue Adjazenzen entstehen} \\
-  III.            &  & h_f      & = h - n                            & \text{Der Stapel wird in jedem Schritt um einen Pfannkuchen kleiner} \\
-  \noalign{II. und III. in I. einsetzen:}                                                                                                   \\
-                  &  & a_0 + 2n & \geq h - n                         &                                                                      \\
-  \leftrightarrow &  & n        & \geq \frac{h - a_0}{3}                                                                                    \\
-  \noalign{Weil $n \in \mathbb{N}^+$ kann aufgerundet werden:}                                                                              \\
-                  &  & n        & \geq \lceil\frac{h - a_0}{3}\rceil                                                                        \\
-\end{align*}
+  In einer Operation können sich höchstens zwei neue Adjazenzen bilden. Weil in einer Operation sich nur die Nachbarn von zwei
+  Pfannkuchen ändern, (nämlich des obersten, der nach unten gewendet wird, und dessen, der direkt unter dem Pfannenwender liegen bleibt)
+  kann sich nur zwischen diesen beiden eine Adjazenz bilden. Eine weitere Adjazenz lässt sich dadurch bilden, dass der aufgegessene
+  Pfannkuchen die Breite zwischen zwei nebeneinanderliegenden hatte, welche nach der Operation keine Pfannkuchen mit Größe zwischen ihnen haben.
+  Als Ajdazenz wird auch gezählt, wenn der größte Pfannkuchen ganz unten liegt. Ein sortierter Stapel der Höhe $n$ hat $n$ Adjazenzen.
+  Seien $a_0$ die Anzahl der Adjazenzen im untersuchten Stapel, $h$ die Höhe des Stapels und $n$ die Anzahl der Sortieroperationen. Weiterhin seien
+  $a_f$ und $h_f$ die Anzahl der Adjazenzen und die Höhe des sortierten Stapels. Dann gilt:
+  \begin{align*}
+    I.              &  & a_f      & = h_f                              & \text{Adjazenzen und Höhe des Stapels müssen gleich sein}            \\
+    II.             &  & a_f      & \leq a_0 + 2n                      & \text{Pro Operation können höchstens zwei neue Adjazenzen entstehen} \\
+    III.            &  & h_f      & = h - n                            & \text{Der Stapel wird in jedem Schritt um einen Pfannkuchen kleiner} \\
+    \noalign{II. und III. in I. einsetzen:}                                                                                                   \\
+                    &  & a_0 + 2n & \geq h - n                         &                                                                      \\
+    \leftrightarrow &  & n        & \geq \frac{h - a_0}{3}                                                                                    \\
+    \noalign{Weil $n \in \mathbb{N}^+$ kann aufgerundet werden:}                                                                              \\
+                    &  & n        & \geq \lceil\frac{h - a_0}{3}\rceil                                                                        \\
+  \end{align*}
 \end{proof}
 Als untere Schranke kann diese Erkenntnis als für den A*-Algorithmus geeignete Heuristik verwendet werden,
 mit $a(S)$ als Anzahl der Adjazenzen im Stapel $S$ und $h(S)$ als Höhe des Stapels $S$:
@@ -245,8 +248,8 @@ $(a>1)\vee (s \notin K(n,0))$ ergänzt werden muss. Da die komplett sortierten S
 setzen wir $K(n,0) = \{(1, \dots, n)\}$, es handelt sich dabei um das Ende der Rekursion.
 Die Funktion $K(n,a)$ ist also definiert als
 \begin{align*}
-  K(n,0) & = \{(1, \dots, n)\} \\
-  K(n,a) & = \{wS, w \in \mathsf{W}^{-1}_{n-1}, S \in K(n-1,a-1)\} | \forall v \in \mathsf{W}_n: \exists b \geq a-1: vwS \in K(n-1,b) \wedge ((a>1)\vee (S \notin K(n,0)))\} \\
+  K(n,0) & = \{(1, \dots, n)\}                                                                                                                                             \\
+  K(n,a) & = \{wS, w \in \mathsf{W}^{-1}_{n-1}, S \in K(n-1,a-1) | \forall v \in \mathsf{W}_n: \exists b \geq a-1: vwS \in K(n-1,b) \wedge ((a>1)\vee (S \notin K(n,0)))\} \\
 \end{align*}
 Dass diese Definition richtig ist, lässt sich überprüfen durch die Substitution
 $A(S)=k, S \in \mathsf{P}_n \iff (\forall w \in \mathsf{W}_n: A(ws) \geq k-1)\wedge(\exists w \in \mathsf{W}_n: A(ws) = k-1)$.
@@ -268,79 +271,185 @@ Zahlen in endlicher Zeit durchprobieren. Dass wir das nicht brauchen, zeigt folg
 \end{proof}
 Es folgt sofort, dass für einen Stapel der Höhe $h$ gilt $n=\lfloor\frac{h}{3}\rfloor$ und dieser deshalb in $2\lfloor\frac{h}{3}\rfloor+1$ Schritten sortiert werden kann.
 Allerdings lässt sich dadurch nicht direkt die PWUE-Zahl bestimmen, es handelt sich lediglich um eine obere Schranke für diese.
-Da jeder Stapel $S \in \mathsf{P}_n$ in $2\lfloor\frac{h}{3}\rfloor+1$ Schritten sortiert werden kann, reicht es aus, 
+Da jeder Stapel $S \in \mathsf{P}_n$ in $2\lfloor\frac{h}{3}\rfloor+1$ Schritten sortiert werden kann, reicht es aus,
 die Funktion $K(n,a)$ für alle $\lceil \frac{n}{1.5}\rceil$ zu berechnen.
-Damit lässt sich auch $\exists b \geq a-1: vws \in K(n-1,b)$ durch $\exists \lceil \frac{n}{1.5}\rceil \geq b \geq a-1: vwS \in K(n-1,b)$ 
+Damit lässt sich auch $\exists b \geq a-1: vws \in K(n-1,b)$ durch $\exists \lceil \frac{n}{1.5}\rceil \geq b \geq a-1: vwS \in K(n-1,b)$
 ersetzen, wodurch nicht unendlich viele Werte für $b$
 ausprobiert werden müssen.
-Um jetzt die PWUE-Zahl zu berechnen, muss nur noch die Funktion $K(n,a)$ für alle $a \leq 2\lfloor\frac{h}{3}\rfloor+1$ 
-berechnet werden und überprüft werden, ob sie Elemente enthält.
+Um jetzt die PWUE-Zahl zu berechnen, muss nur noch die Funktion $K(n,a)$ für alle $a \leq 2\lfloor\frac{h}{3}\rfloor+1$
+berechnet werden und überprüft werden, ob sie Elemente enthält:
+\begin{algorithmic}
+  \Procedure{PWUE-Zahl}{Höhe $h$}
+  \State{Intitalisiere Map $\tilde{K}$}
+  \State{Initialisiere Map $\tilde{S}$}
+  \For{$i \in (2\lfloor\frac{h}{3}\rfloor+1, 2\lfloor\frac{h}{3}\rfloor, \ldots, 0)$}
+  \If{$K(h, i) \neq \emptyset$}
+  \Return{$i, K(h,i)$}
+  \EndIf
+  \EndFor
+  \EndProcedure
+  \Procedure{K}{Höhe $n$, Schritte $a$}
+  \If{$\tilde{K}$ enthält Schlüssel $(n,a)$}
+  \Return{$\tilde{K}[(n,a)]$}
+  \EndIf
+  \If{$a=0$}
+  \State{$\tilde{K}[(n,a)] \gets (1, 2, \ldots, n)$}
+  \State{$\tilde{S}[(1,2,\ldots, n)] \gets 0$}
+  \Return{$\{(1,2,\ldots, n)\}$}
+  \EndIf
+  \If{$a>0 \wedge n=1$}
+  \State{$\tilde{K}[(n,a)] \gets (1, 2, \ldots, n)$}
+  \Return{$\{(1,2,\ldots, n)\}$}
+  \EndIf
+  \State{Initialisiere leere Menge $R$}
+  \For{$w \in \mathsf{W}^{-1}_{n-1}, S \in K(n-1,a-1)$}
+  \If{$\neg(a>1 \vee wS = (1, 2, \ldots, n))$}
+  \State{continue}
+  \EndIf
+  \State{Initialisiere boolesche Variable $A$ mit wahr}
+  \For{$v \in \mathsf{W}_n$}
+  \If{$\tilde{S}$ enthält Schlüssel $vwS$}
+  \If{$\tilde{S}[vwS]<a-1$}
+  \State{$A \gets \text{falsch}$}
+  \State{break}
+  \Else
+  \State{continue}
+  \EndIf
+  \EndIf
+  \State{Initialisiere boolesche Variable $E$ mit falsch}
+  \For{$b \in (a-1, a, \ldots, 2\lfloor\frac{h}{3}\rfloor+1)$}
+  \If{$vwS \in K(n-1, b)$}
+  \State{$E \gets \text{wahr}$}
+  \State{break}
+  \EndIf
+  \EndFor
+  \State{$A \gets A \wedge E$}
+  \If{$\neg A$}
+  \State{break}
+  \EndIf
+  \EndFor
+  \If{$A$}
+  \State{$R \gets R \cup \{wS\}$}
+  \State{$\tilde{S}[wS] \gets a$}
+  \EndIf
+  \EndFor
+  \State{$\tilde{K}[(n,a)] \gets R$}
+  \Return{$R$}
+  \EndProcedure
+\end{algorithmic}
+Dieser Algorithmus kann noch schneller gemacht werden, in dem in der Prozedur "PWUE-Zahl" für $K(n,a)$ nicht alle Elemente gesucht werden, sondern das
+erste zurückgegeben wird, denn dort sind nicht alle Elemente von $K(n,a)$ notwendig, sondern irgendeines, falls es existiert. Die Aufgabenstellung lautet ja nur einen
+Stapel zu finden, der in der größten Zahl von Schritten sortiert werden kann.
 \section{Laufzeit und Speicherbedarf}
 \subsection{Sortieren}
 Der A*-Algorithmus hat für einen Graph mit Kanten $V$ und Knoten $E$ eine
-Laufzeit in\footnote{Da die Landau-Symbole Mengen von Funktionen darstellen, ist es mathematisch korrekt zu sagen, die Zeit (-funktion) ist in $\mathcal{O}(f(x))$.
-In den Gleichungen weiter unten knüpfe ich an die verbreitere Notation an, in der $\mathcal{O}(f(x))$ für einen anonymen Funktionsterm dieser Menge steht.} 
-$\mathcal{O}(|E| \log |V|)$ und einen Speicherbedarf in
-$\mathcal{O}(V)$ \cite[654]{sedgewick_wayne_2011}. Wenn wir einen
-Ausgangsstapel der Höhe $h$ haben, sind die Knoten des zu untersuchenden Graphs
-$V = \overset{.}\cup_{n=1}^{h-1} \mathsf{P}_n$. Da es $n!$ Permutationen von
-$n$ Elementen gibt, ist $|V| = \sum_{n=1}^{h-1}n!$. Diese Summe ist in
+Laufzeit in\footnote{Da die Landau-Symbole Mengen von Funktionen darstellen,
+ist es mathematisch korrekt zu sagen, die Zeit (-funktion) ist in
+$\mathcal{O}(f(x))$. In den Gleichungen weiter unten knüpfe ich an die
+verbreitere Notation an, in der $\mathcal{O}(f(x))$ für einen anonymen
+  Funktionsterm dieser Menge steht.} $\mathcal{O}(|E| \log |V|)$ und einen
+  Speicherbedarf in $\mathcal{O}(V)$ \cite[654]{sedgewick_wayne_2011}. Wenn wir
+  einen Ausgangsstapel der Höhe $h$ haben, sind die Knoten des zu untersuchenden
+  Graphs $V = \overset{.}\cup_{n=1}^{h-1} \mathsf{P}_n$. Da es $n!$ Permutationen
+  von $n$ Elementen gibt, ist $|V| = \sum_{n=1}^{h-1}n!$. Diese Summe ist in
 $\mathcal{O}(h!)$:
-\begin{align*}
-  |V| & = \sum_{n=1}^{h-1}n!                                                                \\
-      & = (h-1)! \cdot (1 + \frac{1}{h-1} + \frac{1}{(h-1)(h-2)} + \ldots + \frac{1}{(h-1)!}) \\
-      & = (h-1)! \cdot (1 + \mathcal{O}(1))                                                   \\
-      & = \mathcal{O}((h-1)!) & | \log \\
-  \log |V| & = \mathcal{O}((h-1) \log (h-1))
-\end{align*}
-Von einem Knoten, der zu einem Stapel der Höhe $n$ gehört, gibt es maximal $n$ verschiedene PWUE-Operationen und somit auch maximal $n$ ausgehende Kanten. Das heißt
-\begin{align*}
-  |E| & = \sum_{n=1}^{h-1} n \cdot |\mathsf{P}_n|                                                   \\
-      & = \sum_{n=1}^{h-1} n \cdot n!                                                               \\
-      & = (h-1) \cdot (h-1)! \cdot (1 + \frac{h-2}{(h-1)^2} + \frac{h-3}{(h-1)^2(h-2)} + \ldots \frac{1}{(h-1) \cdot (h-1)!})\\
-      & = (h-1) \cdot (h-1)! \cdot (1 + \mathcal{O}(1)) \\
-      & = \mathcal{O}((h-1) \cdot (h-1)!) \\
-      & = \mathcal{O}(h!)
-\end{align*}
-Demnach wäre die Laufzeit $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$ und der Speicherbedarf $\mathcal{O}(h!)$. Leider ist das etwas zu kurz gedacht, denn
-in jedem Expansionsschritt des Algorithmus muss für jeden neuen Knoten noch die kanonische Form gebildet werden. Außerdem kann der zu erweiternde Knoten nicht direkt
-mit einem Zielknoten verglichen werden, sondern es muss geprüft werden, ob seine Pfannkuchen in aufsteigender Reihenfolge sind. Diese Prüfung nimmt pro Stapel eine Zeit in
+  \begin{align*}
+    |V|      & = \sum_{n=1}^{h-1}n!                                                                           \\
+             & = (h-1)! \cdot (1 + \frac{1}{h-1} + \frac{1}{(h-1)(h-2)} + \ldots + \frac{1}{(h-1)!})          \\
+             & = (h-1)! \cdot (1 + \mathcal{O}(1))                                                            \\
+             & = \mathcal{O}((h-1)!)                                                                 & | \log \\
+    \log |V| & = \mathcal{O}((h-1) \log (h-1))
+  \end{align*}
+  Von einem Knoten, der zu einem Stapel der Höhe $n$ gehört, gibt es maximal $n$ verschiedene PWUE-Operationen und somit auch maximal $n$ ausgehende Kanten. Das heißt
+  \begin{align*}
+    |E| & = \sum_{n=1}^{h-1} n \cdot |\mathsf{P}_n|                                                                             \\
+        & = \sum_{n=1}^{h-1} n \cdot n!                                                                                         \\
+        & = (h-1) \cdot (h-1)! \cdot (1 + \frac{h-2}{(h-1)^2} + \frac{h-3}{(h-1)^2(h-2)} + \ldots \frac{1}{(h-1) \cdot (h-1)!}) \\
+        & = (h-1) \cdot (h-1)! \cdot (1 + \mathcal{O}(1))                                                                       \\
+        & = \mathcal{O}((h-1) \cdot (h-1)!)                                                                                     \\
+        & = \mathcal{O}(h!)
+  \end{align*}
+  Demnach wäre die Laufzeit $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$ und der Speicherbedarf $\mathcal{O}(h!)$. Leider ist das etwas zu kurz gedacht, denn
+  in jedem Expansionsschritt des Algorithmus muss für jeden neuen Knoten noch die kanonische Form gebildet werden. Außerdem kann der zu erweiternde Knoten nicht direkt
+  mit einem Zielknoten verglichen werden, sondern es muss geprüft werden, ob seine Pfannkuchen in aufsteigender Reihenfolge sind. Diese Prüfung nimmt pro Stapel eine Zeit in
 $\mathcal{O}(h)$ in Anspruch, da jeder Pfannkuchen mit seinem Vorgänger verglichen wird und jeder Stapel nicht mehr als $h$ Pfannkuchen enthält, was zu $h$ Vergleichsoperationen führt.
-Im schlechtesten Fall wird maximal jeder der Knoten überprüft, das heißt diese Operation nimmt eine Zeit in $\mathcal{O}(h \cdot |V|) = \mathcal{O}(h!)$ in Anspruch. Dieser Term
-wächst langsamer als $h! \cdot (h-1) \cdot \log (h-1)$, die Zeit bleibt also in $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1) + h!) = \mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$. Die
-Prüfung auf Sortiertheit nimmt keinen zusätzlichen Speicher in Anspruch.\\
-Betrachten wir nun die Zeit, in der die Stapel in kanonische Form gebracht werden. Die benötigte Zeit liegt für einen Stapel liegt in $\mathcal{O}(h)$: Um $\min(S)$ und $\max(S)$ zu finden, muss der 
-Stapel, der nicht mehr als $h$ Pfannkuchen enthält, durchgegangen werden. Dann wird der gleiche Stapel noch einmal durchgegangen, um die Werte im Array $V$ zu ändern, wo wieder nicht mehr als
-$h$ Iterationen benötigt werden. Dann werden die Elemente des Array $V$ durchgegangen. Dieses hat die Länge $\max(S) - \min(S) + 1$. Diese Länge ist auch niemals größer als $h$, weil 
-der größte Pfannkuchen die Breite $h$ und der kleinste die Breite $1$ hat. Zuletzt wird noch einmal $S$ durchgegangen, um die Abbildung anzuwenden. Diese Operation wird für jeden neu
-erkundeten Stapel durchgeführt, also für jede Kante. Insgesamt wird dadurch die Zeit $\mathcal{O}(h \cdot |V|) = \mathcal{O}(h \cdot (h-1)!) = \mathcal{O}(h!)$ benötigt, was auch langsamer
-als der schon ermittelte Term für die Zeit wächst und somit vernachlässigt werden kann. Der zusätzliche Speicherbedarf liegt in $\mathcal{O}(h)$ für das Array $V$, was auch vernachlässigbar ist.
-Die Kanonisierung eines Stapels der Höhe $h$ muss mindestens in $\mathcal{O}(n)$ liegen, da das Ergebnis der Länge $n$ ja ausgegeben muss. Da die Höhe der Stapel zu $h$ proportional ist,
-ist die Zeit $\mathcal{O}(h)$ meines Algorithmus somit optimal.
-\subsection{PWUE-Zahl}
-Um die PWUE-Zahl der Höhe $h$ zu berechnen, wird $K(n,a)$ höchstens für alle $1 \leq n \leq h$ und $0 \leq a \leq 2\lfloor\frac{n}{3}\rfloor+1$ berechnet. Die Anzahl der notwendigen
-Berechnungen $B$ von $K(n, a)$ ist also:
-\begin{align*}
-  B &= \sum_{n=1}^{h}2\lfloor\frac{n}{3}\rfloor+1 \\
-    &= \sum_{n=1}^{h}\mathcal{O}(n)
-    &= \sum_{n=1}^{h}\mathcal{O}(h)
-    &= h \cdot \mathcal{O}(h)
-    &= \mathcal{O}(h^2)
-\end{align*}
-Die Größe von $K(n, a)$ ist:
-\begin{align*}
-  |K(n, a)| \leq |
-\end{align*}
+  Im schlechtesten Fall wird maximal jeder der Knoten überprüft, das heißt diese Operation nimmt eine Zeit in $\mathcal{O}(h \cdot |V|) = \mathcal{O}(h!)$ in Anspruch. Dieser Term
+  wächst langsamer als $h! \cdot (h-1) \cdot \log (h-1)$, die Zeit bleibt also in $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1) + h!) = \mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$. Die
+  Prüfung auf Sortiertheit nimmt keinen zusätzlichen Speicher in Anspruch.\\
+  Betrachten wir nun die Zeit, in der die Stapel in kanonische Form gebracht werden. Die benötigte Zeit liegt für einen Stapel liegt in $\mathcal{O}(h)$: Um $\min(S)$ und $\max(S)$ zu finden, muss der
+  Stapel, der nicht mehr als $h$ Pfannkuchen enthält, durchgegangen werden. Dann wird der gleiche Stapel noch einmal durchgegangen, um die Werte im Array $V$ zu ändern, wo wieder nicht mehr als
+$h$ Iterationen benötigt werden. Dann werden die Elemente des Array $V$ durchgegangen. Dieses hat die Länge $\max(S) - \min(S) + 1$. Diese Länge ist auch niemals größer als $h$, weil
+  der größte Pfannkuchen die Breite $h$ und der kleinste die Breite $1$ hat. Zuletzt wird noch einmal $S$ durchgegangen, um die Abbildung anzuwenden. Diese Operation wird für jeden neu
+  erkundeten Stapel durchgeführt, also für jede Kante. Insgesamt wird dadurch die Zeit $\mathcal{O}(h \cdot |V|) = \mathcal{O}(h \cdot (h-1)!) = \mathcal{O}(h!)$ benötigt, was auch langsamer
+  als der schon ermittelte Term für die Zeit wächst und somit vernachlässigt werden kann. Der zusätzliche Speicherbedarf liegt in $\mathcal{O}(h)$ für das Array $V$, was auch vernachlässigbar ist.
+  Die Kanonisierung eines Stapels der Höhe $h$ muss mindestens in $\mathcal{O}(n)$ liegen, da das Ergebnis der Länge $n$ ja ausgegeben muss. Da die Höhe der Stapel zu $h$ proportional ist,
+  ist die Zeit $\mathcal{O}(h)$ meines Algorithmus somit optimal. \\
+  Zusammenfassend ist die Zeit in $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$ und der Speicherbedarf in $\mathcal{O}(h!)$. \\
+  \begin{figure}
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{zeit-hoehe-bigo.png}
+      \caption{Messwerte zusammen mit Vorhersage}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{zeit-hoehe.png}
+      \caption{Messwerte allein}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Die Diagramme zeigen die benötigte Zeit für jeweils 100 zufällige Stapel unterschiedlicher Höhen. Man bemerke die logarithmische Skala der Zeit.}
+    \label{fig:test}
+  \end{figure}
+  Abbildung 2 zeigt, dass die tatsächliche Zeit zwar exponentiell wächst (lineares Wachstum auf einer logarithmischen Skala), wie man aber in Abbildung 2a sieht,
+  ist die Steigung kleiner als die theoretische Analyse ergeben hat. Trotzdem scheint die Zeit in $\mathcal{O}(h! \cdot (h-1) \cdot \log (h-1))$ zu liegen, denn ab einem
+  bestimmten Punkt ist die Zeit kleiner als eine Funktion dieser Menge.
+  \subsection{PWUE-Zahl}
+  Um $K(n,a)$ zu ermitteln, werden alle $S \in K(n-1, a-1), w \in
+\mathsf{W}^{-1}_{n-1}, v \in \mathsf{W}_n$ durchgegangen.
+$|\mathsf{W}^{-1}_{n-1}|=(n+1)^2$, weil wir $(n+1)$ verschiedene Pfannkuchen
+  auf den Stapel legen können (den kleinsten, zweitkleinsten, ..., größten) und
+  dann $(n+1)$ verschiedene Wendeoperationen durchführen können.
+$|\mathsf{W}_n|=n$, weil wir nur den ersten Pfannkuchen wenden, die ersten zwei
+  Pfannkuchen wenden, usw. können, bis wir alle $n$ Pfannkuchen wenden. \\ Da die
+  Summe alle möglichen Permutationen umfassen muss, gilt:
+  \begin{align*}
+    \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n,a)| & =n!
+  \end{align*}
+  Wenn wir nun für ein $n$ alle $K(n,a)$ berechnen, benötigen wir
+  \begin{align*}
+    \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)| \cdot |\mathsf{W}^{-1}_{n-1}| \cdot |\mathsf{W}_n|
+     & = |\mathsf{W}^{-1}_{n-1}| \cdot |\mathsf{W}_n| \cdot \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)|
+     & = (n+1)(n+1)n \cdot \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)|
+     & = (n+1)(n+1)n\mathcal{O}((n-1)!)
+     & = \mathcal{O}(n^3(n-1)!)
+  \end{align*}
+  Kombinationen. Da wir $n$ für alle $1 \leq n \leq h-1$ berechnen müssen, um die PWUE-Zahl zu ermitteln, werden insgesamt
+  \begin{align*}
+    \sum_{n=1}^{h-1}\mathcal{O}(n^3(n-1)!) & = \mathcal{O}(\mathcal{O}((h-1)^3(h-2)!) \cdot (h-1))
+                                           & = \mathcal{O}(h^3(h-2)!)
+  \end{align*}
+  Kombinationen durchprobiert. Für eine Kombination wird eine Zeit in $\mathcal{O}(h)$ verwendet, da die Kanonisierung wie oben erläutert
+  diese Zeit benötigt, und die Vergleichs- und Wendeoperationen so wie die Hashfunktionen der Hashmap-Datenstrukturen auch lineare Zeit benötigen.
+  Die Zeit liegt also in $\mathcal{O}(h^4(h-2)!)$. Da auch alle Kombinationen gespeichert werden und eine Kombination Länge in $\mathcal{O}(h)$ hat,
+  ist die Speicherkomplexität auch in $\mathcal{O}(h^4(h-2)!)$.
 \section{Umsetzung}
 Zur Lösung der ersten Aufgabe habe ich Python verwendet. Für die zweite Aufgabe
-habe ich Java verwendet. Die Lösung der ersten Aufgabe verlangt einen Dateipfad zum Pfannkuchenstapel. Diese Datei ist in dem Format, welches die Beispieleingaben auf der BwInf-Webseite
-haben. Das Programm sucht die Lösung und gibt dann die PWUE-Operationen sowie die Zwischenstände des Stapels aus. Die Notation weicht etwas von der hier verwendeten ab,
-denn die einzelnen Pfannkuchen werden nicht durch Kommata sondern durch Leerzeichen getrennt und der Stapel ist nicht umklammert.
+habe ich Java verwendet. Die Lösung der ersten Aufgabe verlangt einen Dateipfad
+zum Pfannkuchenstapel. Diese Datei ist in dem Format, welches die
+Beispieleingaben auf der BwInf-Webseite haben. Das Programm sucht die Lösung
+und gibt dann die PWUE-Operationen sowie die Zwischenstände des Stapels aus.
+Die Notation weicht etwas von der hier verwendeten ab, denn die einzelnen
+Pfannkuchen werden nicht durch Kommata sondern durch Leerzeichen getrennt und
+der Stapel ist nicht umklammert.
 \section{Beispiele}
 \subsection{Sortieren}
-Die Beispiele \lstinline|pancake0.txt| bis \lstinline|pancake7.txt| sind direkt von den BwInf-Webseiten übernommen. Die Beispiele \lstinline|pancake2h.txt| bis \lstinline|pancake11h.txt|
-sind die in der zweiten Teilaufgabe gefundenen aufwändigsten Pfannkuchenstapel mit Höhe 2-11. Die Beispiele sind im Ordner \lstinline|beispiele| zu finden.\\
-Eingabe: \lstinline|pancake0.txt| \\
+Die Beispiele \lstinline|pancake0.txt| bis \lstinline|pancake7.txt| sind direkt
+von den BwInf-Webseiten übernommen. Die Beispiele \lstinline|pancake2h.txt| bis
+\lstinline|pancake11h.txt| sind die in der zweiten Teilaufgabe gefundenen
+aufwändigsten Pfannkuchenstapel mit Höhe 2-11. Die Beispiele sind im Ordner
+\lstinline|beispiele| zu finden.\\ Eingabe: \lstinline|pancake0.txt| \\
 Ausgabe:
 \begin{lstlisting}
 -- schritte --
@@ -350,8 +459,7 @@ Wende erste 5
 Wende erste 4
 2 4 5
 \end{lstlisting}
-Eingabe: \lstinline|pancake1.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake1.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 6 3 1 7 4 2 5
@@ -362,8 +470,7 @@ Wende erste 3
 Wende erste 4
 1 2 4 6
 \end{lstlisting}
-Eingabe: \lstinline|pancake2.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake2.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 8 1 7 5 3 6 4 2
@@ -376,8 +483,7 @@ Wende erste 2
 Wende erste 5
 3 5 7 8
 \end{lstlisting}
-Eingabe: \lstinline|pancake3.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake3.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 5 10 1 11 4 8 2 9 7 3 6
@@ -394,8 +500,7 @@ Wende erste 3
 Wende erste 1
 2 3 5 10 11
 \end{lstlisting}
-Eingabe: \lstinline|pancake4.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake4.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 7 4 11 5 10 6 1 13 12 9 3 8 2
@@ -414,8 +519,7 @@ Wende erste 5
 Wende erste 5
 1 3 8 10 11 12
 \end{lstlisting}
-Eingabe: \lstinline|pancake5.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake5.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 4 13 10 8 2 3 7 9 14 1 12 6 5 11
@@ -432,8 +536,7 @@ Wende erste 5
 Wende erste 6
 1 2 3 5 6 9 10 13
 \end{lstlisting}
-Eingabe: \lstinline|pancake6.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake6.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 14 8 4 12 13 2 1 15 7 11 3 9 5 10 6
@@ -454,8 +557,7 @@ Wende erste 8
 Wende erste 1
 1 2 3 9 10 12 14
 \end{lstlisting}
-Eingabe: \lstinline|pancake7.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake7.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 8 5 10 15 3 7 13 6 2 4 12 9 1 14 16 11
@@ -476,16 +578,14 @@ Wende erste 1
 Wende erste 6
 2 3 5 10 12 13 14 16
 \end{lstlisting}
-Eingabe: \lstinline|pancake2h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake2h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 2 1
 Wende erste 1
 1
 \end{lstlisting}
-Eingabe: \lstinline|pancake3h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake3h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 2 3 1
@@ -494,8 +594,7 @@ Wende erste 1
 Wende erste 1
 1
 \end{lstlisting}
-Eingabe: \lstinline|pancake4h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake4h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 1 4 3 2
@@ -504,8 +603,7 @@ Wende erste 3
 Wende erste 1
 1 2
 \end{lstlisting}
-Eingabe: \lstinline|pancake5h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake5h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 1 4 2 5 3
@@ -516,8 +614,7 @@ Wende erste 1
 Wende erste 2
 2 3
 \end{lstlisting}
-Eingabe: \lstinline|pancake6h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake6h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 1 5 6 3 2 4
@@ -528,8 +625,7 @@ Wende erste 3
 Wende erste 4
 2 5 6
 \end{lstlisting}
-Eingabe: \lstinline|pancake7h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake7h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 1 6 2 7 3 5 4
@@ -542,8 +638,7 @@ Wende erste 2
 Wende erste 4
 5 6 7
 \end{lstlisting}
-Eingabe: \lstinline|pancake8h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake8h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 4 8 1 6 2 7 5 3
@@ -558,8 +653,7 @@ Wende erste 4
 Wende erste 4
 1 6 7
 \end{lstlisting}
-Eingabe: \lstinline|pancake9h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake9h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 1 8 2 6 9 3 7 5 4
@@ -574,8 +668,7 @@ Wende erste 2
 Wende erste 5
 5 7 8 9
 \end{lstlisting}
-Eingabe: \lstinline|pancake10h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake10h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 1 10 2 8 5 7 3 9 6 4
@@ -592,8 +685,7 @@ Wende erste 2
 Wende erste 2
 1 3 7 8
 \end{lstlisting}
-Eingabe: \lstinline|pancake11h.txt| \\
-Ausgabe:
+Eingabe: \lstinline|pancake11h.txt| \\ Ausgabe:
 \begin{lstlisting}
 -- schritte --
 1 10 4 7 5 9 6 11 3 8 2

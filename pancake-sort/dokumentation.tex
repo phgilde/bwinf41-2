@@ -469,13 +469,15 @@ Beispieleingaben auf der BwInf-Webseite haben. Das Programm sucht die Lösung
 und gibt dann die PWUE-Operationen sowie die Zwischenstände des Stapels aus.
 Die Notation weicht etwas von der hier verwendeten ab, denn die einzelnen
 Pfannkuchen werden nicht durch Kommata sondern durch Leerzeichen getrennt und
-der Stapel ist nicht umklammert.
+der Stapel ist nicht umklammert. Die zweite Lösung fragt nach der Zahl $n$, für die
+die PWUE-Zahl berechnet werden soll. Nach Eingabe dieser wird die PWUE-Zahl berechnet
+und zusammen mit einem Beispiel für einen solchen Stapel ausgegeben.
 \section{Beispiele}
 \subsection{Sortieren}
 Die Beispiele \lstinline|pancake0.txt| bis \lstinline|pancake7.txt| sind direkt
 von den BwInf-Webseiten übernommen. Die Beispiele \lstinline|pancake2h.txt| bis
-\lstinline|pancake11h.txt| sind die in der zweiten Teilaufgabe gefundenen
-aufwändigsten Pfannkuchenstapel mit Höhe 2-11. Die Beispiele sind im Ordner
+\lstinline|pancake12h.txt| sind die in der zweiten Teilaufgabe gefundenen
+aufwändigsten Pfannkuchenstapel mit Höhe 2-12. Die Beispiele sind im Ordner
 \lstinline|beispiele| zu finden.\\ Eingabe: \lstinline|pancake0.txt| \\
 Ausgabe:
 \begin{lstlisting}
@@ -729,6 +731,26 @@ Wende erste 3
 Wende erste 5
 4 7 8 9 11
 \end{lstlisting}
+Eingabe: \lstinline|pancake12h.txt| \\ Ausgabe:
+\begin{lstlisting}
+-- schritte --
+1 9 2 10 8 4 7 12 6 11 5 3
+Wende erste 5
+10 2 9 1 4 7 12 6 11 5 3  
+Wende erste 10
+11 6 12 7 4 1 9 2 10 3    
+Wende erste 2
+11 12 7 4 1 9 2 10 3
+Wende erste 7
+9 1 4 7 12 11 10 3
+Wende erste 8
+10 11 12 7 4 1 9
+Wende erste 3
+11 10 7 4 1 9
+Wende erste 6
+1 4 7 10 11
+\end{lstlisting}
+
 \subsection{PWUE-Zahl}
 \begin{lstlisting}
 P(2)=1
@@ -770,6 +792,10 @@ Beispiel:
 P(11)=6
 Beispiel:
 1 10 4 7 5 9 6 11 3 8 2
+
+P(12)=7
+Beispiel:
+1 9 2 10 8 4 7 12 6 11 5 3
 \end{lstlisting}
 \section{Quellcode}
 \lstinputlisting[language=Python]{a_star.py}

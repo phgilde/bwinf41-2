@@ -399,7 +399,8 @@ $h$ Iterationen benötigt werden. Dann werden die Elemente des Array $V$ durchge
       \caption{Messwerte allein}
       \label{fig:sub2}
     \end{subfigure}
-    \caption{Die Diagramme zeigen die benötigte Zeit für jeweils 100 zufällige Stapel unterschiedlicher Höhen. Man bemerke die logarithmische Skala der Zeit.}
+    \caption{Die Diagramme zeigen die benötigte Zeit für jeweils 100 zufällige Stapel unterschiedlicher Höhen. Man bemerke die logarithmische Skala der Zeit. Durch die logarithmische
+    Skala wird die Steigung unabhängig vom Koeffizienten der $\mathcal{O}(n!(n-1)log(n-1))$-Funktion, dieser verschiebt den Graphen nur.}
     \label{fig:test}
   \end{figure}
   Abbildung 2 zeigt, dass die tatsächliche Zeit zwar exponentiell wächst (lineares Wachstum auf einer logarithmischen Skala), wie man aber in Abbildung 2a sieht,
@@ -433,7 +434,33 @@ $|\mathsf{W}_n|=n$, weil wir nur den ersten Pfannkuchen wenden, die ersten zwei
   Kombinationen durchprobiert. Für eine Kombination wird eine Zeit in $\mathcal{O}(h)$ verwendet, da die Kanonisierung wie oben erläutert
   diese Zeit benötigt, und die Vergleichs- und Wendeoperationen so wie die Hashfunktionen der Hashmap-Datenstrukturen auch lineare Zeit benötigen.
   Die Zeit liegt also in $\mathcal{O}(h^4(h-2)!)$. Da auch alle Kombinationen gespeichert werden und eine Kombination Länge in $\mathcal{O}(h)$ hat,
-  ist die Speicherkomplexität auch in $\mathcal{O}(h^4(h-2)!)$.
+  ist die Speicherkomplexität auch in $\mathcal{O}(h^4(h-2)!)$. \\
+  \begin{figure}
+    \centering
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{pwue-hoehe-bigo.png}
+      \caption{Messwerte zusammen mit Vorhersage}
+      \label{fig:sub1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=1\linewidth]{pwue-hoehe.png}
+      \caption{Messwerte allein}
+      \label{fig:sub2}
+    \end{subfigure}
+    \caption{Zeiten, um verschiedene PWUE-Zahlen zu berechnen}
+    \label{fig:test}
+  \end{figure}
+  Auch bei diesem Aufgabenteil steigt die theoretische Zeit steiler an als die tatsächliche. Die tatsächliche Zeit hat aber eine stärkere Krümmung, was darauf
+  schließen lässt, dass die Zeit für größere Werte schneller steigt.
+\section{Erweiterung: Beliebig große Eingabezahlen}
+Ich habe meine Lösung so erweitert, dass auch Stapel sortiert werden können, deren Zahlen nicht bloß eine Permutation von aufeinanderfolgenden Zahlen sind, sondern beliebig große
+Lücken dazwischen liegen können. Dafür habe ich einen zweiten Algorithmus zur Kanonisierung entwickelt: Eine Kopie des Stapels wird sortiert und dann wird für jeden Pfannkuchen
+geschaut, an welcher Stelle er sich befindet. Diese Stelle ist dann die neue Breite. So hat der kleinste Pfannkuchen die erste Stelle und somit die Größe 1, der zweitgrößte Größe 2 
+und so weiter. Das Sortieren mit geläufigen Algorithmen braucht Zeit in $\mathcal{O}(n \log(n))$. Um für jeden der Pfannkuchen seine Stelle zu finden, kann binäre Suche verwendet werden,
+um für jeden Pfannkuchen Zeit in $\mathcal{O}(\log(n))$ zu benötigen, insgesamt also nochmal $\mathcal{O}(n \log(n))$. Es kann auch auf triviale Weise in $\mathcal{O}(n^2)$ gesucht werden,
+wenn wir für jeden Pfannkuchen den sortierten Stapel durchgehen. Da der Rest des Algorithmus sehr viel mehr Zeit braucht, macht die Wahl des Suchalgorithmus hier keinen großen Unterschied.
 \section{Umsetzung}
 Zur Lösung der ersten Aufgabe habe ich Python verwendet. Für die zweite Aufgabe
 habe ich Java verwendet. Die Lösung der ersten Aufgabe verlangt einen Dateipfad

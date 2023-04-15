@@ -44,7 +44,7 @@ def flip(arr, k):
 # Gibt alle moeglichen naechsten Stapel zurueck.
 def next_arrs(arr):
     for i in range(1, len(arr) + 1):
-        yield canonize2(flip(arr, i))
+        yield canonize(flip(arr, i))
 
 
 # Zaehlt, wie viele aufeinanderfolgende Pfannkuchen nebeneinander liegen.
@@ -62,7 +62,7 @@ def count_adj(arr):
 # wobei die Reihenfolge erhalten bleibt.
 # Algorithmus mit O(n), was auch die kleinstmoegliche Zeitkomplexitaet ist,
 # da ja schon die ausgabe des ergebnisses Zeit O(n) braucht
-def canonize2(arr):
+def canonize(arr):
     a_min = min(arr)
     a_max = max(arr)
     values = [-1 for _ in range(a_max - a_min + 1)]
@@ -82,7 +82,7 @@ def canonize2(arr):
 
 # Naehert die minimale Anzahl von flips()s mit count_adj() an.
 def heuristic(arr):
-    return math.ceil((len(arr) - count_adj(canonize2(arr))) / 3)
+    return math.ceil((len(arr) - count_adj(canonize(arr))) / 3)
 
 
 # prueft, ob die Liste in der richtigen Reihenfolge ist.
@@ -92,13 +92,13 @@ def is_sorted(arr):
 
 # Gibt die Optimale Reihenfolge von flip()s zurueck, um die Liste zu sortieren.
 def least_flips(arr, count_steps=False):
-    return a_star(canonize2(arr), is_sorted, next_arrs, lambda a, b: 1, heuristic, count_steps)
+    return a_star(canonize(arr), is_sorted, next_arrs, lambda a, b: 1, heuristic, count_steps)
 
 
 # Findet die PWUE-Operation von pre zu post.
 def find_flip(pre, post):
     for i in range(1, len(pre) + 1):
-        if canonize2(flip(pre, i)) == canonize2(post):
+        if canonize(flip(pre, i)) == canonize(post):
             return i
 
 

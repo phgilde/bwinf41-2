@@ -82,32 +82,35 @@
 
 \section{Lösungsidee}
 \subsection{Notation}
-Mit "Stapel" ist im Folgenden immer der Begriff der Aufgabenstellung gemeint,
+Mit ``Stapel'' ist im Folgenden immer der Begriff der Aufgabenstellung gemeint,
 nicht die Datenstruktur. Die Menge der möglichen Stapel der Höhe $n$ wird mit
 $\mathsf{P}_n$ bezeichnet. Die Möglichen Pfannkuchen-Wende-und-Ess-Operationen
 für einem Stapel mit $n$ Pfannkuchen wird mit $\mathsf{W}_n$ bezeichnet. Die
-Menge der möglichen Umkehroperationen für solch einen Stapel wird mit
-$\mathsf{W}^{-1}_n$ bezeichnet. Wenn der Stapel $S \in \mathsf{P}_n$ durch die
-Operation $w \in \mathsf{W}_n$ verändert wird, so wird der neue Stapel $S' = w
-  S$ bezeichnet. Operationen assoziieren nach rechts, d.h. $w_1 w_2 S = w_1 (w_2
-  S)$. Die Funktionen $A$ und $P$ werden aus der Aufgabenstellung übernommen.
-Wird ein Stapel im Text dargestellt, dann steht der erste Pfannkuchen für den
-obersten, der zweite für den zweitobersten und so weiter. Pfannkuchenstapel
-werden entweder in Klammern durch Kommas getrennt (z.B. $(2,7,1,8)$) oder als
-nicht getrennte Ziffern dargestellt (z.B. $2718$). Bei der zweiten Notation
-können Pfannkuchen dann maximal die Breite 9 haben, um die Eindeutigkeit der
-Darstellung zu gewährleisten.
+Menge der möglichen Umkehroperationen, das heißt einen Pfannkuchen auf den
+Stapel legen und dann die ersten $m$ Pfannkuchen wenden, für solch einen Stapel
+wird mit $\mathsf{W}^{-1}_n$ bezeichnet. Wenn der Stapel $S \in \mathsf{P}_n$
+durch die Operation $w \in \mathsf{W}_n$ verändert wird, so wird der neue
+Stapel $S' = w S$ bezeichnet. Operationen assoziieren nach rechts, d.h. $w_1
+  w_2 S = w_1 (w_2 S)$. Die Funktionen $A$ und $P$ werden aus der
+Aufgabenstellung übernommen. Wird ein Stapel im Text dargestellt, dann steht
+der erste Pfannkuchen für den obersten, der zweite für den zweitobersten und so
+weiter. Pfannkuchenstapel werden entweder in Klammern durch Kommas getrennt
+(z.B. $(2,7,1,8)$) oder als nicht getrennte Ziffern dargestellt (z.B. $2718$).
+Bei der zweiten Notation können Pfannkuchen dann maximal die Breite 9 haben, um
+die Eindeutigkeit der Darstellung zu gewährleisten.
 \subsection{Sortieren}
 \begin{figure}[t]
   \includegraphics[scale=0.5]{pancakegraph}
   \centering
-  \caption{Ausschnitt aus dem Graph der Pfannkuchenstapel. Die Kanten sind beschriftet mit der zugehörigen Operation.}
+  \caption{Ausschnitt aus dem Graph der Pfannkuchenstapel. Die Kanten sind beschriftet mit der zugehörigen Operation. Die kanonische Form des Stapels ist
+    in fetten Buchstaben geschrieben.}
 \end{figure}
-Die möglichen Stapel können in einem gerichteten Graphen dargestellt werden (Siehe Abbildung 1). Die Knoten des Graphen
+Die Pfannkuchenstapel können in einem gerichteten Graphen organisiert werden (Siehe Abbildung 1). Die Knoten des Graphen
 sind die Stapel, die Kanten sind die Operationen. Die Kanten sind gerichtet, denn eine PWUE-Operation
 wandelt einen Stapel in einen anderen um. Die Identität eines Stapels wird durch die Reihenfolge der Pfannkuchen bestimmt,
 nicht deren genauen Größen. Das heißt, dass zum Beispiel die Stapel $(10,12,3)$ und $(2,3,1)$ gleich sind, denn die Elemente haben die gleiche
-Reihenfolge. Das hängt damit zusammen, dass der Zielstapel nur durch seine aufsteigende Reihenfolge definiert ist. Äquivalente Stapel können
+Reihenfolge. Das leigt daran, dass der Zielstapel nur durch seine aufsteigende Reihenfolge definiert ist, und Stapel mit gleicher Reihenfolge
+auf die gleiche Weise sortiert werden müssen. Äquivalente Stapel können
 in eine kanonische Form gebracht werden, in dem die kleinste Größe durch 1, die zweitkleinste durch 2 und so weiter ersetzt werden. Dadurch ist
 $(2,3,1)$ in kanonischer Form. Die kanonische Form kann folgendermaßen bestimmt werden:
 \begin{algorithmic}
@@ -134,12 +137,12 @@ $(2,3,1)$ in kanonischer Form. Die kanonische Form kann folgendermaßen bestimmt
   \EndProcedure
 \end{algorithmic}
 Dieser Algorithmus konstruiert im Array $V$ eine Abbildung der Zahlenwerte der ursprünglichen Pfannkuchen in
-jene der kanonischen Form, wobei der Array-Index den Parameter der Abbildung darstellt. Dafür wird zunächst jeder
+jene der kanonischen Form, wobei der Array-Index das Argument der Abbildung darstellt. Dafür wird zunächst jeder
 Index, der zu einer Breite im ursprünglichen Stapel gehört, markiert. Die markierten Indices werden dann aufsteigend
 nummeriert, der kleinste bekommt also den Wert $1$, der zweitkleinste $2$ und so weiter. So ist die Konstruktion
 der Abbildung vollständig. Im letzten Schritt wird die Abbildung auf die Elemente von $S$ angewandt. Da die Abbildung
 nur für bestimmte Werte zwischen einschließlich dem kleinsten und größten von $S$ definiert ist, kann die Länge des Arrays
-auf $\max(S)-\min(S)$ begrenzt werden. Für die Abbildung muss deshalb immer noch $\min(S)$ vom Parameter abgezogen werden.
+auf $\max(S)-\min(S)$ begrenzt werden. Für die Abbildung muss deshalb immer noch $\min(S)$ vom Argument abgezogen werden.
 \\\\
 Um die Operationen zu bestimmen, die einen Stapel optimal sortieren, muss
 ein kürzester Pfad im Graphen vom Stapel zu einem sortierten Stapel gefunden werden. Dafür lässt sich
@@ -200,7 +203,7 @@ für den Stapel $S$ lautet der Algorithmus:\\\\
   \EndWhile
   \EndProcedure
 \end{algorithmic}
-Eine Heuristik für das Pfannkuchen sortieren ist die Anzahl der Adjazenzen \cite{gates_1979}. Als Adjazenz bezeichne ich zwei
+Eine Heuristik für das Pfannkuchensortieren ist die Anzahl der Adjazenzen \cite{gates_1979}. Als Adjazenz bezeichne ich zwei
 Pfannkuchen die direkt nebeneinander im Stapel liegen und für die es keinen Pfannkuchen gibt, dessen Größe zwischen den beiden liegt.
 Mit Hilfe der Adjazenzen lässt sich eine untere Schranke für die Anzahl der Sortierschritte eines Stapels berechnen.
 \begin{lemma}
@@ -245,14 +248,13 @@ $K(n,a)$ enthält also alle Stapel, die durch eine Umkehroperation aus Stapeln d
 und für die keine andere Sortieroperation eine Stapel bildet, der in weniger als $a-1$ Schritten sortiert werden kann.
 Nach dieser Definition würde $K(n, 1)$ allerdings auch die komplett sortierten Stapel enthalten, weshalb noch die Bedingung
 $(a>1)\vee (s \notin K(n,0))$ ergänzt werden muss. Da die komplett sortierten Stapel nicht weiter sortiert werden müssen,
-setzen wir $K(n,0) = \{(1, \dots, n)\}$, es handelt sich dabei um das Ende der Rekursion.
+setzen wir $K(n,0) = \{(1, \dots, n)\}$, es handelt sich dabei um das Ende der Rekursion. Außerdem setzen wir für $a>0$ $K(0, a)=\emptyset$, denn
+Stapel der Höhe 1 müssen niemals sortiert werden.
 Die Funktion $K(n,a)$ ist also definiert als
 \begin{align*}
   K(n,0) & = \{(1, \dots, n)\}                                                                                                                                             \\
   K(n,a) & = \{wS, w \in \mathsf{W}^{-1}_{n-1}, S \in K(n-1,a-1) | \forall v \in \mathsf{W}_n: \exists b \geq a-1: vwS \in K(n-1,b) \wedge ((a>1)\vee (S \notin K(n,0)))\} \\
 \end{align*}
-Dass diese Definition richtig ist, lässt sich überprüfen durch die Substitution
-$A(S)=k, S \in \mathsf{P}_n \iff (\forall w \in \mathsf{W}_n: A(ws) \geq k-1)\wedge(\exists w \in \mathsf{W}_n: A(ws) = k-1)$.
 Ein Problem bei der Berechnung dieser Funktion ist, dass $\exists b \geq a-1: vwS \in K(n-1,b) \wedge ((a>1)\vee (S \notin K(n,0)))$
 nicht begrenzt ist, sondern alle natürlichen Zahlen durchprobieren müsste. Das ist natürlich Unfug, denn wir können nicht alle natürlichen
 Zahlen in endlicher Zeit durchprobieren. Dass wir das nicht brauchen, zeigt folgendes Lemma:
@@ -452,26 +454,37 @@ $|\mathsf{W}_n|=n$, weil wir nur den ersten Pfannkuchen wenden, die ersten zwei
     \caption{Zeiten, um verschiedene PWUE-Zahlen zu berechnen}
     \label{fig:test}
   \end{figure}
-  Auch bei diesem Aufgabenteil steigt die theoretische Zeit steiler an als die tatsächliche. Die tatsächliche Zeit hat aber eine stärkere Krümmung, was darauf
+  Wie Abbildung 3 zeigt, steigt die theoretische Zeit steiler an als die tatsächliche. Die tatsächliche Zeit hat aber eine stärkere Krümmung, was darauf
   schließen lässt, dass die Zeit für größere Werte schneller steigt.
-\section{Erweiterung: Beliebig große Eingabezahlen}
-Ich habe meine Lösung so erweitert, dass auch Stapel sortiert werden können, deren Zahlen nicht bloß eine Permutation von aufeinanderfolgenden Zahlen sind, sondern beliebig große
-Lücken dazwischen liegen können. Dafür habe ich einen zweiten Algorithmus zur Kanonisierung entwickelt: Eine Kopie des Stapels wird sortiert und dann wird für jeden Pfannkuchen
-geschaut, an welcher Stelle er sich befindet. Diese Stelle ist dann die neue Breite. So hat der kleinste Pfannkuchen die erste Stelle und somit die Größe 1, der zweitgrößte Größe 2 
-und so weiter. Das Sortieren mit geläufigen Algorithmen braucht Zeit in $\mathcal{O}(n \log(n))$. Um für jeden der Pfannkuchen seine Stelle zu finden, kann binäre Suche verwendet werden,
-um für jeden Pfannkuchen Zeit in $\mathcal{O}(\log(n))$ zu benötigen, insgesamt also nochmal $\mathcal{O}(n \log(n))$. Es kann auch auf triviale Weise in $\mathcal{O}(n^2)$ gesucht werden,
-wenn wir für jeden Pfannkuchen den sortierten Stapel durchgehen. Da der Rest des Algorithmus sehr viel mehr Zeit braucht, macht die Wahl des Suchalgorithmus hier keinen großen Unterschied.
-\section{Umsetzung}
-Zur Lösung der ersten Aufgabe habe ich Python verwendet. Für die zweite Aufgabe
-habe ich Java verwendet. Die Lösung der ersten Aufgabe verlangt einen Dateipfad
-zum Pfannkuchenstapel. Diese Datei ist in dem Format, welches die
-Beispieleingaben auf der BwInf-Webseite haben. Das Programm sucht die Lösung
-und gibt dann die PWUE-Operationen sowie die Zwischenstände des Stapels aus.
-Die Notation weicht etwas von der hier verwendeten ab, denn die einzelnen
-Pfannkuchen werden nicht durch Kommata sondern durch Leerzeichen getrennt und
-der Stapel ist nicht umklammert. Die zweite Lösung fragt nach der Zahl $n$, für die
-die PWUE-Zahl berechnet werden soll. Nach Eingabe dieser wird die PWUE-Zahl berechnet
-und zusammen mit einem Beispiel für einen solchen Stapel ausgegeben.
+  \section{Erweiterung: Beliebig große Eingabezahlen}
+  Ich habe meine Lösung so erweitert, dass auch Stapel sortiert werden können,
+  deren Zahlen nicht bloß eine Permutation von aufeinanderfolgenden Zahlen sind,
+  sondern beliebig große Lücken dazwischen liegen können. Die Pfannkuchen müssen
+  allerdings trotzdem alle paarweise unterschiedlich sein, da sonst die
+  Adjazenzheuristik nicht unbedingt funktioniert. Dafür habe ich einen zweiten
+  Algorithmus zur Kanonisierung entwickelt: Eine Kopie des Stapels wird sortiert
+  und dann wird für jeden Pfannkuchen geschaut, an welcher Stelle er sich
+  befindet. Diese Stelle ist dann die neue Breite. So hat der kleinste
+  Pfannkuchen die erste Stelle und somit die Größe 1, der zweitgrößte Größe 2 und
+  so weiter. Das Sortieren mit geläufigen Algorithmen braucht Zeit in
+$\mathcal{O}(n \log(n))$. Um für jeden der Pfannkuchen seine Stelle zu finden,
+  kann binäre Suche verwendet werden, um für jeden Pfannkuchen Zeit in
+$\mathcal{O}(\log(n))$ zu benötigen, insgesamt also nochmal $\mathcal{O}(n
+\log(n))$. Es kann auch auf triviale Weise in $\mathcal{O}(n^2)$ gesucht
+  werden, wenn wir für jeden Pfannkuchen den sortierten Stapel durchgehen. Da der
+  Rest des Algorithmus sehr viel mehr Zeit braucht, macht die Wahl des
+  Suchalgorithmus hier keinen großen Unterschied.
+  \section{Umsetzung}
+  Zur Lösung der ersten Aufgabe habe ich Python verwendet. Für die zweite Aufgabe
+  habe ich Java verwendet. Die Lösung der ersten Aufgabe verlangt einen Dateipfad
+  zum Pfannkuchenstapel. Diese Datei ist in dem Format, welches die
+  Beispieleingaben auf der BwInf-Webseite haben. Das Programm sucht die Lösung
+  und gibt dann die PWUE-Operationen sowie die Zwischenstände des Stapels aus.
+  Die Notation weicht etwas von der hier verwendeten ab, denn die einzelnen
+  Pfannkuchen werden nicht durch Kommata sondern durch Leerzeichen getrennt und
+  der Stapel ist nicht umklammert. Die zweite Lösung fragt nach der Zahl $n$, für
+die die PWUE-Zahl berechnet werden soll. Nach Eingabe dieser wird die PWUE-Zahl
+berechnet und zusammen mit einem Beispiel für einen solchen Stapel ausgegeben.
 \section{Beispiele}
 \subsection{Sortieren}
 Die Beispiele \lstinline|pancake0.txt| bis \lstinline|pancake7.txt| sind direkt

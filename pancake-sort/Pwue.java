@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Pwue {
+    // Einfache Klasse fuer Paare von Integern, die als Schluessel in Maps verwendet werden koennen
     static class IntPair implements Comparable<IntPair> {
         private int num1;
         private int num2;
@@ -67,6 +68,8 @@ public class Pwue {
         }
     }
 
+    // PWUE-Operation, welche die ersten i Elemente eines Stapels wendet und dann den obersten Pfannkuchen
+    // entfernt.
     static Integer[] flipOp(Integer[] a, int i) {
         Integer[] b = new Integer[a.length - 1];
         for (int j = 0; j < i - 1; j++) {
@@ -78,6 +81,9 @@ public class Pwue {
         return canonical(b);
     }
 
+    // Umgekehrte PWUE-Operation, die erst den Pfannkuchen der Groesse newSize auf den Stapel legt und dann die ersten
+    // pos Elemente wendet. Pfannkuchen, die groesser als newSize sind, werden dabei um 1 erhoeht, um zu verhindern, dass
+    // eine Groesse doppelt vorkommt.
     static Integer[] revFlipOp(Integer[] a, int pos, int newSize) {
         Integer[] b = new Integer[a.length + 1];
         b[0] = newSize;
@@ -131,6 +137,8 @@ public class Pwue {
 
     }
 
+    // Menge aller PWUE-Operationen fuer einen Stapel der Hoehe n, dargestellt als
+    // Array der Zahl der zu wendenden Pfannkuchen.
     static Integer[] allFlipOps(int n) {
         Integer[] a = new Integer[n];
         for (int i = 0; i < n; i++) {
@@ -139,6 +147,9 @@ public class Pwue {
         return a;
     }
 
+    // Menge aller umgekehrten PWUE-Operationen fuer einen Stapel der Hoehe n, dargestellt als
+    // Array von Paaren (pos, newSize), wobei pos die Anzahl der zu wendenden Pfannkuchen und
+    // newSize die Groesse des neuen Pfannkuchens ist.
     static IntPair[] allRevFlipOps(int n) {
         IntPair[] a = new IntPair[(n + 1) * (n + 1)];
         for (int pos = 0; pos <= n; pos++) {
@@ -158,10 +169,11 @@ public class Pwue {
         return a;
     }
 
-    // Hier werden die Zwischenergebnisse der dynamischen Programmierung gespeichert
+    // Hier werden die Zwischenergebnisse der dynamischen Programmierung gespeichert.
     static Map<IntPair, Set<List<Integer>>> memo = new HashMap<>();
     static Map<List<Integer>, IntPair> backref = new HashMap<>();
 
+    // Speichert fuer Stapel die Werte (n, a) aus K(n, a). backref ist eine Inverse von memo.
     static void memoBackref(Set<List<Integer>> s, IntPair p) {
         for (List<Integer> l : s) {
             backref.put(l, p);

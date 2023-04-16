@@ -79,7 +79,8 @@ public class SimulatedAnnealing {
             p1 = p2;
             p2 = p3;
         }
-        return result;
+        // round to 2 decimal places
+        return Math.round(result * 100) / 100.0;
     }
 
     static Integer[][] initPopulation(int populationSize, int individualSize) {
@@ -152,10 +153,10 @@ public class SimulatedAnnealing {
     static Integer[] simulatedAnnealing(Integer[] candidate,
             List<Function<Integer[], Integer[]>> mutationOperators,
             ToDoubleFunction<Integer[]> costFunction, int maxIterations, double temperature,
-            double coolingRate, double maxTime) {
+            double coolingRate, double maxTime, double maxStagnation) {
         System.out.println("Simulated Annealing");
-        System.out.println("Parameters: maxIterations=" + maxIterations + ", temperature=" + temperature
-                + ", coolingRate=" + coolingRate + ", maxTime=" + maxTime + "s");
+        System.out.println("Parameters: maxIterations=" + maxIterations + ", temperature="
+                + temperature + ", coolingRate=" + coolingRate + ", maxTime=" + maxTime + "s");
         int printIteration = 0;
         int iteration = 0;
         candidate = candidate.clone();
@@ -163,8 +164,10 @@ public class SimulatedAnnealing {
         double costBest = costFunction.applyAsDouble(candidateBest);
         double costCurrent = costBest;
         double startTime = System.currentTimeMillis();
+        int stagnation = 0;
         while (iteration < maxIterations
-                && System.currentTimeMillis() - startTime < maxTime * 1000.0) {
+                && System.currentTimeMillis() - startTime < maxTime * 1000.0
+                && stagnation < maxStagnation) {
             Integer[] newCandidate = mutationOperators
                     .get((int) (Math.random() * mutationOperators.size())).apply(candidate.clone());
             double costNew = costFunction.applyAsDouble(newCandidate);
@@ -175,14 +178,17 @@ public class SimulatedAnnealing {
             if (Math.random() < Math.exp((costCurrent - costNew) / temperature)) {
                 candidate = newCandidate.clone();
                 costCurrent = costNew;
+                stagnation = 0;
+            } else {
+                stagnation++;
             }
             temperature *= coolingRate;
             iteration++;
             if (System.currentTimeMillis() - startTime > 1000.0 * printIteration) {
-                System.out.print("\rIteration: " + iteration + " Cost: "
-                        + costBest + " Time: "
+                System.out.print("\rIteration: " + iteration + " Cost: " + costBest + " Time: "
                         + secondsToTime((System.currentTimeMillis() - startTime) / 1000.0) + " TH: "
-                        + temperature + "    ");
+                        + temperature + " Stagnation: " + stagnation + " Current candidate:"
+                        + costCurrent + "           ");
                 printIteration++;
             }
         }
@@ -204,14 +210,22 @@ public class SimulatedAnnealing {
     }
 
     public static void main(String[] args) {
-        String path = args[0];
+        String path;
+        if (args.length == 1) {
+            path = args[0];
+        } else {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Pfad zur Datei:");
+            path = scanner.nextLine();
+            scanner.close();
+        }
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
         Integer[] solution = simulatedAnnealing(initPopulation(1, coords.length)[0],
                 Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), (int) 1e9, acutePenalty,
-                0.999999, 60);
+                0.999999, 600, 1000000);
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));
@@ -220,7 +234,7 @@ public class SimulatedAnnealing {
             Files.write(Paths.get(path + ".solution"), Arrays.toString(solution).getBytes());
         } catch (IOException e) {
             e.printStackTrace();
-        }   
+        }
     }
 }
 

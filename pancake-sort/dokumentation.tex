@@ -5,9 +5,9 @@
 \usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
 
 % Die nächsten drei Felder bitte anpassen:
-\newcommand{\Aufgabe}{Aufgabe 1: \LaTeX-Dokument} % Aufgabennummer und Aufgabennamen angeben
-\newcommand{\TeilnahmeId}{?????}                  % Teilnahme-ID angeben
-\newcommand{\Name}{Vor- und Nachname}             % Name des Bearbeiter / der Bearbeiterin dieser Aufgabe angeben
+\newcommand{\Aufgabe}{Aufgabe 3: Pancake Sort} % Aufgabennummer und Aufgabennamen angeben
+\newcommand{\TeilnahmeId}{65336}                  % Teilnahme-ID angeben
+\newcommand{\Name}{Philip Gilde}             % Name des Bearbeiter / der Bearbeiterin dieser Aufgabe angeben
 
 % Kopf- und Fußzeilen
 \usepackage{scrlayer-scrpage, lastpage}
@@ -423,10 +423,10 @@ $|\mathsf{W}_n|=n$, weil wir nur den ersten Pfannkuchen wenden, die ersten zwei
   Wenn wir nun für ein $n$ alle $K(n,a)$ berechnen, benötigen wir
   \begin{align*}
     \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)| \cdot |\mathsf{W}^{-1}_{n-1}| \cdot |\mathsf{W}_n|
-     & = |\mathsf{W}^{-1}_{n-1}| \cdot |\mathsf{W}_n| \cdot \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)|
-     & = (n+1)(n+1)n \cdot \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)|
-     & = (n+1)(n+1)n\mathcal{O}((n-1)!)
-     & = \mathcal{O}(n^3(n-1)!)
+     & = |\mathsf{W}^{-1}_{n-1}| \cdot |\mathsf{W}_n| \cdot \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)| \\
+     & = (n+1)(n+1)n \cdot \sum_{a=0}^{2\lfloor\frac{n}{3}\rfloor+1}|K(n-1,a-1)|                                  \\
+     & = (n+1)(n+1)n\mathcal{O}((n-1)!)                                                                           \\
+     & = \mathcal{O}(n^3(n-1)!)                                                                                   \\
   \end{align*}
   Kombinationen. Da wir $n$ für alle $1 \leq n \leq h-1$ berechnen müssen, um die PWUE-Zahl zu ermitteln, werden insgesamt
   \begin{align*}

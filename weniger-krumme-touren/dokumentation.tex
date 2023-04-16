@@ -5,8 +5,8 @@
 \usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
 
 % Die nächsten drei Felder bitte anpassen:
-\newcommand{\Aufgabe}{Aufgabe 1: \LaTeX-Dokument} % Aufgabennummer und Aufgabennamen angeben
-\newcommand{\TeilnahmeId}{?????}                  % Teilnahme-ID angeben
+\newcommand{\Aufgabe}{Aufgabe 1: Weniger krumme Touren} % Aufgabennummer und Aufgabennamen angeben
+\newcommand{\TeilnahmeId}{65336}                  % Teilnahme-ID angeben
 \newcommand{\Name}{Vor- und Nachname}             % Name des Bearbeiter / der Bearbeiterin dieser Aufgabe angeben
 
 % Kopf- und Fußzeilen
@@ -118,7 +118,7 @@ ist eine obere Schranke der Länge eines Pfades, wodurch für jeden Pfad $S'$ mi
 gilt $C(S) > C(S')$. Diese obere Schranke erschließt sich aus der Überlegung, dass eine mögliche Lösung mindestens $N-1$ Kanten haben muss.
 Dieser Pfad kann höchstens die Kosten der teuersten $N-1$ Kanten haben. \\
 Um Nachbarn einer Lösung zu finden, habe ich die für das klassische TSP bekannten Mutationsoperatoren \textbf{Insert}, \textbf{Displace}, \textbf{Reverse-Displace}
-//TODO quote mutationsoperatoren
+\cite{larranaga_1999}
 und einen eigenen, auf dem 3-Opt-Verfahren basierenden Mutationsoperator, den ich \textbf{3-Opt} nenne, verwendet. Es wird zufällig einer der Operatoren angewendet.
 Die Operatoren basieren auf der
 Darstellung eines Pfades als Permutation von $(1, 2, \ldots, N)$. In dieser Darstellung gibt das $k$-te Element der Permutation
@@ -136,7 +136,7 @@ an, welcher Landeplatz als $k$-tes besucht wird.
     Lösung löscht und die Segmente in einer Reihenfolge zusammensetzt, welche die Gesamtkosten
     minimiert, denn er ersetzt auch 3 Kanten durch neue.
 \end{description}
-\subsection{Optimale Lösung}
+\subsection{Erweiterung: Optimale Lösung}
 
 \begin{figure}[t]
   \includegraphics[scale=.2]{struktur}
@@ -223,20 +223,19 @@ Demnach ist
 $$\text{WKT} \geq_{\mathcal{P}} \text{E-PTSP}$$
 
 Unter der Annahme $\mathcal{P} \neq \mathcal{NP}$ gibt es deshalb keinen
-Algorithmus, der WKT in polynomieller Zeit optimal lößt. 
-\\\\
-Zur optimalen Lösung von WKT wird dieses als Integer-Programming-Problem formuliert. Integer
+Algorithmus, der WKT in polynomieller Zeit optimal lößt. \\\\ Zur optimalen
+Lösung von WKT wird dieses als Integer-Programming-Problem formuliert. Integer
 Programming bezeichnet einen linearen Term mit ganzzahligen Variablen, der
-unter Einhaltung linearer Ungleichung maximiert werden soll. Integer Programming
-ist $\mathcal{NP}$-schwer \cite{karp_1972}, weshalb dafür nur Algorithmen exponentieller
-Laufzeit bekannt sind. \\ Es sei also $I$ eine Instanz von $WKT$ mit den Punkten
-$P \subset \mathbb{R}^2$. Die Landeplätze sind $L=\{1,2,\ldots,|P|\}$ Die
-Variable $x_{i,j} \in \{0, 1\}$ it $i, j \in L; i<j$ kodiert, ob die Route die
-Punkte $P_i$ und $P_j$ direkt nacheinander anfliegt, wobei nicht festgelegt
-ist, welcher zuerst angeflogen wird. Man sagt auch: Die Lösung enthält eine
-Kante zwischen $P_i$ und $P_j$. Die Variable $y_i \in \{0,1\}$ mit $i\in L$
-kodiert, ob der Pfad bei $P_i$ anfängt oder endet. Das
-Integer-Programming-Problem lautet dann:
+unter Einhaltung linearer Ungleichung maximiert werden soll. Integer
+Programming ist $\mathcal{NP}$-schwer \cite{karp_1972}, weshalb dafür nur
+Algorithmen exponentieller Laufzeit bekannt sind. \\ Es sei also $I$ eine
+Instanz von $WKT$ mit den Punkten $P \subset \mathbb{R}^2$. Die Landeplätze
+sind $L=\{1,2,\ldots,|P|\}$ Die Variable $x_{i,j} \in \{0, 1\}$ it $i, j \in L;
+  i<j$ kodiert, ob die Route die Punkte $P_i$ und $P_j$ direkt nacheinander
+anfliegt, wobei nicht festgelegt ist, welcher zuerst angeflogen wird. Man sagt
+auch: Die Lösung enthält eine Kante zwischen $P_i$ und $P_j$. Die Variable $y_i
+  \in \{0,1\}$ mit $i\in L$ kodiert, ob der Pfad bei $P_i$ anfängt oder endet.
+Das Integer-Programming-Problem lautet dann:
 \begin{align}
   \text{minimiere} \sum^{|P|}_{i=1} \sum^{|P|}_{j=1, j>i} c_{i,j} x_{i,j} \text{ mit}                                                                                                       \\
   \sum_{j=i+1}^{|P|} x_{i,j} + \sum_{k=1}^{i-1} x_{k,i} + y_i   & = 2          &  & \text{Für alle } i \in \{1,2,\ldots,|P|\}                                                               \\

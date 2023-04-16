@@ -174,13 +174,13 @@ public class SimulatedAnnealing {
             if (costNew < costBest) {
                 candidateBest = newCandidate.clone();
                 costBest = costNew;
+                stagnation = 0;
+            } else {
+                stagnation++;
             }
             if (Math.random() < Math.exp((costCurrent - costNew) / temperature)) {
                 candidate = newCandidate.clone();
                 costCurrent = costNew;
-                stagnation = 0;
-            } else {
-                stagnation++;
             }
             temperature *= coolingRate;
             iteration++;
@@ -225,7 +225,7 @@ public class SimulatedAnnealing {
                 Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), (int) 1e9, acutePenalty,
-                0.999999, 600, 1000000);
+                0.999999, 600, 10000000);
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));

@@ -209,7 +209,7 @@ public class SimulatedAnnealingTerminal {
         double acutePenalty = lengthUpperBound(coords);
         Integer[] solution = simulatedAnnealing(initPopulation(1, coords.length)[0],
                 Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
-                        GeneticOperators::reverseDisplace, GeneticOperators::fourOpt),
+                        GeneticOperators::reverseDisplace, GeneticOperators::threeOpt),
                 (x) -> penalizedPathCost(x, coords, acutePenalty), maxIterations, acutePenalty * temperature,
                 coolingRate, 1e9);
         System.out.println();

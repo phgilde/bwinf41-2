@@ -81,11 +81,11 @@
 Das Problem wird mit Hilfe des Simulated Annealing \cite{kirkpatrick_1983}
 gelößt.
 \begin{algorithmic}
-  \Procedure{Simulated Annealing}{Startlösung $S$, Temperatur $T_0$, Abkühlkoeffizient $\alpha$, Iterationen $n$}
+  \Procedure{Simulated Annealing}{Startlösung $S$, Temperatur $T_0$, Abkühlkoeffizient $\alpha$, Minimale Temperatur $T_{min}$}
   \State{$S_{Beste} \gets S$}
   \State{$C_{Beste} \gets C(S)$}
   \State{$T \gets T_0$}
-  \For{$i \in {1, 2, \ldots, n}$}
+  \While{$T > T_{min}$}
   \State{$S_{Neu} \gets \text{Nachbarlösung von } S$}
   \State{$C_{Neu} \gets C(S_{Neu}) $}
   \If{$C_{Neu} < C_{Beste}$}
@@ -97,7 +97,7 @@ gelößt.
   \State{$S \gets S_{Neu}$}
   \EndIf
   \State{$T \gets \alpha T$}
-  \EndFor
+  \EndWhile
 
   \Return{$S_{Beste}$}
   \EndProcedure
@@ -125,17 +125,33 @@ Darstellung eines Pfades als Permutation von $(1, 2, \ldots, N)$. In dieser Dars
 an, welcher Landeplatz als $k$-tes besucht wird.
 \begin{description}
   \item[Insert] wählt einen zufälligen Landeplatz der Permutation aus und setzt ihn an
-    eine zufällige neue Stelle.
+    eine zufällige neue Stelle. Wenn wir zum Beispiel die Permutation
+    $(1,2,3,4,5,6)$ haben und der dritte Landeplatz ausgewählt wird, könnte die
+    erzeugte Permutation $(1,2,4,5,3,6)$ sein, wenn die vorletzte als neue Position
+    ausgewählt wurde.
   \item[Displace] wählt ein zufälliges Segment der Permutation aus und setzt es an eine
-    zufällige neue Stelle.
+    zufällige neue Stelle. Wenn von der Permutation $(1,2,3,4,5,6)$ das Segment
+    $(2,3,4)$ ausgewählt wird, könnte das Ergebnis $(1,5,2,3,4,6)$ sein, wenn
+    wieder die vorletzte Stelle ausgewählt wurde.
   \item[Reverse-Displace] wählt ein zufälliges Segment der Permutation aus und setzt es
-    in umgekehrter Reihenfolge an eine zufällige neue Stelle.
+    in umgekehrter Reihenfolge an eine zufällige neue Stelle. Beim Beispiel aus
+    \textbf{Displace} wäre das Ergebnis dann $(1,5,4,3,2,6)$.
   \item[3-Opt] teilt den Pfad an zufälligen Stellen in vier Segmente auf. Diese werden
     in einer zufälligen neuen Reihenfolge zusammengesetzt, wobei sie mit Wahrscheinlichkeit
     0.5 umgekehrt werden. Der Operator ähnelt der 3-Opt-Heuristik, welche 3 Kanten einer
     Lösung löscht und die Segmente in einer Reihenfolge zusammensetzt, welche die Gesamtkosten
-    minimiert, denn er ersetzt auch 3 Kanten durch neue.
+    minimiert, denn er ersetzt auch 3 Kanten durch neue. Wenn von der Lösung $(1,2,3,4,5,6,7,8,9)$ die Segmente
+    $(1,2)$, $(3,4)$, $(5,6)$ und $(7,8,9)$ ausgewählt werden, könnte das Ergebnis $(4,3,5,6,9,8,7,1,2)$ sein.
 \end{description}
+Für die Starttemperatur $T_0$ ist es sinnvoll, einen Wert zu nehmen, der Anfangs für alle Lösungen eine höhe Übergangswahrscheinlichkeit
+erlaubt. Es ist sinnvoll, ein Vielfaches von $g$ zu verwenden, damit Anfangs mehrere spitze Winkel dazukommen können. \textbf{Displace}, \textbf{Reverse-Displace} und
+\textbf{3-Opt} tauschen drei Kanten aus und fügen dadurch maximal sechs neue spitze Winkel hinzu. Deshalb sollte die Temperatur anfangs mindestens $7g$ betragen. Durch
+Ausprobieren hat sich eine Starttemperatur von $16g$, eine Mindesttemperatur von $0.001$ und ein Abkühlkoeffizient von $0.999999$ durchgesetzt. Weiterhin war es sinnvoll, die Suche abzubrechen, wenn für
+$1000000$ Iterationen keine neue beste Lösung gefunden wurde. \\
+Der Algorithmus lässt sich so modifizieren, dass er möglichst schnell eine Lösung ohne spitze Winkel findet. Dafür wird einerseits ein weiteres Abbruchkriterium
+eingeführt, dass sofort abbricht, wenn eine Lösung ohne spitze Winkel gefunden wurde. Andererseits wird zuerst ein recht kleiner Abkühlkoeffizient von beispielsweise
+$0.5$ verwendet, wodurch potenziell weniger Iterationen notwendig sind um eine gute Lösung zu finden. Wenn das nicht ausreicht, wird der Abkühlkoeffizient erhöht und der Algorithmus
+erneut ausgeführt. Das wird so lange wiederholt, bis eine sinnvolle Lösung gefunden wurde, oder eine grenze der Iterationen erreicht wurde.
 \subsection{Erweiterung: Optimale Lösung}
 
 \begin{figure}[t]
@@ -250,21 +266,47 @@ Winkel bilden, dann darf maximal eine dieser Kanten in der Lösung sein. (5) sor
 Kreise durch die restlichen Knoten. Es handelt sich um die in \cite{dantzig_1954} entwickelte Subtour-Elimination-Bedingung.\\
 Weil (5) exponentiell viele Ungleichungen beinhaltet, muss es als Lazy Constraint formuliert werden, die Ungleichungen werden also im Laufe des Lösungsprozesses
 hinzugefügt. Wenn es
-eine potentielle Lösung gibt, wird ein Algorithmus auf diese Lösung angewendet, der Kreise in ihr sucht, und aus den Kreisen die entsprechenden Bedingungen
-formuliert. Auf diese Weise kann diese Bedingung auch Schnittebenen aus Relaxationen formulieren, wobei in der Relaxationslösung Kreise gesucht werden. \\
-Dieses Integer-Programming-Problem kann mit dem Branch-and-Cut-Algorithmus \cite{padberg_1991} gelößt werden. Als Startlösung verwende ich dabei das Ergebnis des Simulated Annealing.
+eine potentielle Lösung gibt, werden die Ungleichungen so ergänzt, dass die Lösung ungültig wird. Dafür wird zuerst mit einer einfachen Depth-First-Search ein Kreis
+in der Lösung gesucht und für die Knoten des Kreises die Ungleichung ergänzt. Danach wird geprüft, ob die Lösung aus mehreren, nicht verbundenen Komponenten besteht. Wenn ja, wird für
+jede der Komponenten eine entsprechende Ungleichung hinzugefügt. Wenn die Lösung aus nur einer Komponente besteht, dann ist sie entweder gültig oder nicht ganzzahlig. Im ersten Fall
+ist die Lösung entweder optimal oder eine obere Schranke für die optimale Lösung, im zweiten Fall müssen Ungleichungen ergänzt werden, welche die nicht-ganzzahlige Lösung
+ausschließen (``Separation''). Dafür wird mit dem Stoer-Wagner-Algorithmus\cite{stoer_1997} ein mimimaler Schnitt in der Lösung gesucht,
+also die Kanten mit minimaler Summe, so dass die Lösung ohne
+diese kanten zwei Komponenten hat. Für diese Komponenten werden dann die entsprechenden Ungleichungen hinzugefügt, falls sie von der Lösung verletzt werden. \\
+Dieses Integer-Programming-Problem kann mit dem Branch-and-Cut-Algorithmus\cite{padberg_1991} gelößt werden. Als Startlösung verwende ich dabei das Ergebnis des Simulated Annealing.
 Mit dem Branch-and-Cut-Algorithmus können auch Annäherungslösungen gefunden werden. Dafür wird die Suche abgebrochen, wenn die Differenz zwischen oberer und unterer Schranke
 in einem definierten Toleranzbereich liegt. Eine so ermittelte Lösung ist nicht garantiert optimal, liegt aber garantiert innerhalb des Toleranzbereiches zur optimalen Lösung.
 \section{Umsetzung}
-Hier wird kurz erläutert, wie die Lösungsidee im Programm tatsächlich umgesetzt
-wurde. Hier können auch Implementierungsdetails erwähnt werden.
+Den Simulated-Annealing-Algorithmus habe ich in Java implementiert. Wenn das
+Programm ausgeführt wird, muss der Pfad zur Eingabedatei mit den Koordinaten
+der Landeplätze angegeben werden. Dann wird eine Lösung gesucht, wobei der
+Fortschritt ausgegeben wird. Die Lösung wird zusammen mit den Kosten
+ausgegeben. Die Lösung wird als Permutation der Indices der Landeplätze in der
+Eingabedatei ausgegeben, beginnend bei 0. Die beiden Versionen
+\lstinline|SimulatedAnnealing.java| und
+\lstinline|SimulatedAnnealingFeasible.java| unterscheiden sich darin, dass
+letzteres den Algorithmus zum Finden einer beliebig teuren möglichen Lösung
+implementiert. Ersteres speichert die Lösung zusätzlich in der Datei
+\lstinline|<Eingabedatei>.solution|, damit das Ergebnis auch von der
+Integer-Programming-Lösung verwendet werden kann. \\ Die
+Integer-Programming-Lösung habe ich in Python implementiert. Dabei habe ich die
+Bibliothek \lstinline|python-mip| verwendet, welche Mixed-Integer-Programme mit
+dem CBC-Löser löst. Für die Graph-Algorithmen, also die Suche nach Zyklen und
+den Stoer-Wagner-Algorithmus, habe ich die Bibliothek \lstinline|networkx|
+verwendet. Um eine Startlösung für den CBC-Löser zu finden, wird die
+Java-Implementierung des Simulated-Annealing-Algorithmus aufgerufen. Wenn das
+Programm ausgeführt wird, muss auch hier der Pfad zur Lösung angegeben werden.
+Danach muss angegeben werden, um wieviel Prozent die Lösung maximal von der
+optimalen Lösung abweichen darf. Nach der Eingabe wird der Löser gestartet und
+gibt seinen Fortschritt aus. Wenn der Löser fertig ist, wird auch hier eine
+Permutation der Lösung ausgegeben.
 
 \section{Beispiele}
-Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier
-diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn
-sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier
-einfügen!
-
+Es handelt sich um die Beispiele von der BwInf-Webseite. Die Dateien sind im Ordner
+\lstinline|beispiele| zu finden.
+\subsection{Simulated Annealing: Beliebige gültige Lösung}
+Eingabe: \lstinline|wenigerkrumm1.txt| \\
+Ausgabe:
 \section{Quellcode}
 \bibliographystyle{apalike}
 \begingroup

@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 
-public class SimulatedAnnealing {
+public class SimulatedAnnealingFeasible {
     // Obere Schranke fuer die Laenge einer Tour, berechnet aus Summe der n teuersten Kanten
     static double lengthUpperBound(Vector2d[] coords) {
         double[] distances = new double[coords.length * coords.length];
@@ -70,18 +70,27 @@ public class SimulatedAnnealing {
         return String.format("%02d:%02d:%02d", hours, minutes, (int) seconds);
     }
 
+    private static Vector2d[] readCoords(String path) {
+        List<Vector2d> coords = new ArrayList<>();
+        try {
+            Files.lines(Paths.get(path)).forEach((line) -> {
+                String[] split = line.split(" ");
+                coords.add(
+                        new Vector2d(Double.parseDouble(split[0]), Double.parseDouble(split[1])));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return coords.toArray(new Vector2d[coords.size()]);
+    }
+
 
     static Integer[] simulatedAnnealing(Integer[] candidate,
             List<Function<Integer[], Integer[]>> mutationOperators,
             ToDoubleFunction<Integer[]> costFunction, double minTemperature, double temperature,
-            double coolingRate, double maxTime, double maxStagnation) {
-        System.out.println("Simulated Annealing");
-        System.out.println("Parameters: minTemperature=" + minTemperature + ", temperature="
-                + temperature + ", coolingRate=" + coolingRate + ", maxTime=" + maxTime + "s");
-
+            double coolingRate, double maxTime, double costMax) {
         int printIteration = 0;
         int iteration = 0;
-
         candidate = candidate.clone();
         Integer[] candidateBest = candidate.clone();
         double costBest = costFunction.applyAsDouble(candidateBest);
@@ -90,7 +99,7 @@ public class SimulatedAnnealing {
         int stagnation = 0;
         while (temperature > minTemperature
                 && System.currentTimeMillis() - startTime < maxTime * 1000.0
-                && stagnation < maxStagnation) {
+                && costBest > costMax) {
             Integer[] newCandidate = mutationOperators
                     .get((int) (Math.random() * mutationOperators.size())).apply(candidate.clone());
             double costNew = costFunction.applyAsDouble(newCandidate);
@@ -121,20 +130,6 @@ public class SimulatedAnnealing {
         return candidate;
     }
 
-    // Liest die Koordinaten aus einer Datei
-    private static Vector2d[] readCoords(String path) {
-        List<Vector2d> coords = new ArrayList<>();
-        try {
-            Files.lines(Paths.get(path)).forEach((line) -> {
-                String[] split = line.split(" ");
-                coords.add(
-                        new Vector2d(Double.parseDouble(split[0]), Double.parseDouble(split[1])));
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return coords.toArray(new Vector2d[coords.size()]);
-    }
 
     public static void main(String[] args) {
         String path;
@@ -148,20 +143,20 @@ public class SimulatedAnnealing {
         }
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
-        Integer[] solution = simulatedAnnealing(randomPermutation(coords.length),
-                Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
-                        GeneticOperators::reverseDisplace, GeneticOperators::threeOpt),
-                (x) -> penalizedPathCost(x, coords, acutePenalty), 0.001, acutePenalty,
-                0.999999, 600, 10000000);
+        System.out.println(acutePenalty);
+        Integer[] solution = randomPermutation(coords.length);
+        double coolingRate = 0.9;
+        for (int i = 0; i < 100; i++) {
+            solution = simulatedAnnealing(solution,
+                    Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
+                            GeneticOperators::reverseDisplace, GeneticOperators::threeOpt),
+                    (x) -> penalizedPathCost(x, coords, acutePenalty), 0.001, acutePenalty,
+                    coolingRate, 600, acutePenalty);
+            coolingRate = 1 - (1 - coolingRate) * 0.5;
+        }
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));
-        // write solution to file
-        try {
-            Files.write(Paths.get(path + ".solution"), Arrays.toString(solution).getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
 

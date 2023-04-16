@@ -16,14 +16,25 @@ from mip import (
     CBC,
 )
 import sim_ann
-import java_interface
+
+import os
+from time import sleep
+
+java_path = "weniger-krumme-touren/build/SimulatedAnnealing.jar"
 
 
+def solveTA(path):
+    if not os.path.exists(path + ".solution"):
+        os.system(f"java -cp weniger-krumme-touren/build touren.SimulatedAnnealing {path}")
+    with open(path + ".solution") as f:
+        return tuple(map(int, f.readline()[1:-1].split(", ")))
+    
+# sortiert das paar (a, b) so, dass a < b
 def edge(a, b):
     return (a, b) if a < b else (b, a)
 
 
-# checks if the angle between the three points is acute
+# Prueft, ob die Punkte einen spitzen Winkel bilden
 def acute(p1, p2, p3):
     v1 = (p1[0] - p2[0], p1[1] - p2[1])
     v2 = (p3[0] - p2[0], p3[1] - p2[1])
@@ -35,120 +46,104 @@ def acute(p1, p2, p3):
     return False
 
 
-def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
-    class SubTourCutGenerator(ConstrsGenerator):
-        """Class to generate cutting planes for the TSP"""
+class SubTourCutGenerator(ConstrsGenerator):
+    def __init__(self, x_, V_):
+        self.x, self.V = x_, V_
 
-        def __init__(self, x_, V_, c_, name, use_johnson):
-            self.x, self.V, self.c = x_, V_, c_
-            self.name = name
-            self.use_johnson = use_johnson
-
-        def generate_constrs(self, model: Model, depth: int = 0, npass: int = 0):
-            xf, V_, G = model.translate(self.x), self.V, nx.Graph()
-            for (u, v) in [
-                (k, l) for (k, l) in product(V_, V_) if k < l and xf[(k, l)] is not None
-            ]:
-                if xf[(u, v)].x > 0.01:
-                    G.add_edge(u, v, capacity=xf[(u, v)].x)
-            if (
-                len(
-                    list(
-                        filter(
-                            lambda e: e[0] in G.nodes and e[1] in G.nodes,
-                            product(V_, V_),
-                        )
+    def generate_constrs(self, model: Model, depth: int = 0, npass: int = 0):
+        xf, V_, G = model.translate(self.x), self.V, nx.Graph()
+        for (u, v) in [
+            (k, l) for (k, l) in product(V_, V_) if k < l and xf[(k, l)] is not None
+        ]:
+            if xf[(u, v)].x > 0.01:
+                G.add_edge(u, v, capacity=xf[(u, v)].x)
+        if (
+            len(
+                list(
+                    filter(
+                        lambda e: e[0] in G.nodes and e[1] in G.nodes,
+                        product(V_, V_),
                     )
                 )
-                == 0
-            ):
+            )
+            == 0
+        ):
+            return
+        # Subtour-Ungleichung fuer Zykel
+        try:
+            cycle = nx.algorithms.cycles.find_cycle(G, orientation="ignore")
+            S = {u for u, _, _ in cycle}
+            if sum(xf[edge(u, v)].x for u in S for v in S if u < v) > len(S) - 1:
+                cut = xsum(xf[edge(u, v)] for u in S for v in S if u < v) <= len(S) - 1
+                model += cut
+        except nx.NetworkXNoCycle:
+            pass
+        # Komponenten Suchen
+        components = list(nx.algorithms.components.connected_components(G))
+        if len(components) == 1:
+            # Falls nur eine Komponente, Min-Cut-Ungleichung
+            cut_value, (
+                S,
+                ST,
+            ) = nx.algorithms.connectivity.stoerwagner.stoer_wagner(G)
+            # Beide Komponenten muessen mindestens 2 Knoten haben
+            if len(S) == 1 or len(ST) == 1:
                 return
-            # show the graph
-            # nx.draw(G, with_labels=True, pos=points)
-            # plt.show()
-            try:
-                cycle = nx.algorithms.cycles.find_cycle(G, orientation="ignore")
-                S = {u for u, _, _ in cycle}
-                if sum(xf[edge(u, v)].x for u in S for v in S if u < v) > len(S) - 1:
-                    cut = xsum(xf[edge(u, v)] for u in S for v in S if u < v) <= len(S) - 1
+            # falls die ungleichungen verletzt werden, werden sie hinzugefuegt
+            if sum(xf[edge(u, v)].x for u in S for v in S if u < v) > len(S) - 1:
+                cut = xsum(xf[edge(u, v)] for u in S for v in S if u < v) <= len(S) - 1
+                model += cut
+            if sum(xf[edge(u, v)].x for u in ST for v in ST if u < v) > len(ST) - 1:
+                cut = (
+                    xsum(xf[edge(u, v)] for u in ST for v in ST if u < v) <= len(ST) - 1
+                )
+                model += cut
+        else:
+            # Falls mehrere Komponenten, Ungleichung fuer jede Komponente
+            for component in components:
+                # Komponenten muessen mindestens 2 Knoten haben
+                if len(component) == 1:
+                    continue
+                # Falls die Ungleichungen verletzt werden, werden sie hinzugefuegt
+                if (
+                    sum(xf[edge(u, v)].x for u in component for v in component if u < v)
+                    > len(component) - 1
+                ):
+                    cut = (
+                        xsum(
+                            xf[edge(u, v)]
+                            for u in component
+                            for v in component
+                            if u < v
+                        )
+                        <= len(component) - 1
+                    )
                     model += cut
-            except nx.NetworkXNoCycle:
-                pass
-            components = list(nx.algorithms.components.connected_components(G))
-            if len(components) == 1:
-                cut_value, (
-                    S,
-                    ST,
-                ) = nx.algorithms.connectivity.stoerwagner.stoer_wagner(G)
-                if len(S) == 1 or len(ST) == 1:
-                    return
-                if cut_value < 1 - 1e-6:
-                    if (
-                        sum(xf[edge(u, v)].x for u in S for v in S if u < v)
-                        > len(S) - 1
-                    ):
-                        cut = (
-                            xsum(xf[edge(u, v)] for u in S for v in S if u < v)
-                            <= len(S) - 1
-                        )
-                        model += cut
-                    if (
-                        sum(xf[edge(u, v)].x for u in ST for v in ST if u < v)
-                        > len(ST) - 1
-                    ):
-                        cut = (
-                            xsum(xf[edge(u, v)] for u in ST for v in ST if u < v)
-                            <= len(ST) - 1
-                        )
-                        model += cut
-            else:
-                for component in components:
-                    if len(component) == 1:
-                        continue
-                    if (
-                        sum(xf[edge(u, v)].x for u in component for v in component if u < v)
-                        > len(component) - 1
-                    ):
-                        cut = (
-                            xsum(
-                                xf[edge(u, v)]
-                                for u in component
-                                for v in component
-                                if u < v
-                            )
-                            <= len(component) - 1
-                        )
-                        model += cut
 
+
+# Erstellt ein mip-Modell der TSP-Instanz
+def tsp_instance(n: int, c: List[List[int]], points: List[Tuple[int, int]]):
 
     V = set(range(n))
     Arcs = [(i, j) for (i, j) in product(V, V) if i < j]
 
     model = Model()
 
-    # binary variables indicating if arc (i,j) is used on the route or not
+    # Binaere Variable fuer die Kanten
     x = {arc: model.add_var(name=f"Arc {arc}", var_type=BINARY) for arc in Arcs}
     ends = [model.add_var(name=f"End {i}", var_type=BINARY) for i in V]
     # objective function: minimize the distance
     model.objective = minimize(xsum(c[i][j] * x[(i, j)] for (i, j) in Arcs))
 
-    # constraint : leave each city only once
+    # Jeder Knoten hat einen Grad von 2, ausser Anfang und Ende
     for i in V:
         model += xsum(x[(j, k)] for j, k in Arcs if i in (j, k)) + ends[i] == 2
 
+    # Es gibt genau einen Anfang und ein Ende
     model += xsum(ends) == 2
 
-    # computing farthest point for each point, these will be checked first for
-    # isolated subtours
-    F = []
-    for i in V:
-        f = max(V, key=lambda j: c[i][j])
-        F.append((i, f))
-
-    model.cuts_generator = SubTourCutGenerator(x, V, c, "cuts_generator", False)
-    model.lazy_constrs_generator = SubTourCutGenerator(
-        x, V, "lazy_constrs_generator", c, False
-    )
+    model.cuts_generator = SubTourCutGenerator(x, V)
+    model.lazy_constrs_generator = SubTourCutGenerator(x, V)
     return model, x, ends
 
 
@@ -156,16 +151,8 @@ points = []
 with open(path := input("Pfad zur Datei: ")) as f:
     while line := f.readline():
         points.append(tuple(map(float, line.split())))
+max_gap = float(input("Maximaler Lücke zur unteren Schranke in Prozent: ")) / 100
 
-main_time = float(input("Zeit für MIP-Löser in Minuten: "))
-# plot points
-plt.figure(figsize=(10, 10))
-min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
-max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
-plt.xlim(min_coord - 50, max_coord + 50)
-plt.ylim(min_coord - 50, max_coord + 50)
-plt.scatter([p[0] for p in points], [p[1] for p in points])
-plt.show()
 
 print("Modell wird erstellt...")
 
@@ -192,34 +179,20 @@ for i in range(len(points)):
                         model += x[edge(i, j)] + x[edge(j, k)] <= 1
 print("Suche Startlösung...")
 
-init_solution = java_interface.solveTA(path)
-if False:
-    # plot initial solution
-    plt.figure(figsize=(10, 10))
-    plt.xlim(min_coord - 50, max_coord + 50)
-    plt.ylim(min_coord - 50, max_coord + 50)
-    plt.scatter([p[0] for p in points], [p[1] for p in points])
-    for i in range(len(init_solution) - 1):
-        plt.plot(
-            [points[init_solution[i]][0], points[init_solution[i + 1]][0]],
-            [points[init_solution[i]][1], points[init_solution[i + 1]][1]],
-            color="red",
-        )
-    plt.show()
-if True:
-    p1 = init_solution[0]
-    start = []
-    for p2 in init_solution[1:]:
-        start.append((x[edge(p1, p2)], 1.0))
-        p1 = p2
-    start.append((ends[init_solution[0]], 1.0))
-    start.append((ends[init_solution[-1]], 1.0))
-    model.start = start
+init_solution = solveTA(path)
+p1 = init_solution[0]
+start = []
+for p2 in init_solution[1:]:
+    start.append((x[edge(p1, p2)], 1.0))
+    p1 = p2
+start.append((ends[init_solution[0]], 1.0))
+start.append((ends[init_solution[-1]], 1.0))
+model.start = start
 print(model.validate_mip_start())
 
 print("Suche optimale Lösung...")
-model.emphasis = 2
-model.optimize(max_seconds=main_time * 60)
+model.max_mip_gap = max_gap + 0.0001
+model.optimize(max_seconds=float("inf"))
 print(model.status)
 import winsound
 
@@ -241,8 +214,31 @@ if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
                     [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
                 )
     plt.show()
+    solution = []
+    for i in range(len(points)):
+        if ends[i].x == 1:
+            solution.append(i)
+            break
+    solution.append(
+        next((j for j in range(len(points)) if i != j and x[edge(i, j)].x == 1), None)
+    )
+    while ends[solution[-1]].x == 0:
+        solution.append(
+            next(
+                (
+                    j
+                    for j in range(len(points))
+                    if j != solution[-1]
+                    and x[edge(solution[-1], j)].x == 1
+                    and j not in solution
+                ),
+                None,
+            )
+        )
+    print(solution)
 if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
     print("Keine weitere Lösung gefunden!")
+    print(init_solution)
 if model.status == OptimizationStatus.INFEASIBLE:
     print("Startlösung ist optimal!")
     plt.figure(figsize=(10, 10))
@@ -258,3 +254,25 @@ if model.status == OptimizationStatus.INFEASIBLE:
                     [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
                 )
     plt.show()
+    solution = []
+    for i in range(len(points)):
+        if ends[i].x == 1:
+            solution.append(i)
+            break
+    solution.append(
+        next((j for j in range(len(points)) if i != j and x[edge(i, j)].x == 1), None)
+    )
+    while ends[solution[-1]].x == 0:
+        solution.append(
+            next(
+                (
+                    j
+                    for j in range(len(points))
+                    if j != solution[-1]
+                    and x[edge(solution[-1], j)].x == 1
+                    and j not in solution
+                ),
+                None,
+            )
+        )
+    print(solution)

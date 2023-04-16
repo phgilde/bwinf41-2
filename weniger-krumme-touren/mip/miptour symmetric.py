@@ -1,9 +1,5 @@
-from time import sleep
 from typing import List, Tuple
-from random import seed, randint
 from itertools import product
-from math import sqrt
-from matplotlib import pyplot as plt
 import networkx as nx
 from mip import (
     Model,
@@ -15,20 +11,21 @@ from mip import (
     OptimizationStatus,
     CBC,
 )
-import sim_ann
 
 import os
-from time import sleep
 
 java_path = "weniger-krumme-touren/build/SimulatedAnnealing.jar"
 
 
 def solveTA(path):
     if not os.path.exists(path + ".solution"):
-        os.system(f"java -cp weniger-krumme-touren/build touren.SimulatedAnnealing {path}")
+        os.system(
+            f"java -cp weniger-krumme-touren/build touren.SimulatedAnnealing {path}"
+        )
     with open(path + ".solution") as f:
         return tuple(map(int, f.readline()[1:-1].split(", ")))
-    
+
+
 # sortiert das paar (a, b) so, dass a < b
 def edge(a, b):
     return (a, b) if a < b else (b, a)
@@ -188,32 +185,17 @@ for p2 in init_solution[1:]:
 start.append((ends[init_solution[0]], 1.0))
 start.append((ends[init_solution[-1]], 1.0))
 model.start = start
-print(model.validate_mip_start())
 
 print("Suche optimale Lösung...")
+# Vorbeugung von Rundungsfehlern
 model.max_mip_gap = max_gap + 0.0001
 model.optimize(max_seconds=float("inf"))
-print(model.status)
 import winsound
-
+print(model.status)
 winsound.MessageBeep()
-print(path)
 if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     print("Lösung gefunden!")
-
-    plt.figure(figsize=(10, 10))
-    min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
-    max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
-    plt.xlim(min_coord - 50, max_coord + 50)
-    plt.ylim(min_coord - 50, max_coord + 50)
-    plt.scatter([p[0] for p in points], [p[1] for p in points])
-    for i in range(len(points)):
-        for j in range(i + 1, len(points)):
-            if x[(i, j)].x == 1:
-                plt.plot(
-                    [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
-                )
-    plt.show()
+    print("Kosten:", model.objective_value  * 100 // 1 / 100)
     solution = []
     for i in range(len(points)):
         if ends[i].x == 1:
@@ -238,41 +220,11 @@ if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
     print(solution)
 if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
     print("Keine weitere Lösung gefunden!")
+
+    print("Kosten:", model.objective_value)
     print(init_solution)
+
 if model.status == OptimizationStatus.INFEASIBLE:
     print("Startlösung ist optimal!")
-    plt.figure(figsize=(10, 10))
-    min_coord = min((min([p[0] for p in points]), min([p[1] for p in points])))
-    max_coord = max((max([p[0] for p in points]), max([p[1] for p in points])))
-    plt.xlim(min_coord - 50, max_coord + 50)
-    plt.ylim(min_coord - 50, max_coord + 50)
-    plt.scatter([p[0] for p in points], [p[1] for p in points])
-    for i in range(len(points)):
-        for j in range(i + 1, len(points)):
-            if x[(i, j)].x == 1:
-                plt.plot(
-                    [points[i][0], points[j][0]], [points[i][1], points[j][1]], "r"
-                )
-    plt.show()
-    solution = []
-    for i in range(len(points)):
-        if ends[i].x == 1:
-            solution.append(i)
-            break
-    solution.append(
-        next((j for j in range(len(points)) if i != j and x[edge(i, j)].x == 1), None)
-    )
-    while ends[solution[-1]].x == 0:
-        solution.append(
-            next(
-                (
-                    j
-                    for j in range(len(points))
-                    if j != solution[-1]
-                    and x[edge(solution[-1], j)].x == 1
-                    and j not in solution
-                ),
-                None,
-            )
-        )
-    print(solution)
+    print("Kosten:", sum(weight_matrix[i][j] for i, j in zip(init_solution[:-1], init_solution[1:])) * 100 // 1 / 100)
+    print(init_solution)

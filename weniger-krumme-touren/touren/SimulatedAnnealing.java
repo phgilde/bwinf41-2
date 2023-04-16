@@ -75,10 +75,6 @@ public class SimulatedAnnealing {
             List<Function<Integer[], Integer[]>> mutationOperators,
             ToDoubleFunction<Integer[]> costFunction, double minTemperature, double temperature,
             double coolingRate, double maxTime, double maxStagnation) {
-        System.out.println("Simulated Annealing");
-        System.out.println("Parameters: minTemperature=" + minTemperature + ", temperature="
-                + temperature + ", coolingRate=" + coolingRate + ", maxTime=" + maxTime + "s");
-
         int printIteration = 0;
         int iteration = 0;
 
@@ -112,9 +108,9 @@ public class SimulatedAnnealing {
 
             // Ausgabe des Fortschritts
             if (System.currentTimeMillis() - startTime > 1000.0 * printIteration) {
-                System.out.print("\rIteration: " + iteration + " Cost: " + costBest + " Time: "
+                System.out.print("\rIteration: " + iteration + " Kosten: " + costBest + " Zeit: "
                         + secondsToTime((System.currentTimeMillis() - startTime) / 1000.0)
-                        + " Temperature: " + temperature + "           ");
+                        + " Temperatur: " + temperature + "           ");
                 printIteration++;
             }
         }
@@ -151,10 +147,10 @@ public class SimulatedAnnealing {
         Integer[] solution = simulatedAnnealing(randomPermutation(coords.length),
                 Arrays.asList(GeneticOperators::displace, GeneticOperators::insert,
                         GeneticOperators::reverseDisplace, GeneticOperators::threeOpt),
-                (x) -> penalizedPathCost(x, coords, acutePenalty), 0.001, acutePenalty,
+                (x) -> penalizedPathCost(x, coords, acutePenalty), 0.001, 16 * acutePenalty,
                 0.999999, 600, 10000000);
         System.out.println();
-        System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
+        System.out.println("Kosten: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));
         // write solution to file
         try {

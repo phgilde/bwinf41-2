@@ -68,7 +68,8 @@ public class Pwue {
         }
     }
 
-    // PWUE-Operation, welche die ersten i Elemente eines Stapels wendet und dann den obersten Pfannkuchen
+    // PWUE-Operation, welche die ersten i Elemente eines Stapels wendet und dann den obersten
+    // Pfannkuchen
     // entfernt.
     static Integer[] flipOp(Integer[] a, int i) {
         Integer[] b = new Integer[a.length - 1];
@@ -81,8 +82,10 @@ public class Pwue {
         return canonical(b);
     }
 
-    // Umgekehrte PWUE-Operation, die erst den Pfannkuchen der Groesse newSize auf den Stapel legt und dann die ersten
-    // pos Elemente wendet. Pfannkuchen, die groesser als newSize sind, werden dabei um 1 erhoeht, um zu verhindern, dass
+    // Umgekehrte PWUE-Operation, die erst den Pfannkuchen der Groesse newSize auf den Stapel legt
+    // und dann die ersten
+    // pos Elemente wendet. Pfannkuchen, die groesser als newSize sind, werden dabei um 1 erhoeht,
+    // um zu verhindern, dass
     // eine Groesse doppelt vorkommt.
     static Integer[] revFlipOp(Integer[] a, int pos, int newSize) {
         Integer[] b = new Integer[a.length + 1];
@@ -99,7 +102,8 @@ public class Pwue {
             b[i] = b[pos - i - 1];
             b[pos - i - 1] = tmp;
         }
-        //System.out.println("revFlipOp(" + Arrays.toString(a) + ", " + pos + ", " + newSize + ") = " + Arrays.toString(b));
+        // System.out.println("revFlipOp(" + Arrays.toString(a) + ", " + pos + ", " + newSize + ") =
+        // " + Arrays.toString(b));
         return canonical(b);
     }
 
@@ -200,7 +204,7 @@ public class Pwue {
             return result;
         }
         HashSet<List<Integer>> result = new HashSet<>();
-        for (IntPair rFlip : allRevFlipOps(n-1)) {
+        for (IntPair rFlip : allRevFlipOps(n - 1)) {
 
             for (List<Integer> seqL : k(n - 1, a - 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
@@ -249,18 +253,19 @@ public class Pwue {
         if (n == 1 && a != 0) {
             return Optional.empty();
         }
-        for (IntPair rFlip : allRevFlipOps(n-1)) {
+        for (IntPair rFlip : allRevFlipOps(n - 1)) {
             for (List<Integer> seqL : k(n - 1, a - 1)) {
                 Integer[] seq = seqL.toArray(new Integer[0]);
                 Integer[] rFlipped = revFlipOp(seq, rFlip.first(), rFlip.second());
                 if (!(a > 1 || !Arrays.equals(rFlipped, range(n))))
                     continue;
 
-                // forall steht fuer den Existenzquantor ueber P_n
-                // exists steht fuer den Allquantor ueber N zwischen a-1 und 2*floor(n/3)+1
+                // forall steht fuer den Allquantor ueber alle moeglichen flip-Operationen
                 boolean forall = true;
-                boolean exists = false;
                 for (Integer flip : allFlipOps(n)) {
+                    // Pruefen, ob der Stapel schon bekannt ist. Verhindert, dass k(n-1,b) fuer a-1
+                    // <= b <= 2*floor(n/3)+1
+                    // berechnet werden muss.
                     if (backref.containsKey(Arrays.asList(flipOp(rFlipped, flip)))) {
                         IntPair p = backref.get(Arrays.asList(flipOp(rFlipped, flip)));
                         if (p.second() < a - 1) {
@@ -270,7 +275,8 @@ public class Pwue {
                             continue;
                         }
                     }
-                    exists = false;
+                    // exists steht fuer den Existenzquantor ueber N zwischen a-1 und 2*floor(n/3)+1
+                    boolean exists = false;
                     for (int b = a - 1; b < 2 * Math.floor(n / 3) + 2; b++) {
                         if (k(n - 1, b).contains(Arrays.asList(flipOp(rFlipped, flip)))) {
                             exists = true;

@@ -7,7 +7,7 @@
 % Die nächsten drei Felder bitte anpassen:
 \newcommand{\Aufgabe}{Aufgabe 1: Weniger krumme Touren} % Aufgabennummer und Aufgabennamen angeben
 \newcommand{\TeilnahmeId}{65336}                  % Teilnahme-ID angeben
-\newcommand{\Name}{Vor- und Nachname}             % Name des Bearbeiter / der Bearbeiterin dieser Aufgabe angeben
+\newcommand{\Name}{Philip Gilde}             % Name des Bearbeiter / der Bearbeiterin dieser Aufgabe angeben
 
 % Kopf- und Fußzeilen
 \usepackage{scrlayer-scrpage, lastpage}
@@ -312,7 +312,11 @@ liegt deshalb in $\mathcal{O}(2^(n^2))$. Der Algorithmus arbeitet einen
 Suchbaum ab. Dabei geht der Algorithmus zuerst in die Tiefe des Suchbaums.
 Dadurch muss für jede Variable immer nur eine weitere Verzweigung auf einmal
 gespeichert werden, der Speicherverbrauch liegt also in
-$\mathcal{O}(\frac{n(n-1)}{2}+n) = \mathcal{O}(n^2)$.
+$\mathcal{O}(\frac{n(n-1)}{2}+n) = \mathcal{O}(n^2)$. Allerdings gibt es
+$2^n$ Teilmengen von $L = \{1,2,\ldots n\}$, wodurch es auch $\mathcal{O}(2^n)$
+Subtour-Elimination-Constraints gibt. Da diese im schlechtesten Fall alle
+gespeichert werden müssen und eine dieser Ungleichungen $\mathcal{O}(n)$
+Variablen enthält, liegt der Speicherverbrauch im schlechtesten Fall in $\mathcal{O}(n2^n)$.
 \section{Umsetzung}
 Den Simulated-Annealing-Algorithmus habe ich in Java implementiert. Wenn das
 Programm ausgeführt wird, muss der Pfad zur Eingabedatei mit den Koordinaten
@@ -512,7 +516,8 @@ Kosten: 4150.64
 \end{lstlisting}
 \section{Quellcode}
 \lstinputlisting[language=Java]{SimulatedAnnealing.java}
-\lstinputlisting[language=Java]{SimulatedAnnealingFeasible.java}
+\lstinline|SimulatedAnnealingFeasible.java| ist in den Zeilen davor identisch zu \lstinline|SimulatedAnnealing.java|.
+\lstinputlisting[language=Java,firstline=238]{SimulatedAnnealingFeasible.java}
 \lstinputlisting[language=Python]{miptour.py}
 \bibliographystyle{alpha}
 \begingroup

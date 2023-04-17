@@ -14,13 +14,10 @@ from mip import (
 
 import os
 
-java_path = "weniger-krumme-touren/build/SimulatedAnnealing.jar"
-
-
 def solveTA(path):
     if not os.path.exists(path + ".solution"):
         os.system(
-            f"java -cp weniger-krumme-touren/build touren.SimulatedAnnealing {path}"
+            f"java -jar --enable-preview weniger-krumme-touren/SimulatedAnnealing.jar {path}"
         )
     with open(path + ".solution") as f:
         return tuple(map(int, f.readline()[1:-1].split(", ")))

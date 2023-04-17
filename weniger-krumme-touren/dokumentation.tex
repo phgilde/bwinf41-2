@@ -278,6 +278,16 @@ Mit dem Branch-and-Cut-Algorithmus können auch Annäherungslösungen gefunden w
 in einem definierten Toleranzbereich liegt. Eine so ermittelte Lösung ist nicht garantiert optimal, liegt aber garantiert innerhalb des Toleranzbereiches zur optimalen Lösung.
 \section{Laufzeit und Speicherbedarf}
 \subsection{Simulated Annealing: Beliebige gültige Lösung}
+Da dieser Algorithmus stark zufallsbasiert ist, gestaltet sich eine theoretische Analyse der Laufzeit schwierig. Stattdessen habe ich den Algorithmus auf
+zufällig generierte Eingaben angewendet und die benötigte Zeit gemessen. Die benötigte Zeit des Algorithmus scheint, bis auf einige Outlier, linear von der
+Anzahl der Flugplätze abzuhängen. \\
+Der benötigte Speicher des Algorithmus ist proportional zur Länge der Eingabe, denn es wird immer nur die beste bisher gefundene Lösung sowie der aktuelle Kandidat
+gespeichert.
+\begin{figure}[t]
+  \includegraphics[scale=.5]{feasibletrend.png}
+  \centering
+  \caption{Messergebnisse zusammen mit einer linearen Funktion.}
+\end{figure}
 \subsection{Simulated Annealing}
 Es sei $n$ die Anzahl der Flugplätze in der Eingabe, $T_0$ die Starttemperatur,
 $\alpha$ der Abkühlkoeffizient und $T_{min}$ die Mindesttemperatur. Die

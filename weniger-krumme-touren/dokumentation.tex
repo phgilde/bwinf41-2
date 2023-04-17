@@ -273,9 +273,18 @@ ist die Lösung entweder optimal oder eine obere Schranke für die optimale Lös
 ausschließen (``Separation''). Dafür wird mit dem Stoer-Wagner-Algorithmus\cite{stoer_1997} ein mimimaler Schnitt in der Lösung gesucht,
 also die Kanten mit minimaler Summe, so dass die Lösung ohne
 diese kanten zwei Komponenten hat. Für diese Komponenten werden dann die entsprechenden Ungleichungen hinzugefügt, falls sie von der Lösung verletzt werden. \\
-Dieses Integer-Programming-Problem kann mit dem Branch-and-Cut-Algorithmus\cite{padberg_1991} gelößt werden. Als Startlösung verwende ich dabei das Ergebnis des Simulated Annealing.
+Dieses Integer-Programming-Problem kann mit dem Branch-and-Cut-Algorithmus\cite{padberg_1991} gelößt werden. Als Startlösung verwende ich dabei das Ergebnis des Simulated Annealing. \\
 Mit dem Branch-and-Cut-Algorithmus können auch Annäherungslösungen gefunden werden. Dafür wird die Suche abgebrochen, wenn die Differenz zwischen oberer und unterer Schranke
 in einem definierten Toleranzbereich liegt. Eine so ermittelte Lösung ist nicht garantiert optimal, liegt aber garantiert innerhalb des Toleranzbereiches zur optimalen Lösung.
+\section{Laufzeit und Speicherbedarf}
+\subsection{Optimale Lösung}
+Es sei $n$ die Anzahl der Flugplätze in der Eingabe. Wir haben
+$\frac{n(n-1)}{2}$ binäre Variablen für die Kanten ($x$) und $n$ binäre
+Variablen für die Enden ($y$). Im schlechtesten Fall muss der
+Branch-and-Cut-Algorithmus alle $2^{\frac{n(n-1)}{2}+n}$ möglichen
+Kombinationen von Lösungen durchprobieren \cite[653]{korte_2018}.
+Der Speicherbedarf des Algorithmus setzt sich aus den zwischengespeicherten
+Teillösungen zusammen. Für eine Variable gibt es 
 \section{Umsetzung}
 Den Simulated-Annealing-Algorithmus habe ich in Java implementiert. Wenn das
 Programm ausgeführt wird, muss der Pfad zur Eingabedatei mit den Koordinaten
@@ -291,15 +300,16 @@ implementiert. Ersteres speichert die Lösung zusätzlich in der Datei
 Integer-Programming-Lösung verwendet werden kann. \\ Die
 Integer-Programming-Lösung habe ich in Python implementiert. Dabei habe ich die
 Bibliothek \lstinline|python-mip| verwendet, welche Mixed-Integer-Programme mit
-dem CBC-Löser löst. Für die Graph-Algorithmen, also die Suche nach Zyklen und
-den Stoer-Wagner-Algorithmus, habe ich die Bibliothek \lstinline|networkx|
-verwendet. Um eine Startlösung für den CBC-Löser zu finden, wird die
-Java-Implementierung des Simulated-Annealing-Algorithmus aufgerufen. Wenn das
-Programm ausgeführt wird, muss auch hier der Pfad zur Lösung angegeben werden.
-Danach muss angegeben werden, um wieviel Prozent die Lösung maximal von der
-optimalen Lösung abweichen darf. Nach der Eingabe wird der Löser gestartet und
-gibt seinen Fortschritt aus. Wenn der Löser fertig ist, wird auch hier eine
-Permutation der Lösung ausgegeben.
+dem CBC-Löser\cite{john_forrest_2023_7820266} löst. Für die Graph-Algorithmen,
+also die Suche nach Zyklen und den Stoer-Wagner-Algorithmus, habe ich die
+Bibliothek \lstinline|networkx| verwendet. Um eine Startlösung für den
+CBC-Löser zu finden, wird die Java-Implementierung des
+Simulated-Annealing-Algorithmus aufgerufen. Wenn das Programm ausgeführt wird,
+muss auch hier der Pfad zur Lösung angegeben werden. Danach muss angegeben
+werden, um wieviel Prozent die Lösung maximal von der optimalen Lösung
+abweichen darf. Nach der Eingabe wird der Löser gestartet und gibt seinen
+Fortschritt aus. Wenn der Löser fertig ist, wird auch hier eine Permutation der
+Lösung ausgegeben.
 
 \section{Beispiele}
 Es handelt sich um die Beispiele von der BwInf-Webseite. Die Dateien sind im
@@ -417,8 +427,8 @@ Kosten: 4397.65
 60, 24, 74, 83, 87, 46, 37, 68, 11, 54]
 \end{lstlisting}
 \subsection{Optimale Lösung}
-Die Ausgaben des CBC-Lösers wurden hier ausgelassen. \\
-Eingabe: \lstinline|wenigerkrumm1.txt \n 0| \\ Ausgabe:
+Die Ausgaben des CBC-Lösers wurden hier ausgelassen. \\ Eingabe:
+\lstinline|wenigerkrumm1.txt \n 0| \\ Ausgabe:
 \begin{lstlisting}
 Kosten: 847.43
 [20, 75, 62, 36, 14, 81, 43, 72, 27, 40, 6, 74, 10, 83, 21, 1, 66, 13, 25, 4, 0, 37, 38, 
@@ -465,15 +475,15 @@ Kosten: 3509.52
 \end{lstlisting}
 Eingabe: \lstinline|wenigerkrumm7.txt \n 0| \\ Ausgabe:
 \begin{lstlisting}
-Kosten: 4397.65
-[53, 50, 79, 43, 2, 65, 25, 84, 20, 77, 73, 36, 45, 26, 5, 94, 57, 75, 63, 40, 78, 86, 
-19, 18, 51, 42, 41, 85, 72, 71, 1, 66, 35, 88, 32, 99, 89, 9, 82, 76, 59, 58, 21, 62, 
-49, 30, 55, 69, 92, 22, 0, 61, 6, 93, 80, 14, 33, 28, 70, 56, 7, 96, 95, 98, 17, 34, 90, 
-47, 81, 8, 13, 3, 10, 48, 15, 39, 64, 4, 97, 12, 23, 52, 44, 16, 29, 91, 38, 31, 67, 27, 
-60, 24, 74, 83, 87, 46, 37, 68, 11, 54]
+Kosten: 4150.64
+[30, 55, 54, 11, 68, 37, 46, 87, 90, 83, 24, 60, 27, 67, 31, 38, 91, 29, 16, 39, 15, 48,
+10, 3, 13, 8, 81, 47, 74, 17, 34, 7, 56, 70, 28, 33, 14, 6, 93, 80, 12, 97, 4, 50, 23, 
+52, 44, 26, 45, 36, 73, 77, 20, 72, 84, 25, 65, 2, 43, 79, 64, 53, 98, 95, 96, 69, 92, 
+22, 49, 0, 61, 75, 57, 94, 5, 85, 41, 42, 51, 59, 35, 88, 32, 99, 89, 9, 82, 71, 1, 66, 
+76, 58, 21, 86, 78, 40, 63, 18, 19, 62]
 \end{lstlisting}
 \section{Quellcode}
-\bibliographystyle{apalike}
+\bibliographystyle{alpha}
 \begingroup
 \def\chapter*#1{}
 \bibliography{refs.bib}

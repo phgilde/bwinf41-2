@@ -277,14 +277,32 @@ Dieses Integer-Programming-Problem kann mit dem Branch-and-Cut-Algorithmus\cite{
 Mit dem Branch-and-Cut-Algorithmus können auch Annäherungslösungen gefunden werden. Dafür wird die Suche abgebrochen, wenn die Differenz zwischen oberer und unterer Schranke
 in einem definierten Toleranzbereich liegt. Eine so ermittelte Lösung ist nicht garantiert optimal, liegt aber garantiert innerhalb des Toleranzbereiches zur optimalen Lösung.
 \section{Laufzeit und Speicherbedarf}
+\subsection{Simulated Annealing: Beliebige gültige Lösung}
+\subsection{Simulated Annealing}
+Es sei $n$ die Anzahl der Flugplätze in der Eingabe, $T_0$ die Starttemperatur,
+$\alpha$ der Abkühlkoeffizient und $T_{min}$ die Mindesttemperatur. Die
+Temperatur im Schritt $s$ ist dann $T_0\alpha^s=T$. Um die Anzahl der Schritte
+zu erhalten, können wir die Gleichung für $T=T_{min}$ lösen:
+\begin{align*}
+  T_0\alpha^s & = T_{min}                            & |:T_0          \\
+  \alpha^s    & = \frac{T_{min}}{T_0}                & |\log_{\alpha} \\
+  s           & = \log_{\alpha}(\frac{T_{min}}{T_0})                  \\
+\end{align*}
+Die Zeit für einen einzelnen Schritt liegt in $\mathcal{O}(n)$, denn jeder der Permutationsoperatoren
+und die Berechnung der Kosten einer Lösung können in linearer Zeit durchgeführt werden. Die Zeit liegt also in
+$\mathcal{O}(n\log_{\alpha}(\frac{T_{min}}{T_0}))$. Es muss immer nur die aktuell beste Lösung gespeichert werden,
+wodurch der Speicherverbrauch in $\mathcal{O}(n)$ liegt.
 \subsection{Optimale Lösung}
 Es sei $n$ die Anzahl der Flugplätze in der Eingabe. Wir haben
 $\frac{n(n-1)}{2}$ binäre Variablen für die Kanten ($x$) und $n$ binäre
 Variablen für die Enden ($y$). Im schlechtesten Fall muss der
 Branch-and-Cut-Algorithmus alle $2^{\frac{n(n-1)}{2}+n}$ möglichen
-Kombinationen von Lösungen durchprobieren \cite[653]{korte_2018}.
-Der Speicherbedarf des Algorithmus setzt sich aus den zwischengespeicherten
-Teillösungen zusammen. Für eine Variable gibt es 
+Kombinationen von Lösungen durchprobieren \cite[653]{korte_2018}. Die Zeit
+liegt deshalb in $\mathcal{O}(2^(n^2))$. Der Algorithmus arbeitet einen
+Suchbaum ab. Dabei geht der Algorithmus zuerst in die Tiefe des Suchbaums.
+Dadurch muss für jede Variable immer nur eine weitere Verzweigung auf einmal
+gespeichert werden, der Speicherverbrauch liegt also in
+$\mathcal{O}(\frac{n(n-1)}{2}+n) = \mathcal{O}(n^2)$.
 \section{Umsetzung}
 Den Simulated-Annealing-Algorithmus habe ich in Java implementiert. Wenn das
 Programm ausgeführt wird, muss der Pfad zur Eingabedatei mit den Koordinaten

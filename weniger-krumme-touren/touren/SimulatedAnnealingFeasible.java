@@ -141,6 +141,7 @@ public class SimulatedAnnealingFeasible {
             path = scanner.nextLine();
             scanner.close();
         }
+        long startTime = System.currentTimeMillis();
         Vector2d[] coords = readCoords(path);
         double acutePenalty = lengthUpperBound(coords);
         System.out.println(acutePenalty);
@@ -157,6 +158,7 @@ public class SimulatedAnnealingFeasible {
         System.out.println();
         System.out.println("Cost: " + penalizedPathCost(solution, coords, acutePenalty));
         System.out.println(Arrays.toString(solution));
+        System.out.println("Time: " + (System.currentTimeMillis() - startTime));
     }
 }
 

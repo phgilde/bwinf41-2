@@ -300,8 +300,8 @@ zu erhalten, können wir die Gleichung für $T=T_{min}$ lösen:
 \end{align*}
 Die Zeit für einen einzelnen Schritt liegt in $\mathcal{O}(n)$, denn jeder der Permutationsoperatoren
 und die Berechnung der Kosten einer Lösung können in linearer Zeit durchgeführt werden. Die Zeit liegt also in
-$\mathcal{O}(n\log_{\alpha}(\frac{T_{min}}{T_0}))$. Es muss immer nur die aktuell beste Lösung gespeichert werden,
-wodurch der Speicherverbrauch in $\mathcal{O}(n)$ liegt.
+$\mathcal{O}(n\log_{\alpha}(\frac{T_{min}}{T_0}))$. Es muss immer nur die aktuell beste Lösung und der aktuelle Kandidat
+gespeichert werden, wodurch der Speicherverbrauch in $\mathcal{O}(n)$ liegt.
 \subsection{Optimale Lösung}
 Es sei $n$ die Anzahl der Flugplätze in der Eingabe. Wir haben
 $\frac{n(n-1)}{2}$ binäre Variablen für die Kanten ($x$) und $n$ binäre
@@ -511,6 +511,9 @@ Kosten: 4150.64
 76, 58, 21, 86, 78, 40, 63, 18, 19, 62]
 \end{lstlisting}
 \section{Quellcode}
+\lstinputlisting[language=Java]{SimulatedAnnealing.java}
+\lstinputlisting[language=Java]{SimulatedAnnealingFeasible.java}
+\lstinputlisting[language=Python]{miptour.py}
 \bibliographystyle{alpha}
 \begingroup
 \def\chapter*#1{}

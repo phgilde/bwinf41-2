@@ -1,5 +1,3 @@
-package touren;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,17 +33,20 @@ public class SimulatedAnnealingFeasible {
             return result2.toArray(new Integer[0]);
         }
 
+        // insert-operator
         static Integer[] insert(Integer[] individual) {
             Integer[] result = new Integer[individual.length - 1];
             Integer[] result2 = new Integer[individual.length];
             int i = (int) (Math.random() * (individual.length - 1));
             int j = (int) (Math.random() * (individual.length - 1));
+            // zunaechst wird individual[i] aus result entfernt
             for (int ix = 0; ix < i; ix++) {
                 result[ix] = individual[ix];
             }
             for (int ix = i; ix < individual.length - 1; ix++) {
                 result[ix] = individual[ix + 1];
             }
+            // dann wird individual[i] an position j eingefuegt
             for (int ix = 0; ix < j; ix++) {
                 result2[ix] = result[ix];
             }
@@ -56,6 +57,7 @@ public class SimulatedAnnealingFeasible {
             return result2;
         }
 
+        // reverse-displace-operator
         static Integer[] reverseDisplace(Integer[] individual) {
             List<Integer> result = new ArrayList<Integer>();
             List<Integer> result2 = new ArrayList<Integer>();
@@ -63,16 +65,21 @@ public class SimulatedAnnealingFeasible {
             int i = (int) (Math.random() * (individual.length - 1));
             int j = (int) (Math.random() * (individual.length - i)) + i;
             int k = (int) (Math.random() * (individual.length - j + i));
+            // result enthaelt permutation ohne segment
             result.addAll(list.subList(0, i));
             result.addAll(list.subList(j, individual.length));
+
+            // segment an neuer stelle rueckwaerts einfuegen
             result2.addAll(result.subList(0, k));
             List<Integer> reverse = list.subList(i, j);
             Collections.reverse(reverse);
             result2.addAll(reverse);
             result2.addAll(result.subList(k, result.size()));
+
             return result2.toArray(new Integer[0]);
         }
 
+        // three-opt-operator
         static Integer[] threeOpt(Integer[] individual) {
             List<Integer> list = Arrays.asList(individual);
             List<Integer> result = new ArrayList<Integer>();
@@ -80,12 +87,14 @@ public class SimulatedAnnealingFeasible {
             int j = (int) (Math.random() * (individual.length - i)) + i;
             int k = (int) (Math.random() * (individual.length - j)) + j;
             Integer[] order = new Integer[] {0, 1, 2, 3};
+            // zufaellige Reihenfolge der Segmente
             for (int l = 0; l < 4; l++) {
                 int m = (int) (Math.random() * (4));
                 int tmp = order[0];
                 order[0] = order[m];
                 order[m] = tmp;
             }
+            // segmente an neuer stelle einfuegen
             for (int l = 0; l < 4; l++) {
                 List<Integer> segment;
                 switch (order[l]) {
@@ -102,6 +111,7 @@ public class SimulatedAnnealingFeasible {
                         segment = (list.subList(k, individual.length));
                         break;
                 }
+                // ggf segment umkehren
                 if (Math.random() < 0.5) {
                     Collections.reverse(segment);
                 }
@@ -110,6 +120,8 @@ public class SimulatedAnnealingFeasible {
             return result.toArray(new Integer[0]);
         }
     }
+
+    // Vektor in R^2
     public static class Vector2d implements Comparable<Vector2d> {
         final private double x, y;
 
@@ -149,6 +161,7 @@ public class SimulatedAnnealingFeasible {
             return a.sub(b).dot(c.sub(b)) > 0;
         }
     }
+
     // Obere Schranke fuer die Laenge einer Tour, berechnet aus Summe der n teuersten Kanten
     static double lengthUpperBound(Vector2d[] coords) {
         double[] distances = new double[coords.length * coords.length];

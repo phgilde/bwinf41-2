@@ -148,7 +148,7 @@ points = []
 with open(path := input("Pfad zur Datei: ")) as f:
     while line := f.readline():
         points.append(tuple(map(float, line.split())))
-max_gap = float(input("Maximaler Lücke zur unteren Schranke in Prozent: ")) / 100
+max_gap = float(input("Maximale Luecke zur unteren Schranke in Prozent: ")) / 100
 
 
 print("Modell wird erstellt...")
@@ -174,7 +174,7 @@ for i in range(len(points)):
                 if i != k and j != k:
                     if acute(points[i], points[j], points[k]):
                         model += x[edge(i, j)] + x[edge(j, k)] <= 1
-print("Suche Startlösung...")
+print("Suche Startloesung...")
 
 init_solution = solveTA(path)
 p1 = init_solution[0]
@@ -186,16 +186,17 @@ start.append((ends[init_solution[0]], 1.0))
 start.append((ends[init_solution[-1]], 1.0))
 model.start = start
 
-print("Suche optimale Lösung...")
+print("Suche optimale Loesung...")
 # Vorbeugung von Rundungsfehlern
 model.max_mip_gap = max_gap + 0.0001
 model.optimize(max_seconds=float("inf"))
 import winsound
+
 print(model.status)
 winsound.MessageBeep()
 if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
-    print("Lösung gefunden!")
-    print("Kosten:", model.objective_value  * 100 // 1 / 100)
+    print("Loesung gefunden!")
+    print("Kosten:", model.objective_value * 100 // 1 / 100)
     solution = []
     for i in range(len(points)):
         if ends[i].x == 1:
@@ -219,12 +220,27 @@ if model.status in (OptimizationStatus.OPTIMAL, OptimizationStatus.FEASIBLE):
         )
     print(solution)
 if model.status == OptimizationStatus.NO_SOLUTION_FOUND:
-    print("Keine weitere Lösung gefunden!")
+    print("Keine weitere Loesung gefunden!")
 
     print("Kosten:", model.objective_value)
     print(init_solution)
 
 if model.status == OptimizationStatus.INFEASIBLE:
-    print("Startlösung ist optimal!")
-    print("Kosten:", sum(weight_matrix[i][j] for i, j in zip(init_solution[:-1], init_solution[1:])) * 100 // 1 / 100)
-    print(init_solution)
+    if all(
+        not acute(init_solution[i], init_solution[i + 1], init_solution[i + 2])
+        for i in range(len(init_solution) - 2)
+    ):
+        print("Startloesung ist optimal!")
+        print(
+            "Kosten:",
+            sum(
+                weight_matrix[i][j]
+                for i, j in zip(init_solution[:-1], init_solution[1:])
+            )
+            * 100
+            // 1
+            / 100,
+        )
+        print(init_solution)
+    else:
+        print("Es konnte keine gueltige Loesung gefunden werden!")

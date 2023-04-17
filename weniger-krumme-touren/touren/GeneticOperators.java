@@ -16,7 +16,7 @@ import java.util.function.Function;
  * (1999)
  */
 
-public class GeneticOperators {
+ public class GeneticOperators {
     // displace-operator
     static Integer[] displace(Integer[] individual) {
         List<Integer> result = new ArrayList<Integer>();
